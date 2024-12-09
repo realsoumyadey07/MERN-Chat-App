@@ -2,17 +2,16 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { WavyBackground } from "@/components/ui/wavy-background";
-import { useRouter } from "next/navigation";
 import SpeacialButton from "@/components/SpeacialButton";
 import Link from "next/link";
 import LoadingComp from "@/components/LoadingComp";
 
 export default function Home() {
-  const [loggedIn, setLoggedIn] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const access_token = localStorage.getItem("access_token");
-    setLoggedIn(access_token);
+    if(access_token) setLoggedIn(true);
     setLoading(false);
   }, []);
   if (loading) {

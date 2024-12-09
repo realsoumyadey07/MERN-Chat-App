@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { User } from "../models/user.model.js";
 
@@ -56,22 +58,32 @@ export const userLogin = AsyncHandler(async(req, res, next)=> {
         }
         const accessToken = await user.signAccessToken();
         const refreshToken = await user.signRefreshToken();
-        const option = {
+        const accessTokenExpires = parseInt(process.env.ACCESS_TOKEN_EXPIRES, 10);
+        const refreshTokenExpires = parseInt(process.env.REFRESH_TOKEN_EXPIRES, 10);
+        const accessTokenOption = {
+            expires: new Date(Date.now() + accessTokenExpires*1000),
+            maxAge: accessTokenExpires*1000,
+            httpOnly: true,
+            secure: true
+        }
+        const refreshTokenOption = {
+            expires: new Date(Date.now() + refreshTokenExpires*1000),
+            maxAge: refreshTokenExpires*1000,
             httpOnly: true,
             secure: true
         }
         return next(
             res
             .status(200)
-            .cookie("access_token", accessToken, option)
-            .cookie("refresh_token", refreshToken, option)
+            .cookie("access_token", accessToken, accessTokenOption)
+            .cookie("refresh_token", refreshToken, refreshTokenOption)
             .json({
             success: true,
             user,
             access_token: accessToken,
             refresh_token: refreshToken,
             message: "User logged in successfully!"
-        }))
+        }));
     } catch (error) {
         return next(res.status(500).json({
             success: false,

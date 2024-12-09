@@ -1,5 +1,5 @@
 import doetnv from "dotenv";
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 doetnv.config();
@@ -54,4 +54,4 @@ userSchema.methods.signRefreshToken = async function() {
     }, process.env.REFRESH_TOKEN || "");
 }
 
-export const User = model.User || model("User", userSchema);
+export const User = mongoose.models.User || model("User", userSchema);
