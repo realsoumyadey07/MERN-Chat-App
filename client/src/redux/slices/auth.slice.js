@@ -24,6 +24,7 @@ export const registration = createAsyncThunk(
             email: formData.email,
             password: formData.password,
           }),
+          credentials: "include"
         }
       );
       if (!response.ok) {
@@ -55,7 +56,7 @@ export const login = createAsyncThunk(
           body: JSON.stringify({
             email: formData.email,
             password: formData.password,
-          }),
+          })
         }
       );
       if (!response.ok) {

@@ -58,19 +58,19 @@ export const userLogin = AsyncHandler(async(req, res, next)=> {
         }
         const accessToken = await user.signAccessToken();
         const refreshToken = await user.signRefreshToken();
-        const accessTokenExpires = parseInt(process.env.ACCESS_TOKEN_EXPIRES, 10);
-        const refreshTokenExpires = parseInt(process.env.REFRESH_TOKEN_EXPIRES, 10);
         const accessTokenOption = {
-            expires: new Date(Date.now() + accessTokenExpires*1000),
-            maxAge: accessTokenExpires*1000,
+            expires: new Date( Date.now() + 5 * 24 * 60 * 60 * 1000 ),
+            maxAge: 5 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: "none"
         }
         const refreshTokenOption = {
-            expires: new Date(Date.now() + refreshTokenExpires*1000),
-            maxAge: refreshTokenExpires*1000,
+            expires: new Date( Date.now() + 30 * 24 * 60 * 60 * 1000 ),
+            maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: "none"
         }
         return next(
             res
@@ -84,6 +84,22 @@ export const userLogin = AsyncHandler(async(req, res, next)=> {
             refresh_token: refreshToken,
             message: "User logged in successfully!"
         }));
+    } catch (error) {
+        return next(res.status(500).json({
+            success: false,
+            message: error.message
+        }))
+    }
+});
+
+export const userLogout = AsyncHandler(async(req, res, next)=> {
+    try {
+        res.cookie("access_token", "", {maxAge: 1});
+        res.cookie("refresh_token", "", {maxAge: 1});
+        res.status(200).json({
+            success: true,
+            message: "User logout successfully!"
+        });
     } catch (error) {
         return next(res.status(500).json({
             success: false,

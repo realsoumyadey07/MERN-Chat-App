@@ -31,7 +31,7 @@ const userSchema = new Schema({
     }
 }, {timestamps: true});
 
-userSchema.pre("save", async function(){
+userSchema.pre("save", async function(next){
     if(!this.isModified("password")){
         next();
     }
@@ -45,13 +45,17 @@ userSchema.methods.comparePassword = async function(enteredPassword){
 userSchema.methods.signAccessToken = async function(){
  return jwt.sign({
     id: this._id
- }, process.env.ACCESS_TOKEN || "");
+ }, process.env.ACCESS_TOKEN || "", {
+    expiresIn: "5d"
+ });
 }
 
 userSchema.methods.signRefreshToken = async function() {
     return jwt.sign({
         id: this._id
-    }, process.env.REFRESH_TOKEN || "");
+    }, process.env.REFRESH_TOKEN || "", {
+        expiresIn: "30d"
+    });
 }
 
 export const User = mongoose.models.User || model("User", userSchema);

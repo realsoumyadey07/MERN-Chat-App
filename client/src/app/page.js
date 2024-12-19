@@ -11,6 +11,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const access_token = localStorage.getItem("access_token");
+    const cookies = document.cookie.includes("access_token=");
+    console.log("Cokkies ",cookies);
+    console.log("local storage: ", access_token);
     if(access_token) setLoggedIn(true);
     setLoading(false);
   }, []);
