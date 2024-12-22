@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { AsyncHandler } from "./AsyncHandler";
+import { AsyncHandler } from "./AsyncHandler.js";
 import jwt from "jsonwebtoken";
 
 export const IsAuthenticated = AsyncHandler(async(req, res, next)=>{
