@@ -14,5 +14,7 @@ export const IsAuthenticated = AsyncHandler(async(req, res, next)=>{
         success: false,
         message: "The token is not authenticated!"
     }));
+    req.user = decoded?.id;
+    console.log(req?.user);
     next();
-})
+});

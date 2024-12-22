@@ -88,7 +88,7 @@ export const userLogin = AsyncHandler(async(req, res, next)=> {
         return next(res.status(500).json({
             success: false,
             message: error.message
-        }))
+        }));
     }
 });
 
@@ -104,6 +104,38 @@ export const userLogout = AsyncHandler(async(req, res, next)=> {
         return next(res.status(500).json({
             success: false,
             message: error.message
-        }))
+        }));
     }
-})
+});
+
+export const getProfile = AsyncHandler(async(req, res, next)=> {
+    try {
+        const user_id = req.user;
+        const user = await User.findById({_id: user_id}).select("-password");
+        if(!user) return next(res.status(400).json({
+            success: false,
+            message: "Something went wrong!"
+        }));
+        res.status(200).json({
+            success: true,
+            user
+        });
+    } catch (error) {
+        return next(res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error!"
+        }));
+    }
+});
+
+export const searchUser = AsyncHandler(async(req, res, next)=> {
+    try {
+        const {name} = req.query;
+        const user = await User.findOne({})
+    } catch (error) {
+        return next(res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error!"
+        }));
+    }
+});
