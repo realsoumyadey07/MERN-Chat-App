@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { User } from "../models/user.model.js";
+import jwt from "jsonwebtoken";
+
 
 export const userRegistration = AsyncHandler(async(req, res, next)=> {
     try {
