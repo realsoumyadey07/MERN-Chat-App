@@ -227,6 +227,7 @@ export const removeMember = AsyncHandler(async (req, res, next)=> {
     chat.members = chat.members.filter(member=>member.toString() !== userId.toString());
     await chat.save();
     emitEvent(req, ALERT, chat.members, `${req.user.name} has been removed from the group`);
+    emitEvent(req, REFETCH_CHATS, chat.members);
     return next(res.status(200).json({
       success: true,
       chat
@@ -237,4 +238,15 @@ export const removeMember = AsyncHandler(async (req, res, next)=> {
       message: error.message
     }));
   }
-})
+});
+
+export const leaveGroup = AsyncHandler(async(req, res, next)=> {
+  try {
+    const {userId, chatId} = req.body;
+  } catch (error) {
+   return next(res.status(500).json({
+    success: false,
+    message: error.message
+   })); 
+  }
+});
