@@ -7,7 +7,9 @@ import {
   leaveGroup,
   newGroupChat,
   removeMember,
+  sendAttachments,
 } from "../controllers/chat.controller.js";
+import { attchmentsMulter } from "../middlewares/Multer.js";
 
 const chatRouter = express.Router();
 chatRouter.use(IsAuthenticated);
@@ -17,6 +19,7 @@ chatRouter.get("/get-my-chat", getMyChat);
 chatRouter.get("/get-my-group", getMyGroups);
 chatRouter.put("/add-member", addMember);
 chatRouter.put("/remove-member", removeMember);
-chatRouter.delete("/leave-chat/:id", leaveGroup)
+chatRouter.delete("/leave-chat/:id", leaveGroup);
+chatRouter.post("/message", attchmentsMulter, sendAttachments);
 
 export default chatRouter;

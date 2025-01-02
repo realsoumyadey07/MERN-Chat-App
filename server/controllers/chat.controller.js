@@ -153,9 +153,9 @@ export const addMember = AsyncHandler(async (req, res, next) => {
         })
       );
 
-    const allNewMembersPromise = [ ...new Set(members.map((i) =>
-      User.findById(i, "username")
-    ))];
+    const allNewMembersPromise = [
+      ...new Set(members.map((i) => User.findById(i, "username"))),
+    ];
     const allNewMembers = await Promise.all(allNewMembersPromise);
     chat.members.push(...allNewMembers.map((i) => i._id));
     if (chat.members.length > 100) {
@@ -190,63 +190,132 @@ export const addMember = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export const removeMember = AsyncHandler(async (req, res, next)=> {
+export const removeMember = AsyncHandler(async (req, res, next) => {
   try {
-    const {userId, chatId} = req.body;
-    if(!chatId || !userId) {
-      return next(res.status(400).json({
-        success: false,
-        message: "Chat Id and User Id are required!"
-      }));
+    const { userId, chatId } = req.body;
+    if (!chatId || !userId) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "Chat Id and User Id are required!",
+        })
+      );
     }
     const chat = await Chat.findById(chatId);
-    if(!chat){
-      return next(res.status(400).json({
-        success: false,
-        message: "Chat not found!"
-      }));
+    if (!chat) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "Chat not found!",
+        })
+      );
     }
-    if(!chat.groupChat){
-      return next(res.status(400).json({
-        success: false,
-        message: "This is not a group chat!"
-      }));
+    if (!chat.groupChat) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "This is not a group chat!",
+        })
+      );
     }
-    if(chat.creator.toString() !== req.user.toString()){
-      return next(res.status(400).json({
-        success: false,
-        message: "You are not allowed to remove member!"
-      }));
+    if (chat.creator.toString() !== req.user.toString()) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "You are not allowed to remove member!",
+        })
+      );
     }
-    if(chat.members.length <=3){
-      return next(res.status(400).json({
-        success: false,
-        message: "Group chat must have at least 3 members!"
-      }));
+    if (chat.members.length <= 3) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "Group chat must have at least 3 members!",
+        })
+      );
     }
-    chat.members = chat.members.filter(member=>member.toString() !== userId.toString());
+    chat.members = chat.members.filter(
+      (member) => member.toString() !== userId.toString()
+    );
     await chat.save();
-    emitEvent(req, ALERT, chat.members, `${req.user.name} has been removed from the group`);
+    emitEvent(
+      req,
+      ALERT,
+      chat.members,
+      `${req.user.name} has been removed from the group`
+    );
     emitEvent(req, REFETCH_CHATS, chat.members);
-    return next(res.status(200).json({
-      success: true,
-      chat
-    }));
+    return next(
+      res.status(200).json({
+        success: true,
+        chat,
+      })
+    );
   } catch (error) {
-    return next(res.status(500).json({
-      success: false,
-      message: error.message
-    }));
+    return next(
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      })
+    );
   }
 });
 
-export const leaveGroup = AsyncHandler(async(req, res, next)=> {
+export const leaveGroup = AsyncHandler(async (req, res, next) => {
   try {
-    const {userId, chatId} = req.body;
+    const chatId = req.params.id;
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return next(
+        res.status(404).json({
+          success: false,
+          message: "Chat not found!",
+        })
+      );
+    }
+    if (!chat.groupChat) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "This is not a group chat!",
+        })
+      );
+    }
+    const remainingMambers = chat.members.filter(
+      (member) => member.toString() !== req.user.toString()
+    );
+    if (chat.creator.toString() === req.user.toString()) {
+      const randomElement = Math.floor(Math.random() * remainingMambers.length);
+      const newCreator = remainingMambers[randomElement];
+      chat.creator = newCreator;
+    }
+    chat.members = remainingMambers;
+    const [user] = await Promise.all([
+      User.findById(req.user, "username"),
+      chat.save(),
+    ]);
+    emitEvent(req, ALERT, chat.members, `${user} has left the group`);
+    return next(res.status(200).json({
+      success: true,
+      message: "Member removed successfully!"
+    }))
   } catch (error) {
-   return next(res.status(500).json({
-    success: false,
-    message: error.message
-   })); 
+    return next(
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      })
+    );
   }
 });
+
+export const sendAttachments = AsyncHandler(async (req, res, next)=> {
+  try {
+    
+  } catch (error) {
+    return next(res.status(500).json({
+      success: false,
+      message: error.message,
+    }))
+  }
+})
