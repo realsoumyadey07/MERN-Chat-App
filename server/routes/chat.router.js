@@ -22,4 +22,8 @@ chatRouter.put("/remove-member", removeMember);
 chatRouter.delete("/leave-chat/:id", leaveGroup);
 chatRouter.post("/message", attchmentsMulter, sendAttachments);
 
+// get messages
+
+//get chat details, rename, delete
+
 export default chatRouter;
