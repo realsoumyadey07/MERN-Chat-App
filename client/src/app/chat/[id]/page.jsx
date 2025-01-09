@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { IoAttachOutline } from "react-icons/io5";
-import { AiOutlineAudio } from "react-icons/ai";
 
 export default function Page({ params }) {
   console.log(params);
@@ -17,20 +16,17 @@ export default function Page({ params }) {
         />
         <div>
           <h1>Name</h1>
-          <p>Message yourself</p>
+          <p className="text-gray-500">Message yourself</p>
         </div>
       </header>
-      <main className="min-h-screen"></main>
-      <footer className="flex justify-center">
-        <div className="flex basis-[20%]">
+      <main className="min-h-[80vh]"></main>
+      <footer className="flex justify-center items-center px-4">
+        <div className="flex lg:basis-[10%] basis-[20%] justify-around">
           <MdOutlineEmojiEmotions />
           <IoAttachOutline />
         </div>
-        <div className="basis-[60%]">
-            <input type="text" name="message" />
-        </div>
-        <div className="basis-[20%]">
-            <AiOutlineAudio/>
+        <div className="basis-[80%] lg:basis-[90%]">
+            <input className="w-full border-none outline-none" placeholder="Type your message here" type="text" name="message" />
         </div>
       </footer>
     </section>

@@ -4,6 +4,7 @@ const initialState = {
   registerUserData: null,
   loginUserData: null,
   logoutUserData: null,
+  userData: null,
   isLoading: false,
   error: null,
 };
@@ -16,6 +17,7 @@ export const registration = createAsyncThunk(
         `${process.env.NEXT_PUBLIC_BASE_URL}/user/user-registration`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -50,6 +52,7 @@ export const login = createAsyncThunk(
         `${process.env.NEXT_PUBLIC_BASE_URL}/user/user-login`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -72,6 +75,36 @@ export const login = createAsyncThunk(
       return thunkAPI.rejectWithValue(
         error.response?.data || "Something went wrong"
       );
+    }
+  }
+);
+
+export const getUserData = createAsyncThunk(
+  "auth/userData",
+  async (_, thunkAPI)=> {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/user/get-user`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      if(!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData);
+        return thunkAPI.rejectWithValue(
+          errorData || "Something went wrong!"
+        )
+      }
+      const data = await response.json();
+      return data.user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Something went worng!"
+      )
     }
   }
 );
@@ -110,6 +143,18 @@ export const authSlice = createSlice({
         state.isLoading = false,
         state.error = action.payload || action.error.message;
       });
+      //get user data
+      builder.addCase(getUserData.pending, (state, action)=> {
+        state.isLoading = true;
+      }),
+      builder.addCase(getUserData.fulfilled, (state, action)=> {
+        state.isLoading = false;
+        state.userData = action.payload;
+      }),
+      builder.addCase(getUserData.rejected, (state, action)=> {
+        state.isLoading = false;
+        state.error = action.payload || action.error.message;
+      })
   },
 });
 
