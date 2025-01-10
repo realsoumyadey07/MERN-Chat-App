@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { IoAttachOutline } from "react-icons/io5";
+import { TbLocationShare } from "react-icons/tb";
 
 export default function Page({ params }) {
   console.log(params);
@@ -20,14 +21,15 @@ export default function Page({ params }) {
         </div>
       </header>
       <main className="min-h-[80vh]"></main>
-      <footer className="flex justify-center items-center px-4">
-        <div className="flex lg:basis-[10%] basis-[20%] justify-around">
+      <footer className="flex justify-center items-center px-4 ">
+        <div className="flex lg:basis-[10%] basis-[20%] justify-around items-center">
           <MdOutlineEmojiEmotions />
           <IoAttachOutline />
         </div>
-        <div className="basis-[80%] lg:basis-[90%]">
+        <form className="basis-[80%] lg:basis-[90%] flex items-center">
             <input className="w-full border-none outline-none" placeholder="Type your message here" type="text" name="message" />
-        </div>
+            <TbLocationShare/>
+        </form>
       </footer>
     </section>
   );

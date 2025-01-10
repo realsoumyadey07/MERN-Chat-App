@@ -1,3 +1,4 @@
+import openApi from "@/lib/axios/openApi";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -109,6 +110,21 @@ export const getUserData = createAsyncThunk(
   }
 );
 
+export const logOut = createAsyncThunk(
+  "auth/logout",
+  async (_, thunkAPI)=>{
+    try {
+      const response = await openApi.get("/user/user-logout");
+      const data = response.json();
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Something went wrong!"
+      );
+    }
+  }
+)
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -142,7 +158,7 @@ export const authSlice = createSlice({
       builder.addCase(login.rejected, (state, action) => {
         state.isLoading = false,
         state.error = action.payload || action.error.message;
-      });
+      }),
       //get user data
       builder.addCase(getUserData.pending, (state, action)=> {
         state.isLoading = true;
@@ -152,6 +168,18 @@ export const authSlice = createSlice({
         state.userData = action.payload;
       }),
       builder.addCase(getUserData.rejected, (state, action)=> {
+        state.isLoading = false;
+        state.error = action.payload || action.error.message;
+      }),
+      //logout user data
+      builder.addCase(logOut.pending, (state, action)=> {
+        state.isLoading = true;
+      }),
+      builder.addCase(logOut.fulfilled, (state, action)=> {
+        state.isLoading = false;
+        state.logoutUserData = action.payload;
+      }),
+      builder.addCase(logOut.rejected, (state, action)=> {
         state.isLoading = false;
         state.error = action.payload || action.error.message;
       })
