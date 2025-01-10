@@ -1,14 +1,15 @@
 import { Stack } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 
 
 export default function NotFoundScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Oops!' }} />
-      <View>
-        <Text>Not found!</Text>
+      <View style={{flex: 1, width: "100%", justifyContent: "center", alignItems: "center"}}>
+        <Text style={{color: "white"}}>Not found!</Text>
       </View>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content"/>
     </>
   );
 }
