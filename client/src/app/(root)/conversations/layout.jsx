@@ -1,7 +1,10 @@
+import ItemList from '@/components/shared/item-list/ItemList'
 import React from 'react'
 
 export default function layout() {
   return (
-    <div>conversation page</div>
+    <>
+      <ItemList title="Conversations">Conversation page</ItemList>
+    </>
   )
 }

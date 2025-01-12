@@ -1,7 +1,12 @@
+import ConversationContainer from '@/components/shared/conversations/ConversationContainer'
 import React from 'react'
 
-export default function page() {
+export default function page(props) {
   return (
-    <div>page</div>
+    <>
+      <ConversationContainer>
+        Conversation page
+      </ConversationContainer>
+    </>
   )
 }
