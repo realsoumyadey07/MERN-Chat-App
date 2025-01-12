@@ -18,7 +18,6 @@ export const registration = createAsyncThunk(
         `${process.env.NEXT_PUBLIC_BASE_URL}/user/user-registration`,
         {
           method: "POST",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -53,7 +52,6 @@ export const login = createAsyncThunk(
         `${process.env.NEXT_PUBLIC_BASE_URL}/user/user-login`,
         {
           method: "POST",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -73,6 +71,8 @@ export const login = createAsyncThunk(
       localStorage.setItem("refresh_token", data.refresh_token);
       return data.user;
     } catch (error) {
+      console.log(error);
+      
       return thunkAPI.rejectWithValue(
         error.response?.data || "Something went wrong"
       );

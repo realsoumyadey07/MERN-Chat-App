@@ -5,11 +5,11 @@ export const useConversation = ()=> {
     const params = useParams();
 
     const conversationId = useMemo(()=>{
-        params?.conversationId || ""
+        return params?.conversationId || ""
     },[params?.conversationId]);
 
     const isActive = useMemo(()=>{
-        !!conversationId
+        return !!conversationId
     },[conversationId]);
     
     return {

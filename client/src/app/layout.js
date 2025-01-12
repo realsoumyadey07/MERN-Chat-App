@@ -23,16 +23,16 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <ThemeProvider
+        <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        > */}
+        >
           <TooltipProvider>
             <Provider store={store}>{children}</Provider>
           </TooltipProvider>
-        {/* </ThemeProvider> */}
+        </ThemeProvider>
       </body>
     </html>
   );

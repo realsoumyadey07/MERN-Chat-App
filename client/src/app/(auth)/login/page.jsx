@@ -46,7 +46,7 @@ const LoginPage = () => {
   };
   useEffect(()=> {
     if(loginUserData){
-      router.push("/");
+      router.push("/conversations");
     }
   }, [loginUserData])
   return (

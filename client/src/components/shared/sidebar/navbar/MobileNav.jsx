@@ -1,4 +1,6 @@
 "use client";
+import ProfileComponent from "@/components/ProfileComponent";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -11,15 +13,17 @@ import Link from "next/link";
 
 export default function MobileNav() {
   const paths = useNavigation();
+  const {isActive} = useNavigation();
+  if(isActive) return null;
   return (
-    <Card className="fixed bottom-4 w-[calc(100vw-50px)] flex lg:hidden justify-center items-center p-2">
+    <Card className="fixed bottom-4 w-[calc(100vw-32px)] flex lg:hidden justify-center items-center p-2">
       <nav className="w-full">
         <ul className="flex flex-row justify-evenly items-center">
           {paths.map((path, id) => {
             return (
               <li key={id} className="relative">
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <Link href={path.href}>
                       <Button
                         size="icon"
@@ -34,8 +38,15 @@ export default function MobileNav() {
               </li>
             );
           })}
+          <li>
+            <ThemeToggle/>
+          </li>
+          <li>
+            <div className="flex flex-col items-centergap-4">
+              <ProfileComponent/>
+            </div>
+          </li>
         </ul>
-        <div className="flex flex-col items-centergap-4"></div>
       </nav>
     </Card>
   );

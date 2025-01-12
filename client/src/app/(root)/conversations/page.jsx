@@ -2,9 +2,5 @@ import ConversationFallback from "@/components/shared/conversations/Conversation
 import React from "react";
 
 export default function page() {
-  return (
-    <>
-      <ConversationFallback />
-    </>
-  );
+  return <ConversationFallback />
 }

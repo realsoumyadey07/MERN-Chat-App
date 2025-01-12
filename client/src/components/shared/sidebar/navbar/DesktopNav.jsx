@@ -1,4 +1,6 @@
 "use client";
+import ProfileComponent from "@/components/ProfileComponent";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -19,7 +21,7 @@ export default function DesktopNav() {
             return (
               <li key={id} className="relative">
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <Link href={path.href}>
                       <Button
                         size="icon"
@@ -36,7 +38,10 @@ export default function DesktopNav() {
           })}
         </ul>
       </nav>
-      <div className="flex flex-col items-centergap-4"></div>
+      <div className="flex flex-col items-center gap-4">
+        <ThemeToggle/>
+        <ProfileComponent/>
+      </div>
     </Card>
   );
 }

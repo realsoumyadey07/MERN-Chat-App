@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { useConversation } from '@/hooks/useConversation'
 
 export default function ItemList({children, title, action: Action}) {
-  const {isActive} = useConversation();
+  const {isActive} = useConversation();  
   return (
     <Card className={cn("hidden h-full w-full lg:flex-none lg:w-80 p-2", {
       "block": !isActive,

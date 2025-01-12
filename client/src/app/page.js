@@ -21,7 +21,7 @@ export default function Home() {
     setLoading(false);
   }, []);
   useEffect(()=> {
-    if(loggedIn) router.push("/chat");
+    if(loggedIn) router.push("/conversations");
   }, [loggedIn, router]);
 
   if (loading) {
