@@ -13,10 +13,10 @@ export const useNavigation = () => {
             active: pathname.startsWith("/conversations")
         },
         {
-            name: "Friends",
-            href: "/friends",
+            name: "Groups",
+            href: "/groups",
             icon: <Users/>,
-            active: pathname === "/friends"
+            active: pathname === "/groups"
         }
     ], [pathname]);
 

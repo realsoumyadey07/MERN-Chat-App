@@ -38,7 +38,7 @@ export const registration = createAsyncThunk(
       return data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Something went wrong"
+        error.message || "Something went wrong"
       );
     }
   }
@@ -74,7 +74,7 @@ export const login = createAsyncThunk(
       console.log(error);
       
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Something went wrong"
+        error.message || "Something went wrong"
       );
     }
   }
@@ -84,27 +84,12 @@ export const getUserData = createAsyncThunk(
   "auth/userData",
   async (_, thunkAPI)=> {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/user/get-user`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      );
-      if(!response.ok) {
-        const errorData = await response.json();
-        console.log(errorData);
-        return thunkAPI.rejectWithValue(
-          errorData || "Something went wrong!"
-        )
-      }
+      const response = await openApi.get("/user/get-user");
       const data = await response.json();
       return data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Something went worng!"
+        error.message || "Something went worng!"
       )
     }
   }
@@ -119,7 +104,7 @@ export const logOut = createAsyncThunk(
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Something went wrong!"
+        error.message || "Something went wrong!"
       );
     }
   }

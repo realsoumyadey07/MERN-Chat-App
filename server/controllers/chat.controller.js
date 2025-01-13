@@ -50,6 +50,7 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
   }
 });
 
+
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
     const chats = await Chat.find({ members: req.user }).populate(
