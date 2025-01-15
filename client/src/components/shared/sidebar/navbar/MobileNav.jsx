@@ -9,12 +9,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useNavigation } from "@/hooks/useNavigation";
+import { getUserData } from "@/redux/slices/auth.slice";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
 
 export default function MobileNav() {
   const paths = useNavigation();
   const {isActive} = useNavigation();
   if(isActive) return null;
+  const dispatch = useDispatch();
+  const getUserProfile = () => {
+    dispatch(getUserData());
+  };
   return (
     <Card className="fixed bottom-4 w-[calc(100vw-32px)] flex lg:hidden justify-center items-center p-2">
       <nav className="w-full">
@@ -42,7 +48,7 @@ export default function MobileNav() {
             <ThemeToggle/>
           </li>
           <li>
-            <div className="flex flex-col items-centergap-4">
+            <div className="flex flex-col items-centergap-4" onClick={getUserProfile}>
               <ProfileComponent/>
             </div>
           </li>

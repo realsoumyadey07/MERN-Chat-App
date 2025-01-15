@@ -159,6 +159,7 @@ const LoginPage = () => {
               </DialogContent>
             </Dialog>
           )}
+          {error}
         </>
       )}
     </>

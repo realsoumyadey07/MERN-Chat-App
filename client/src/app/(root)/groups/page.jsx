@@ -5,7 +5,7 @@ import React from 'react'
 function page() {
   return (
     <>
-      <ItemList title="Friends">Friends page</ItemList>
+      <ItemList title="Groups">Groups page</ItemList>
       <ConversationFallback/>
     </>
   )
