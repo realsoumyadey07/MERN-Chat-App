@@ -85,7 +85,7 @@ export const getUserData = createAsyncThunk(
   async (_, thunkAPI)=> {
     try {
       const response = await openApi.get("/user/get-user");
-      const data = await response.json();
+      const data = await response.data;
       return data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -100,7 +100,7 @@ export const logOut = createAsyncThunk(
   async (_, thunkAPI)=>{
     try {
       const response = await openApi.get("/user/user-logout");
-      const data = response.json();
+      const data = response.data;
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

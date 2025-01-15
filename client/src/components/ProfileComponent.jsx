@@ -13,6 +13,7 @@ import { Skeleton } from "./ui/skeleton";
 
 export default function ProfileComponent() {
   const {userData, error, isLoading} = useSelector((state)=> state.auth);
+  console.log("user data is "+userData);
   return (
     <div className="flex items-center justify-center" >
       <DropdownMenu>
