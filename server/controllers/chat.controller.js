@@ -362,3 +362,103 @@ export const sendAttachments = AsyncHandler(async (req, res, next)=> {
   }
 });
 
+export const getChatDetails = AsyncHandler(async(req, res, next)=> {
+  try {
+    if(req.query.populate === "true") {
+      const chat = await Chat.findById(req.params.id).populate("members", "username").lean();
+      if(!chat) return next(res.status(404).json({
+        success: false,
+        message: "Chat not found"
+      }));
+      chat.members = chat.members.map(({_id, username})=> ({
+        _id,
+        username
+      }));
+      return next(res.status(200).json({
+        success: true,
+        chat
+      }));
+    } else {
+      const chat = await Chat.findById(req.params.id);
+      if(!chat) return next(res.status(404).json({
+        success: false,
+        message: "Chat not found"
+      }));
+      return next(res.status(200).json({
+        success: true,
+        chat
+      }));
+    }
+  } catch (error) {
+    return next(res.status(500).json({
+      success: false,
+      message: error.message
+    }));
+  }
+});
+
+export const renameGroup = AsyncHandler(async (req, res, next)=> {
+  try {
+    const chatId = req.params.id;
+    const { newName } = req.body;
+    if([chatId, newName].some(field=> field?.trim() === "")) {
+      return next(res.status(400).json({
+        success: false,
+        message: "Chat Id and new name are required!"
+      }));
+    }
+    const chat = await Chat.findById(chatId);
+    if(!chat) return next(res.status(404).json({
+      success: false,
+      message: "Chat not found!"
+    }));
+    if(!chat.groupChat){
+      return next(res.status(400).json({
+        success: false,
+        message: "This is not a group chat!"
+      }));
+    }
+    if(chat.creator.toString() !== req.user.toString()) return next(res.status(400).json({
+      success: false,
+      message: "You are not allowed to rename this chat!"
+    }));
+    chat.name = newName;
+    chat.save();
+    emitEvent(req, REFETCH_CHATS, chat.members);
+    return next(res.status(200).json({
+      success: true,
+      message: "Chat name has been updated successfully!"
+    }));
+  } catch (error) {
+    return next(response.status(500).json({
+      success: false,
+      message: error.message
+    }));
+  }
+});
+
+export const deleteGroup = AsyncHandler(async (req, res, next)=> {
+  try {
+    const groupId = req.params.groupId;
+    if(!groupId) return next(res.status(404).json({
+      success: false,
+      message: "Group Id is required!"
+    }));
+    const chat = await Chat.findById(groupId);
+    if(!chat) return next(res.status(404).json({
+      success: false,
+      message: "Chat not found!"
+    }));
+    const members = await chat.members;
+    if(chat.groupChat && chat.creator.toString() !== req.user.toString()) return next(res.status(400).json({
+      success: false,
+      message: "You are not allowed to delete this group!"
+    }));
+    
+  } catch (error) {
+    return next(res.status(500).json({
+      success: false,
+      message: error.message
+    }));
+  }
+})
