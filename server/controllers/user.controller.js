@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { User } from "../models/user.model.js";
-import jwt from "jsonwebtoken";
+
 
 
 export const userRegistration = AsyncHandler(async(req, res, next)=> {
@@ -62,16 +62,16 @@ export const userLogin = AsyncHandler(async(req, res, next)=> {
         const refreshToken = await user.signRefreshToken();
         const accessTokenOption = {
             expires: new Date( Date.now() + 5 * 24 * 60 * 60 * 1000 ),
-            maxAge: 5 * 24 * 60 * 60 * 1000,
+            // maxAge: 5 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "none"
         }
         const refreshTokenOption = {
             expires: new Date( Date.now() + 30 * 24 * 60 * 60 * 1000 ),
-            maxAge: 30 * 24 * 60 * 60 * 1000,
+            // maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "none"
         }
         return next(
