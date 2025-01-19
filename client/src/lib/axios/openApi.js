@@ -7,8 +7,6 @@ if (typeof window !== "undefined") {
   access_token = localStorage.getItem("access_token");
 }
 
-// const refresh_token = localStorage.getItem("refresh_token");
-
 const openApi = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URL,
     withCredentials: true,
