@@ -20,9 +20,10 @@ export default function Home() {
     }
     setLoading(false);
   }, []);
+
   useEffect(()=> {
-    if(loggedIn) router.push("/conversations");
-  }, [loggedIn, router]);
+    if(loggedIn) router.push("/conversations")
+  },[loggedIn])
 
   if (loading) {
     return <LoadingComp />;

@@ -1,29 +1,40 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({
+  path: "../.env",
+});
 import { AsyncHandler } from "./AsyncHandler.js";
 import jwt from "jsonwebtoken";
+import { User } from "../models/user.model.js";
 
 export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
+  console.log("browser cookie: "+ req.cookies.access_token);
+  console.log("bearer token: "+ req.header("Authorization"));
   try {
-    const access_token = req.cookies.access_token || req.header("Authorization")?.replace("Bearer ", "");
+    const access_token =
+      req.cookies.access_token ||
+      req.header("Authorization")?.replace("Bearer ", "");
     if (!access_token)
-      return next(
-        res.status(400).json({
-          success: false,
-          message: "Token is not found. Please log in!",
-        })
-      );
+      return res.status(400).json({
+        success: false,
+        message: "Token is not found. Please log in!",
+      });
     const decoded = jwt.verify(access_token, process.env.ACCESS_TOKEN);
-
-    req.user = decoded?.id;
+    console.log("decoded id is: "+ decoded?.id);
+    
+    const user = await User.findById(decoded?.id).select(
+      "-password -refresh_token"
+    );
+    if (!user) return res.status(400).json({
+        success: false,
+        message: "Invalid access token!",
+      });
+    req.user = user._id;
     console.log(req?.user);
     next();
   } catch (error) {
-      return next(
-        res.status(500).json({
-          success: false,
-          message: "The token is not authenticated!",
-        })
-      );
+    return res.status(500).json({
+      success: false,
+      message: "The token is not authenticated!",
+    });
   }
 });

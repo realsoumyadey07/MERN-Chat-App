@@ -2,7 +2,9 @@ import doetnv from "dotenv";
 import mongoose, { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-doetnv.config();
+doetnv.config({
+    path: "../.env"
+});
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -22,12 +24,14 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true,
-        select: false
+        required: [true, "password is required"]
     },
     avatar: {
         public_id: String,
         url: String
+    },
+    refresh_token: {
+        type: String
     }
 }, {timestamps: true});
 
@@ -44,17 +48,19 @@ userSchema.methods.comparePassword = async function(enteredPassword){
 
 userSchema.methods.signAccessToken = async function(){
  return jwt.sign({
-    id: this._id
- }, process.env.ACCESS_TOKEN || "", {
-    expiresIn: "5d"
+    id: this._id,
+    email: this.email,
+    username: this.username
+ }, process.env.ACCESS_TOKEN, {
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRES
  });
 }
 
 userSchema.methods.signRefreshToken = async function() {
     return jwt.sign({
         id: this._id
-    }, process.env.REFRESH_TOKEN || "", {
-        expiresIn: "30d"
+    }, process.env.REFRESH_TOKEN, {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRES
     });
 }
 
