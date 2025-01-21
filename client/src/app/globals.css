@@ -63,7 +63,7 @@
 
 @layer utilities {
   .side-img {
-    @apply hidden h-full object-cover md:block;
+    @apply hidden h-full object-cover lg:block;
   }
   .container {
     @apply relative flex-1 overflow-y-auto px-[5%];

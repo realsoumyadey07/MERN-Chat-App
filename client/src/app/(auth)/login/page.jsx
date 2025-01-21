@@ -56,9 +56,9 @@ const LoginPage = () => {
         <LoadingComp />
       ) : (
         <>
-          <div className="flex h-screen max-h-screen">
-            <section className="my-auto container">
-              <div className="sub-container max-w-[496px]">
+          <div className="flex h-screen">
+            <section className="w-full lg:w-1/2 flex items-center justify-center px-6">
+              <div className="w-full max-w-[496px]">
                 <Link
                   href={"/"}
                   className="font-semibold text-gray-300 text-2xl"
@@ -140,19 +140,19 @@ const LoginPage = () => {
               </div>
             </section>
 
-            <Image
-              src={BackGroundImage}
-              alt="background"
-              width={1000}
-              height={1000}
-              className="side-img max-w-[50%]"
-            />
+            <section className="hidden lg:flex w-1/2 h-full">
+              <Image
+                src={BackGroundImage}
+                alt="background"
+                className="object-cover w-full h-full"
+              />
+            </section>
           </div>
           {error && (
             <Dialog open={!!error}>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Error: {error?.message}</DialogTitle>
+                  <DialogTitle>Error: {error}</DialogTitle>
                 </DialogHeader>
                 <DialogFooter>
                   <Link

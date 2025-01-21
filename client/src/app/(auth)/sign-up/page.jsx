@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useState } from "react";
-import BackGroundImage from "../../../../public/images/pexels-marcus-aurelius-4064696.jpg";
+import BackGroundImage from "../../../../public/images/sign-up.jpg";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,8 +60,9 @@ const SignupPage = () => {
         <LoadingComp />
       ) : (
         <>
-          <div className="flex w-full h-svh gap-10 justify-center items-center px-5 py-5">
-            <section className="my-auto">
+          <div className="flex h-screen">
+            <section className="w-full lg:w-1/2 flex items-center justify-center px-6">
+            <div className="w-full max-w-[496px]">
               <Link href={"/"} className="font-semibold text-gray-300 text-2xl">
                 MERN Chat App
               </Link>
@@ -153,22 +154,18 @@ const SignupPage = () => {
                   </Link>
                 </span>
               </form>
+              </div>
             </section>
-            <div className="hidden custom920:block max-w-[496px]">
+            <section className="hidden lg:flex w-1/2 h-full">
               <Image
                 src={BackGroundImage}
                 alt="background"
-                width={700}
-                height={500}
-                className="w-fit"
+                className="object-cover w-full h-full"
               />
-            </div>
+              </section>
           </div>
           {registerUserData && (
             <Dialog open={!!registerUserData}>
-              {/* <DialogTrigger asChild>
-                <Button variant="outline">Edit Profile</Button>
-              </DialogTrigger> */}
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Welcome {registerUserData.username}</DialogTitle>
@@ -176,20 +173,6 @@ const SignupPage = () => {
                     Your registration successfully completed!
                   </DialogDescription>
                 </DialogHeader>
-                {/* <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <label htmlFor="name" className="text-right">
-                      Name
-                    </label>
-                    
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <label htmlFor="username" className="text-right">
-                      Username
-                    </label>
-                    
-                  </div>
-                </div> */}
                 <DialogFooter>
                   <Link href="/login" className="hover:underline">
                     Login to continue
@@ -202,7 +185,7 @@ const SignupPage = () => {
             <Dialog open={!!error}>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Error: {error?.message}</DialogTitle>
+                  <DialogTitle>Error: {error}</DialogTitle>
                 </DialogHeader>
                 <DialogFooter>
                   <Link

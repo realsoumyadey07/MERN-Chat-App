@@ -20,11 +20,12 @@ export const registration = createAsyncThunk(
         email: formData?.email,
         password: formData?.password,
       });
-      
-      const data = await response.data;
+      const data = await response.data; 
+      console.log("here is data: "+data);   
       return data?.user;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message || "Something went wrong");
+      console.log(error?.response?.data);
+      return thunkAPI.rejectWithValue(error?.response?.data);
     }
   }
 );
@@ -44,7 +45,7 @@ export const login = createAsyncThunk(
       return data?.user;
     } catch (error) {
       console.log(error);
-      return thunkAPI.rejectWithValue(error.message || "Something went wrong");
+      return thunkAPI.rejectWithValue(error?.response?.data || "Something went wrong");
     }
   }
 );
@@ -57,7 +58,7 @@ export const logOut = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
     localStorage.removeItem("refresh_token");
     return data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.message || "Something went wrong!");
+    return thunkAPI.rejectWithValue(error?.response?.data || "Something went wrong!");
   }
 });
 
@@ -69,7 +70,7 @@ export const getUserData = createAsyncThunk(
       const data = await response.data;
       return data.user;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message || "Something went worng!");
+      return thunkAPI.rejectWithValue(error?.response?.data || "Something went worng!");
     }
   }
 );
@@ -96,55 +97,55 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     //for registration
     builder.addCase(registration.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoading = true
     });
     builder.addCase(registration.fulfilled, (state, action) => {
-      (state.isLoading = false), 
-      (state.registerUserData = action.payload);
-      console.log(action.payload);
+      state.isLoading = false 
+      state.registerUserData = action.payload;
     });
     builder.addCase(registration.rejected, (state, action) => {
-      (state.isLoading = false),
-      (state.error = action.payload || action.error.message);
+      state.isLoading = false
+      console.log("action error in build case: "+ action?.payload?.message);
+      state.error = action?.payload?.message
     });
 
     //for login
     builder.addCase(login.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoading = true
     });
     builder.addCase(login.fulfilled, (state, action) => {
-      (state.isLoading = false), 
-      (state.loginUserData = action.payload);
+      state.isLoading = false
+      state.loginUserData = action.payload
     });
     builder.addCase(login.rejected, (state, action) => {
-      (state.isLoading = false),
-        (state.error = action.payload || action.error.message);
+      state.isLoading = false
+      state.error = action?.payload?.message
     });
     
     //logout user data
     builder.addCase(logOut.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoading = true
     });
     builder.addCase(logOut.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.logoutUserData = action.payload;
+      state.isLoading = false
+      state.logoutUserData = action.payload
     });
     builder.addCase(logOut.rejected, (state, action) => {
-      state.isLoading = false;
-      state.error = action.payload || action.error.message;
+      state.isLoading = false
+      state.error = action.error.message
     });
 
     //get user data
     builder.addCase(getUserData.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoading = true
     });
     builder.addCase(getUserData.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.userData = action.payload;
+      state.isLoading = false
+      state.userData = action.payload
     });
     builder.addCase(getUserData.rejected, (state, action) => {
-      state.isLoading = false;
-      state.error = action.payload || action.error.message;
+      state.isLoading = false
+      state.error = action.error.message
     });
   },
 });
