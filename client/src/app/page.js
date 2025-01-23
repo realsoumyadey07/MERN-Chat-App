@@ -23,11 +23,12 @@ export default function Home() {
 
   useEffect(()=> {
     if(loggedIn) router.push("/conversations")
-  },[loggedIn])
+  },[loggedIn]);
 
   if (loading) {
     return <LoadingComp />;
   }
+
   return (
     <>
       {!loggedIn && (
