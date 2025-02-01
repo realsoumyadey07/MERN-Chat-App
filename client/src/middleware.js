@@ -5,8 +5,11 @@ export function middleware(request) {
   const access_token = cookies.get("access_token")?.value;
   console.log("middleware ran");
   const loggedinUserNotAccessPath =
-    request.nextUrl.pathname == "/login" ||
-    request.nextUrl.pathname == "/sign-up";
+    request.nextUrl.pathname === "/login" ||
+    request.nextUrl.pathname === "/sign-up";
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.next();
+  }
   if (loggedinUserNotAccessPath) {
     if (access_token) {
       return NextResponse.redirect(new URL("/conversations", request.url));
@@ -16,8 +19,9 @@ export function middleware(request) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/conversations/:conversationId*", "/groups"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
