@@ -12,13 +12,13 @@ export default function ConversationFallback() {
           height={80}
           alt="logo"
         />
-        <h3 className="text-gray-500 font-semibold text-xl">
+        <h3 className="dark:text-gray-400 font-semibold text-xl">
           MERN Stack Chat Application
         </h3>
-        <p className="text-gray-300 text-[15px]">
+        <p className="dark:text-gray-300 text-[15px]">
           Send and receive messages without keeping your phone online.
         </p>
-        <p className="text-gray-300 text-[15px]">
+        <p className="dark:text-gray-300 text-[15px]">
           Use our chat application in order to stay in touch with your closeone.
         </p>
       </div>
