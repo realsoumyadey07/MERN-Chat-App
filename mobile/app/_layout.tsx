@@ -28,13 +28,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(root)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" options={{ headerShown: false}} />
       </Stack>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-    </ThemeProvider>
+    </>
   );
 }

@@ -5,7 +5,6 @@ import CustomButton from '@/components/CustomButton'
 import { router } from 'expo-router'
 
 export default function index (){
-  
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground 
@@ -60,17 +59,17 @@ const styles = StyleSheet.create({
       heading: {
         fontWeight: 600,
         fontSize: 24,
-        color: "gray"
+        color: "#3b3b3b"
       },
       text: {
-        color: "gray",
+        color: "#474747",
         fontSize: 15
       },
       buttonStyle: {
-        backgroundColor: "green",
+        backgroundColor: "#141414",
         paddingVertical: 15,
         borderRadius: 5,
-        marginTop: 10
+        marginTop: 20
       },
       buttonText: {
         color: "white",
@@ -78,4 +77,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: "center"
       }
-})
+});
