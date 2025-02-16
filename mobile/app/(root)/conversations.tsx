@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderRadius: 8,
+    borderRadius: 25,
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginBottom: 20,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     justifyContent: "space-between",
-    backgroundColor: "#cfcecc",
+    backgroundColor: "#e8e8e8",
     padding: 15,
     borderRadius: 10
   },

@@ -1,10 +1,22 @@
 import { StatusBar, View, SafeAreaView, StyleSheet, ImageBackground, Text } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import CustomButton from '@/components/CustomButton'
-import { router } from 'expo-router'
+import { Redirect, router } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function index (){
+  useEffect(()=> {
+    const checkToken = async ()=> {
+      try {
+        const token = await AsyncStorage.getItem("access_token");
+        if(token) return <Redirect href="/(root)/conversations"/>
+      } catch (error: any) {
+        console.error("Error while fetching token: ", error);
+      }
+    }
+    checkToken();
+  },[]);
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground 

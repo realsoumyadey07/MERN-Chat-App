@@ -8,16 +8,30 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import CustomButton from "@/components/CustomButton";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "@/redux/slices/auth.slice";
+import { store } from "@/redux/store";
 
-const login = () => {
+
+
+const handleUserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = () => {};
+  const dispatch = useDispatch<typeof store.dispatch>();
+  const {isLoading, loginUserData, error} = useSelector((state: any )=> state.auth );
+  const handleLogin = () => {
+    dispatch(login({email, password}));
+  };
+  useEffect(()=> {
+    if(!isLoading && loginUserData) {
+      router.push("/(root)/conversations");
+    }
+  },[loginUserData])
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -52,7 +66,7 @@ const login = () => {
         </View>
         <CustomButton
           title="Login"
-          handleSubmit={() => handleLogin}
+          handleSubmit={handleLogin}
           textStyle={styles.buttonText}
           buttonStyle={styles.buttonStyle}
         />
@@ -72,7 +86,7 @@ const login = () => {
   );
 };
 
-export default login;
+export default handleUserLogin;
 
 const styles = StyleSheet.create({
   container: {
