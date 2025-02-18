@@ -1,10 +1,11 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { FontAwesome } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 const Conversations = () => {
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.inputContainer}>
         <FontAwesome name="search" size={20} color="gray" style={styles.icon} />
         <TextInput
@@ -14,7 +15,7 @@ const Conversations = () => {
         />
       </View>
       <View>
-        <TouchableOpacity style={styles.chatContainer}>
+        <TouchableOpacity style={styles.chatContainer} onPress={()=> router.push("/[conversationId]/index")}>
           {/* <Image source={}/> */}
           <FontAwesome name="user-circle-o" size={30} color="black" />
           <View style={styles.messageSection}>
@@ -24,7 +25,7 @@ const Conversations = () => {
           <Text>Yesterday</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

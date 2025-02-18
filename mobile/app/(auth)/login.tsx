@@ -29,9 +29,10 @@ const handleUserLogin = () => {
   };
   useEffect(()=> {
     if(!isLoading && loginUserData) {
-      router.push("/(root)/conversations");
+      router.replace("/(root)/conversations");
     }
-  },[loginUserData])
+  },[loginUserData, isLoading]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground

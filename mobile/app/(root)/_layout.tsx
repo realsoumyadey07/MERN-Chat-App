@@ -97,6 +97,7 @@ const TabNavigator: React.FC = () => {
               name="Profile"
             />
           ),
+          headerShown: false
         }}
       />
     </Tabs>

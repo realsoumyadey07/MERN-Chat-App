@@ -76,6 +76,7 @@ export const login = createAsyncThunk<
   { rejectValue: { message: string } }
 >("auth/login", async (formData, thunkAPI) => {
   try {
+    console.log(process.env.EXPO_PUBLIC_BASE_URL);
     const response = await openApi.post("/user/user-login", {
       email: formData?.email,
       password: formData?.password,
