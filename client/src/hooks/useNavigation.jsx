@@ -10,7 +10,7 @@ export const useNavigation = () => {
             name: "Conversations",
             href: "/conversations",
             icon: <MessageSquare/>,
-            active: pathname.startsWith("/conversations")
+            active: pathname ==="/conversations"
         },
         {
             name: "Groups",

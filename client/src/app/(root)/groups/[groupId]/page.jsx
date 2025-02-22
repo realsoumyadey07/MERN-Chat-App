@@ -1,11 +1,8 @@
 import ConversationContainer from "@/components/shared/conversations/ConversationContainer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import React from "react";
+import { IoAttachOutline, IoMic } from "react-icons/io5";
 import { LuVideo } from "react-icons/lu";
-import { MdCall } from "react-icons/md";
-import { MdEmojiEmotions } from "react-icons/md";
-import { IoAttachOutline } from "react-icons/io5";
-import { IoMic } from "react-icons/io5";
+import { MdCall, MdEmojiEmotions } from "react-icons/md";
 
 export default function page() {
   return (
@@ -32,7 +29,11 @@ export default function page() {
           <MdEmojiEmotions size={23} />
           <IoAttachOutline size={25} />
         </div>
-        <input type="text" className="bg-transparent border-none w-[85%] focus:border-none focus:outline-none" placeholder="Type your message here" />
+        <input
+          type="text"
+          className="bg-transparent border-none w-[85%] focus:border-none focus:outline-none"
+          placeholder="Type your message here"
+        />
         <div>
           <IoMic size={25} />
         </div>

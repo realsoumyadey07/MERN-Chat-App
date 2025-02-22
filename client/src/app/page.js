@@ -20,17 +20,19 @@ export default function Home() {
     }
     setLoading(false);
   }, []);
+
   useEffect(()=> {
-    if(loggedIn) router.push("/conversations");
-  }, [loggedIn, router]);
+    if(loggedIn) router.push("/conversations")
+  },[loggedIn]);
 
   if (loading) {
     return <LoadingComp />;
   }
+
   return (
     <>
       {!loggedIn && (
-        <WavyBackground className="max-w-4xl mx-auto pb-40 min-h-svh flex flex-col justify-center items-center">
+        <WavyBackground className="max-w-4xl mx-auto pb-40 min-h-svh flex flex-col justify-center items-center px-5">
           <p className="text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center">
             Explore the new world of chatting
           </p>

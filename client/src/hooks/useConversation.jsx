@@ -5,8 +5,8 @@ export const useConversation = ()=> {
     const params = useParams();
 
     const conversationId = useMemo(()=>{
-        return params?.conversationId || ""
-    },[params?.conversationId]);
+        return params?.conversationId || params?.groupId || ""
+    },[params?.conversationId, params?.groupId]);
 
     const isActive = useMemo(()=>{
         return !!conversationId

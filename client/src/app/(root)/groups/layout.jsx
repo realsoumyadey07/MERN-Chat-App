@@ -2,17 +2,16 @@
 import ItemList from "@/components/shared/item-list/ItemList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { IoSearch } from "react-icons/io5";
 
 export default function layout({ children }) {
   const router = useRouter();
-  const handleClick = (id)=> {
-    router.push(`/conversations/${id}`)
-  }
+  const handleClick = (id) => {
+    router.push(`/groups/${id}`);
+  };
   return (
     <>
-      <ItemList title="Conversations">
+      <ItemList title="Groups">
         <div className="flex w-[95%] bg-gray-200 dark:bg-blue-950 rounded-lg justify-between px-4 py-3">
           <input
             type="text"
@@ -24,7 +23,10 @@ export default function layout({ children }) {
           </div>
         </div>
         <ul className="flex flex-col gap-2 w-full p-4">
-          <li className="w-full" onClick={()=> handleClick("ajkdfhafdjgadfgadf")}>
+          <li
+            className="w-full"
+            onClick={() => handleClick("ajkdfhafdjgadfgadf")}
+          >
             <div className="flex items-center gap-2">
               <Avatar className="w-8 h-8">
                 <AvatarImage

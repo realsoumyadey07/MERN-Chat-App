@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "@/redux/slices/auth.slice";
+import { login, resetLogoutData } from "@/redux/slices/auth.slice";
 import LoadingComp from "@/components/LoadingComp";
 import { useRouter } from "next/navigation";
 import {
@@ -43,109 +43,116 @@ const LoginPage = () => {
   const [isHidePassword, setIsHidePassword] = useState(false);
   const onSubmit = (data) => {
     dispatch(login(data));
+    dispatch(resetLogoutData());
   };
-  useEffect(()=> {
-    if(loginUserData){
+  useEffect(() => {
+    if (loginUserData) {
       router.push("/conversations");
     }
-  }, [loginUserData])
+  }, [loginUserData]);
   return (
     <>
       {isLoading && isLoading ? (
         <LoadingComp />
       ) : (
         <>
-        <div className="flex w-full h-svh gap-10 justify-center items-center px-5 py-5">
-          <section className="my-auto">
-            <Link href={"/"} className="font-semibold text-gray-300 text-2xl">
-              MERN Chat App
-            </Link>
-            <div className="my-4">
-              <h4 className="text-4xl font-semibold">Login 👋</h4>
-              <p className="text-gray-500 mt-3">
-                A chat app where you can have unlimited chats...
-              </p>
-            </div>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-2"
-            >
-              <div className="flex flex-col gap-2">
-                <label htmlFor="email" className="text-gray-400">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  className="border border-gray-500 rounded-md py-2 px-3"
-                  placeholder="Enter your email here..."
-                  defaultValue=""
-                  {...register("email")}
-                />
-                {errors?.email?.message && (
-                  <span className="text-sm text-red-500">
-                    {errors?.email?.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex relative flex-col gap-2">
-                <label htmlFor="email" className="text-gray-400">
-                  Password
-                </label>
-                <input
-                  type={isHidePassword ? "password" : "text"}
-                  name="password"
-                  className="border border-gray-500 rounded-md py-2 px-3"
-                  placeholder={
-                    isHidePassword ? "*******" : "Enter your password here..."
-                  }
-                  defaultValue=""
-                  {...register("password")}
-                />
-                {errors?.password?.message && (
-                  <span className="text-sm text-red-500">
-                    {errors?.password?.message}
-                  </span>
-                )}
-                <span
-                  className="absolute top-11 right-4"
-                  onClick={() => setIsHidePassword(!isHidePassword)}
+          <div className="flex h-screen">
+            <section className="w-full lg:w-1/2 flex items-center justify-center px-6">
+              <div className="w-full max-w-[496px]">
+                <Link
+                  href={"/"}
+                  className="font-semibold text-gray-300 text-2xl"
                 >
-                  {isHidePassword && isHidePassword ? (
-                    <FaEyeSlash />
-                  ) : (
-                    <FaEye />
-                  )}
-                </span>
-              </div>
-              <button
-                type="submit"
-                className="py-2 px-3 text-black bg-white rounded-[5px] font-semibold hover:bg-gray-300 my-4"
-              >
-                Login
-              </button>
-              <span>
-                <Link href={"/sign-up"} className="hover:underline">
-                  Don't have an account??
+                  MERN Chat App
                 </Link>
-              </span>
-            </form>
-          </section>
-          <div className="hidden custom920:block max-w-[496px]">
-            <Image
-              src={BackGroundImage}
-              alt="background"
-              width={700}
-              height={500}
-              className="w-fit"
-            />
+                <div className="my-4">
+                  <h4 className="text-4xl font-semibold">Login 👋</h4>
+                  <p className="text-gray-500 mt-3">
+                    A chat app where you can have unlimited chats...
+                  </p>
+                </div>
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="flex flex-col gap-2"
+                >
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="email" className="text-gray-400">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      className="border border-gray-500 rounded-md py-2 px-3"
+                      placeholder="Enter your email here..."
+                      defaultValue=""
+                      {...register("email")}
+                    />
+                    {errors?.email?.message && (
+                      <span className="text-sm text-red-500">
+                        {errors?.email?.message}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex relative flex-col gap-2">
+                    <label htmlFor="email" className="text-gray-400">
+                      Password
+                    </label>
+                    <input
+                      type={isHidePassword ? "password" : "text"}
+                      name="password"
+                      className="border border-gray-500 rounded-md py-2 px-3"
+                      placeholder={
+                        isHidePassword
+                          ? "*******"
+                          : "Enter your password here..."
+                      }
+                      defaultValue=""
+                      {...register("password")}
+                    />
+                    {errors?.password?.message && (
+                      <span className="text-sm text-red-500">
+                        {errors?.password?.message}
+                      </span>
+                    )}
+                    <span
+                      className="absolute top-11 right-4"
+                      onClick={() => setIsHidePassword(!isHidePassword)}
+                    >
+                      {isHidePassword && isHidePassword ? (
+                        <FaEyeSlash />
+                      ) : (
+                        <FaEye />
+                      )}
+                    </span>
+                  </div>
+                  <button
+                    type="submit"
+                    className="py-2 px-3 dark:text-black bg-slate-600 text-white dark:bg-white rounded-[5px] font-semibold hover:bg-slate-800 my-4"
+                  >
+                    Login
+                  </button>
+                  <span>
+                    <Link href={"/sign-up"} className="hover:underline">
+                      Don't have an account??
+                    </Link>
+                  </span>
+                </form>
+              </div>
+            </section>
+
+            <section className="hidden lg:flex w-1/2 h-full">
+              <Image
+                src={BackGroundImage}
+                alt="background"
+                className="object-cover w-full h-full"
+              />
+            </section>
           </div>
-        </div>
-        {error && (
+          {error && (
             <Dialog open={!!error}>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Error: {error?.message}</DialogTitle>
+                  <DialogTitle>Error: {error}</DialogTitle>
                 </DialogHeader>
                 <DialogFooter>
                   <Link

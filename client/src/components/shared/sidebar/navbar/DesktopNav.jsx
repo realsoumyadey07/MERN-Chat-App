@@ -47,7 +47,7 @@ export default function DesktopNav() {
       <div className="flex flex-col items-center gap-4">
         <ThemeToggle/>
         <div onClick={getUserProfile}>
-        <ProfileComponent/>
+          <ProfileComponent/>
         </div>
       </div>
     </Card>

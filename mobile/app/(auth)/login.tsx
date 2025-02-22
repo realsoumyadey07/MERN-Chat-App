@@ -1,67 +1,93 @@
 import {
-  Alert,
-  SafeAreaView,
+  Button,
+  ImageBackground,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import CustomButton from "@/components/CustomButton";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "@/redux/slices/auth.slice";
+import { store } from "@/redux/store";
 
-const login = () => {
+
+
+const handleUserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch<typeof store.dispatch>();
+  const {isLoading, loginUserData, error} = useSelector((state: any )=> state.auth );
   const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in both fields.");
-    } else {
-      // Perform login logic here
-      Alert.alert("Login Successful", `Welcome ${email}!`);
-    }
+    dispatch(login({email, password}));
   };
+  useEffect(()=> {
+    if(!isLoading && loginUserData) {
+      router.replace("/(root)/conversations");
+    }
+  },[loginUserData, isLoading]);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text>login</Text>
-      <Text style={styles.title}>Login</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        placeholderTextColor="#888"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        placeholderTextColor="#888"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.footerText}>
-        Don't have an account?{" "}
-        <Text
-          style={styles.linkText}
-          onPress={() => Alert.alert("Sign Up", "Redirect to sign-up screen.")}
-        >
-          Sign Up
+      <ImageBackground
+        source={require("../../assets/images/login.jpg")}
+        style={styles.image}
+      >
+        <LinearGradient
+          colors={[
+            "transparent",
+            "rgba(255, 255, 255, 0.7)",
+            "rgba(255, 255, 255, 1)",
+          ]}
+          style={styles.gradient}
+        />
+      </ImageBackground>
+      <View style={styles.buttonContainer}>
+        <Text style={styles.heading}>MERN Chat App</Text>
+        <Text style={styles.text}>
+          A chat app where you can have unlimited chats...
         </Text>
-      </Text>
+        <View style={{marginTop: 20}}>
+          <TextInput
+            placeholder="Enter your email here..."
+            onChangeText={(e)=> setEmail(e)}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Enter your password here..."
+            onChangeText={(e)=> setPassword(e)}
+            style={styles.input}
+          />
+        </View>
+        <CustomButton
+          title="Login"
+          handleSubmit={handleLogin}
+          textStyle={styles.buttonText}
+          buttonStyle={styles.buttonStyle}
+        />
+        <TouchableOpacity
+          onPress={() => router.push("/signup")}
+          style={{ marginTop: 10 }}
+        >
+          <Text style={{ color: "blue" }}>Don't have an account?</Text>
+        </TouchableOpacity>
+      </View>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
     </SafeAreaView>
   );
 };
 
-export default login;
+export default handleUserLogin;
 
 const styles = StyleSheet.create({
   container: {
@@ -70,42 +96,52 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  title: {
-    fontSize: 28,
+  image: {
+    flex: 1,
+    width: 400,
+    height: 400,
+    position: "absolute",
+    top: 0,
+  },
+  gradient: {
+    flex: 1,
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: "30%", // Adjust the height to control the blur area
+  },
+  buttonContainer: {
+    marginTop: 40,
+    paddingHorizontal: 10,
+  },
+  heading: {
+    fontWeight: 600,
+    fontSize: 24,
+    color: "#3b3b3b",
+  },
+  text: {
+    color: "#474747",
+    fontSize: 15,
+  },
+  buttonStyle: {
+    backgroundColor: "#141414",
+    paddingVertical: 15,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
     fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 16,
+    textAlign: "center",
   },
   input: {
     width: "100%",
-    height: 50,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: 5,
+    padding: 15,
+    marginBottom: 20,
+    color: "gray",
     borderWidth: 1,
-    borderColor: "#ccc",
-  },
-  button: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#4caf50",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  footerText: {
-    marginTop: 20,
-    fontSize: 16,
-    color: "#888",
-  },
-  linkText: {
-    color: "#007bff",
-    fontWeight: "bold",
+    borderColor: "gray",
   },
 });

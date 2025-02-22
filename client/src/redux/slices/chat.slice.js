@@ -1,4 +1,4 @@
-import openApi from "@/lib/axios/openApi";
+import openApi from "@/lib/axios/tokenApi";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
