@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({
-  path: "../.env",
-});
+dotenv.config();
 import { AsyncHandler } from "./AsyncHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";

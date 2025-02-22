@@ -49,7 +49,7 @@ const LoginPage = () => {
     if (loginUserData) {
       router.push("/conversations");
     }
-  }, [loginUserData]);
+  }, [loginUserData, isLoading]);
   return (
     <>
       {isLoading && isLoading ? (
