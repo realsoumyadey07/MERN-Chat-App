@@ -1,5 +1,5 @@
 import {
-  Button,
+  Alert,
   ImageBackground,
   StatusBar,
   StyleSheet,
@@ -8,17 +8,68 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import CustomButton from "@/components/CustomButton";
+import { useDispatch, useSelector } from "react-redux";
+import { registration } from "@/redux/slices/auth.slice";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-const signup = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const handleSignup = () => {};
+// Validation Schema
+const schema = yup.object({
+  username: yup.string().required("Username is required!"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[0-9]/, "Password must contain at least one numeric digit")
+    .matches(
+      /[!@#$%^&*(),.?\":{}|<>]/,
+      "Password must contain at least one special character"
+    ),
+});
+
+const Signup = () => {
+  const dispatch = useDispatch();
+  const { registerUserData, error, isLoading } = useSelector(
+    (state: any) => state.auth
+  );
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = (data: any) => {
+    dispatch(registration(data));
+  };
+
+  useEffect(() => {
+    if (!isLoading && registerUserData) {
+      Alert.alert(
+        "User registered successfully",
+        "Go to login screen and make login to continue",
+        [
+          {
+            text: "Go to Login",
+            onPress: () => router.replace("/login"),
+          },
+          { text: "Cancel", style: "cancel" },
+        ]
+      );
+    }
+  }, [registerUserData]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -40,28 +91,73 @@ const signup = () => {
           A chat app where you can have unlimited chats...
         </Text>
         <View style={{ marginTop: 20 }}>
-          <TextInput
-            placeholder="Enter your username here..."
-            onChangeText={(e) => setUsername(e)}
-            style={styles.input}
+          {/* Username Field */}
+          <Controller
+            control={control}
+            name="username"
+            render={({ field: { onChange, value } }) => (
+              <>
+                <TextInput
+                  placeholder="Enter your username here..."
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                />
+                {errors.username && (
+                  <Text style={styles.errorText}>{errors.username.message}</Text>
+                )}
+              </>
+            )}
           />
-          <TextInput
-            placeholder="Enter your email here..."
-            onChangeText={(e) => setEmail(e)}
-            style={styles.input}
+
+          {/* Email Field */}
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <>
+                <TextInput
+                  placeholder="Enter your email here..."
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                />
+                {errors.email && (
+                  <Text style={styles.errorText}>{errors.email.message}</Text>
+                )}
+              </>
+            )}
           />
-          <TextInput
-            placeholder="Enter your password here..."
-            onChangeText={(e) => setPassword(e)}
-            style={styles.input}
+
+          {/* Password Field */}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <>
+                <TextInput
+                  placeholder="Enter your password here..."
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                  style={styles.input}
+                />
+                {errors.password && (
+                  <Text style={styles.errorText}>{errors.password.message}</Text>
+                )}
+              </>
+            )}
           />
         </View>
+
+        {/* Signup Button */}
         <CustomButton
           title="Signup"
-          handleSubmit={() => handleSignup}
+          handleSubmit={handleSubmit(onSubmit)}
           textStyle={styles.buttonText}
           buttonStyle={styles.buttonStyle}
         />
+
         <TouchableOpacity
           onPress={() => router.push("../conversations")}
           style={{ marginTop: 10 }}
@@ -78,7 +174,7 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default Signup;
 
 const styles = StyleSheet.create({
   container: {
@@ -99,14 +195,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    height: "30%", // Adjust the height to control the blur area
+    height: "30%",
   },
   buttonContainer: {
     marginTop: 40,
     paddingHorizontal: 10,
   },
   heading: {
-    fontWeight: 600,
+    fontWeight: "600",
     fontSize: 24,
     color: "#3b3b3b",
   },
@@ -134,5 +230,9 @@ const styles = StyleSheet.create({
     color: "gray",
     borderWidth: 1,
     borderColor: "gray",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
 });

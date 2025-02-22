@@ -83,8 +83,8 @@ export const login = createAsyncThunk<
     });
     const data = response.data;
     console.log("login data: " + data?.access_token);
-    await AsyncStorage.setItem("access_token", data?.access_token);
-    await AsyncStorage.setItem("refresh_token", data?.refresh_token);
+    await AsyncStorage.setItem("access_token", String(data?.access_token));
+    await AsyncStorage.setItem("refresh_token", String(data?.refresh_token));
     return data?.user;
   } catch (error: any) {
     console.log(error);

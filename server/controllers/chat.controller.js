@@ -1,6 +1,6 @@
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { Chat } from "../models/chat.model.js";
-import { emitEvent } from "../utils/features.js";
+import { deleteFilesFromCloudinary, emitEvent } from "../utils/features.js";
 import {
   ALERT,
   NEW_ATTACHMENT,
@@ -57,22 +57,19 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
 
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
-    const chats = await Chat.find({ members: req.user }).populate(
-      "members",
-      "username"
-    );
+    const chats = await Chat.find({ members:  req.user});
     const transeformedChats = chats.map(({ _id, name, members, groupChat }) => {
       const otherMember = getOtherMember(members, req.user);
       return {
         _id,
-        name: groupChat ? name : otherMember.name,
+        name: groupChat ? name : otherMember?.username,
         groupChat,
         members: members.reduce((prev, curr) => {
           if (curr._id.toString() !== req.user.toString()) {
             prev.push(curr._id);
           }
           return prev;
-        }, []),
+        }, [])
       };
     });
     return next(
@@ -483,7 +480,7 @@ export const renameGroup = AsyncHandler(async (req, res, next) => {
 
 export const deleteGroup = AsyncHandler(async (req, res, next) => {
   try {
-    const groupId = req.params.groupId;
+    const groupId = req.params.id;
     if (!groupId)
       return next(
         res.status(404).json({
@@ -507,6 +504,37 @@ export const deleteGroup = AsyncHandler(async (req, res, next) => {
           message: "You are not allowed to delete this group!",
         })
       );
+    if (!chat.groupChat && !chat.members.includes(req.user.toString())) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "You are not allowed to delete this chat!",
+        })
+      );
+    }
+
+    const messageWithAttachments = await Message.find({
+      chat: groupId,
+      attachments: {
+        $exists: true,
+        $ne: [],
+      },
+    });
+    const public_ids = [];
+
+    messageWithAttachments.forEach(({ attachments }) =>
+      attachments.forEach(({ public_id }) => public_ids.push(public_id))
+    );
+    await Promise.all([
+      deleteFilesFromCloudinary(public_ids),
+      chat.deleteOne(),
+      Message.deleteMany({ chat: groupId }),
+    ]);
+    emitEvent(req, REFETCH_CHATS, members);
+    return res.status(200).json({
+      success: true,
+      message: "Chat has been deleted successfully!",
+    });
   } catch (error) {
     return next(
       res.status(500).json({

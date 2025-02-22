@@ -28,10 +28,11 @@ const handleUserLogin = () => {
     dispatch(login({email, password}));
   };
   useEffect(()=> {
-    if(!isLoading && loginUserData) {
-      router.replace("/(root)/conversations");
+    if(!error && loginUserData) {
+      router.replace("/conversations");
     }
-  },[loginUserData, isLoading]);
+    
+  },[loginUserData, error]);
 
   return (
     <SafeAreaView style={styles.container}>

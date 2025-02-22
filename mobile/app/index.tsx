@@ -10,7 +10,9 @@ export default function index (){
     const checkToken = async ()=> {
       try {
         const token = await AsyncStorage.getItem("access_token");
-        if(token) return <Redirect href="/(root)/conversations"/>
+        console.log("Token: ", token);
+        
+        if(token) router.replace("/conversations");
       } catch (error: any) {
         console.error("Error while fetching token: ", error);
       }

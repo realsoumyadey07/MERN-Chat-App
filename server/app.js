@@ -14,7 +14,7 @@ import chatRouter from "./routes/chat.router.js";
 const port = process.env.PORT || 8000;
 const app = express();
 app.use(cors({
-    origin: process.env.ORIGIN || "*",
+    origin: "*",
     credentials: true
 }));
 app.use(express.json({limit: "50mb"}));

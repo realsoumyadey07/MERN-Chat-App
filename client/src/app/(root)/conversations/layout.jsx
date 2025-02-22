@@ -23,7 +23,7 @@ export default function layout({ children }) {
             <IoSearch size={23} color="#a6a6a6" />
           </div>
         </div>
-        <ul className="flex flex-col gap-2 w-full p-4">
+        <ul className="flex flex-col gap-2 w-full p-4 cursor-pointer">
           <li className="w-full" onClick={()=> handleClick("ajkdfhafdjgadfgadf")}>
             <div className="flex items-center gap-2">
               <Avatar className="w-8 h-8">
