@@ -10,17 +10,19 @@ import cors from "cors";
 // Routers import
 import userRouter from "./routes/user.router.js";
 import chatRouter from "./routes/chat.router.js";
+import { createMessagesInAChat } from "./seeders/chat.js";
 
 const port = process.env.PORT || 8000;
 const app = express();
 app.use(cors({
-    origin: "*",
+    origin: "http://localhost:3000",
     credentials: true
 }));
 app.use(express.json({limit: "50mb"}));
 app.use(express.urlencoded({extended: true, limit: "16kb"}));
 app.use(express.static("public"));
 app.use(cookieParser());
+
 
 
 app.use("/api/user", userRouter);
@@ -32,3 +34,5 @@ app.listen(port, ()=> {
     console.log(`⚙ Server is running on port: ${port}`);
     connectDb();
 });
+
+// createMessagesInAChat("67b9ce4e74c62ad7acafa4ad", 50);

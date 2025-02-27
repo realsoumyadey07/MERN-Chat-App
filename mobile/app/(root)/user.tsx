@@ -1,5 +1,4 @@
 import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import {
     View,
     Text,
@@ -7,6 +6,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     ScrollView,
+    Alert,
   } from "react-native";
   import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 
@@ -15,36 +15,34 @@ const user = () => {
         name: "Soumya Dey",
         about: "Realsoumyadey",
         phoneNumber: "soumyadipdey802@gmail.com",
-        profilePicture: "../../assets/images/icon.png", // Replace with actual image URL
+        profilePicture: require("../../assets/images/user-logo.png"), // Replace with actual image URL
       };
+      const handleSignOut = ()=> {
+        Alert.alert("Sign out", "Are you sure you want to sign out?");
+      }
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Profile Picture */}
       <View style={styles.profilePictureContainer}>
-        <Image source={{ uri: user.profilePicture }} style={styles.profilePicture} />
+        <Image source={user.profilePicture } style={styles.profilePicture} />
         <TouchableOpacity style={styles.cameraIcon}>
           <Ionicons name="camera" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
-      {/* User Name */}
       <Text style={styles.userName}>{user.name}</Text>
 
-      {/* About Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Username</Text>
         <Text style={styles.sectionContent}>{user.about}</Text>
       </View>
 
-      {/* Phone Number */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Email</Text>
         <Text style={styles.sectionContent}>{user.phoneNumber}</Text>
       </View>
 
-      {/* Edit Profile Button */}
-      <TouchableOpacity style={styles.editButton}>
-        <Text style={styles.editButtonText}>Edit Profile</Text>
+      <TouchableOpacity style={styles.editButton} onPress={handleSignOut}>
+        <Text style={styles.editButtonText}>Sign out</Text>
       </TouchableOpacity>
     </ScrollView>
   )
@@ -57,6 +55,7 @@ const styles = StyleSheet.create({
       flexGrow: 1,
       backgroundColor: "#fff",
       padding: 20,
+      paddingTop: 70,
       alignItems: "center",
     },
     profilePictureContainer: {

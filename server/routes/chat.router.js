@@ -4,6 +4,7 @@ import {
   addMember,
   deleteGroup,
   getChatDetails,
+  getMessages,
   getMyChat,
   getMyGroups,
   leaveGroup,
@@ -26,6 +27,7 @@ chatRouter.delete("/leave-chat/:id", leaveGroup);
 chatRouter.post("/message", attchmentsMulter, sendAttachments);
 
 // get messages
+chatRouter.get("/message/:id", getMessages);
 
 //get chat details, rename, delete
 chatRouter.route("/:id").get(getChatDetails).put(renameGroup).delete(deleteGroup);

@@ -15,7 +15,7 @@ const Conversations = () => {
         />
       </View>
       <View>
-        <TouchableOpacity style={styles.chatContainer} onPress={()=> router.push("/[conversationId]/index")}>
+        <TouchableOpacity style={styles.chatContainer} onPress={()=> router.push("../conversationId/23874ehgd")}>
           {/* <Image source={}/> */}
           <FontAwesome name="user-circle-o" size={30} color="black" />
           <View style={styles.messageSection}>

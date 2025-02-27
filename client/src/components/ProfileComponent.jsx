@@ -41,7 +41,7 @@ export default function ProfileComponent() {
       dispatch(resetUserData());
       router.push("/login");
     }
-  },[logoutUserData])
+  },[logoutUserData]);
 
   if(isLoading) {
     return <LoadingSpinner/>

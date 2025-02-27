@@ -57,7 +57,7 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
 
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
-    const chats = await Chat.find({ members:  req.user});
+    const chats = await Chat.find({ members: req.user });
     const transeformedChats = chats.map(({ _id, name, members, groupChat }) => {
       const otherMember = getOtherMember(members, req.user);
       return {
@@ -69,7 +69,7 @@ export const getMyChat = AsyncHandler(async (req, res, next) => {
             prev.push(curr._id);
           }
           return prev;
-        }, [])
+        }, []),
       };
     });
     return next(
@@ -542,5 +542,33 @@ export const deleteGroup = AsyncHandler(async (req, res, next) => {
         message: error.message,
       })
     );
+  }
+});
+
+export const getMessages = AsyncHandler(async (req, res) => {
+  try {
+    const chatId = req.params.id;
+    const { page = 1 } = req.query;
+    const resultPerPage = 20;
+    const skip = (page - 1) * resultPerPage;
+    const [messages, totalMessagesCount] = await Promise.all([
+      Message.find({ chat: chatId })
+        .sort({ createdAt: -1 })
+        .limit(resultPerPage)
+        .skip(skip)
+        .populate("sender", "username"),
+      Message.countDocuments({ chat: chatId }),
+    ]);
+    const totalPages = Math.ceil(totalMessagesCount / resultPerPage) || 0;
+    return res.status(200).json({
+      success: true,
+      messages: messages.reverse(),
+      totalPages,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!",
+    });
   }
 });
