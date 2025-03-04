@@ -31,7 +31,6 @@ const handleUserLogin = () => {
     if(!error && loginUserData) {
       router.replace("/conversations");
     }
-    
   },[loginUserData, error]);
 
   return (

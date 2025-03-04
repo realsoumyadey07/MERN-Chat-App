@@ -2,7 +2,7 @@ import { StatusBar, View, SafeAreaView, StyleSheet, ImageBackground, Text } from
 import React, { useEffect } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import CustomButton from '@/components/CustomButton'
-import { Redirect, router } from 'expo-router'
+import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function index (){

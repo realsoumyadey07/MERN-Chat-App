@@ -1,7 +1,7 @@
 import openApi from "@/lib/axios/openApi";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { tokenApi } from "@/lib/axios/tokenApi";
 
 interface RegisterUserRequest {
   username: string;
@@ -94,6 +94,24 @@ export const login = createAsyncThunk<
   }
 });
 
+export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
+  try {
+    const response = await tokenApi.get("/user/user-logout");
+    const data = response.data;
+    if (response.status === 200) {
+      await AsyncStorage.removeItem("access_token");
+      await AsyncStorage.removeItem("refresh_token");
+    }
+    console.log("logout data: " + data);
+    return data;
+  } catch (error: any) {
+    console.log("error in logout: " + error);
+    return thunkAPI.rejectWithValue(
+      error?.response?.data || "Something went wrong"
+    );
+  }
+});
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -114,18 +132,29 @@ export const authSlice = createSlice({
     });
     //for login
     builder.addCase(login.pending, (state, action) => {
-      state.isLoading = true
+      state.isLoading = true;
     });
     builder.addCase(login.fulfilled, (state, action) => {
-      state.isLoading = false
-      state.loginUserData = action.payload
+      state.isLoading = false;
+      state.loginUserData = action.payload;
     });
     builder.addCase(login.rejected, (state, action) => {
-      state.isLoading = false
-      state.error = action?.payload?.message
+      state.isLoading = false;
+      state.error = action?.payload?.message;
+    });
+    //for logout
+    builder.addCase(logout.pending, (state, action)=> {
+      state.isLoading = true;
+    });
+    builder.addCase(logout.fulfilled, (state, action)=> {
+      state.logoutUserData = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(logout.rejected, (state, action)=> {
+      state.error = action?.payload;
+      state.isLoading = false;
     });
   },
 });
-
 
 export default authSlice.reducer;

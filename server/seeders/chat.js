@@ -4,24 +4,27 @@ import { Chat } from "../models/chat.model.js";
 import { Message } from "../models/message.model.js";
 
 
-const createSingleChats = async (numChats) => {
+const createSingleChats = async () => {
   try {
     const users = await User.find().select("_id");
 
-    const chatsPromise = [];
+    if (users.length < 2) {
+      console.log("Not enough users to create chats");
+      process.exit();
+    }
+
+    const chats = [];
 
     for (let i = 0; i < users.length; i++) {
       for (let j = i + 1; j < users.length; j++) {
-        chatsPromise.push(
-          Chat.create({
-            name: faker.lorem.words(2),
-            members: [users[i], users[j]],
-          })
-        );
+        chats.push({
+          name: faker.lorem.words(2),
+          members: [users[i]._id, users[j]._id].sort(),
+        });
       }
     }
 
-    await Promise.all(chatsPromise);
+    await Chat.insertMany(chats);
 
     console.log("Chats created successfully");
     process.exit();

@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config({
-  path: "../.env"
+  path: "../.env",
 });
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import { Chat } from "../models/chat.model.js";
 
 export const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -204,7 +205,9 @@ export const refreshAccessToken = AsyncHandler(async (req, res) => {
 export const getProfile = AsyncHandler(async (req, res) => {
   try {
     const user_id = req.user;
-    const user = await User.findById({ _id: user_id }).select("-password -refresh_token");
+    const user = await User.findById({ _id: user_id }).select(
+      "-password -refresh_token"
+    );
     if (!user)
       return res.status(400).json({
         success: false,
@@ -225,13 +228,32 @@ export const getProfile = AsyncHandler(async (req, res) => {
 export const searchUser = AsyncHandler(async (req, res, next) => {
   try {
     const { name } = req.query;
-    const user = await User.findOne({});
+    const myChats = await Chat.find({
+      groupChat: false,
+      members: req.user,
+    });
+    const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+    const allMemberAcceptMe = await User.find({
+      _id: {
+        $nin: allUsersFromMyChats,
+      },
+      username: {
+        $regex: name,
+        $options: "i",
+      },
+    });
+    const users = allMemberAcceptMe.map(({ _id, name }) => ({
+      _id,
+      name,
+    }));
+    res.status(200).json({
+      success: true,
+      users ,
+    });
   } catch (error) {
-    return next(
-      res.status(500).json({
-        success: false,
-        message: error.message || "Internal server error!",
-      })
-    );
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!",
+    });
   }
 });

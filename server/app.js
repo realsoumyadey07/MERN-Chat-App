@@ -10,12 +10,12 @@ import cors from "cors";
 // Routers import
 import userRouter from "./routes/user.router.js";
 import chatRouter from "./routes/chat.router.js";
-import { createMessagesInAChat } from "./seeders/chat.js";
+import { createMessagesInAChat, createSingleChats } from "./seeders/chat.js";
 
 const port = process.env.PORT || 8000;
 const app = express();
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "http://192.168.1.6:8081",
     credentials: true
 }));
 app.use(express.json({limit: "50mb"}));
@@ -35,4 +35,5 @@ app.listen(port, ()=> {
     connectDb();
 });
 
+// createSingleChats()
 // createMessagesInAChat("67b9ce4e74c62ad7acafa4ad", 50);
