@@ -27,7 +27,7 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
         message: "Invalid access token!",
       });
     req.user = user._id;
-    console.log(req?.user);
+    console.log("user id is: ",req?.user);
     next();
   } catch (error) {
     return res.status(500).json({

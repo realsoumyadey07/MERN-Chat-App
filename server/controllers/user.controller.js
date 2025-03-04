@@ -228,27 +228,33 @@ export const getProfile = AsyncHandler(async (req, res) => {
 export const searchUser = AsyncHandler(async (req, res, next) => {
   try {
     const { name } = req.query;
-    const myChats = await Chat.find({
+    if (!name)
+      return res.status(400).json({
+        success: false,
+        message: "Search param is required!",
+      });
+    const chats = await Chat.find({
       groupChat: false,
-      members: req.user,
+      $or: [
+        {members: req.user}
+      ]
     });
-    const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
-    const allMemberAcceptMe = await User.find({
-      _id: {
-        $nin: allUsersFromMyChats,
-      },
-      username: {
-        $regex: name,
-        $options: "i",
-      },
+    const allUsersOfMyChat = chats.flatMap(chat => chat.members);
+    const searchedUsers = await User.find({
+      _id: { $in: allUsersOfMyChat },
+      username: { $regex: name, $options: "i" },
     });
-    const users = allMemberAcceptMe.map(({ _id, name }) => ({
+    const users = searchedUsers.map(({ _id, username }) => ({
       _id,
-      name,
+      username,
     }));
+    if (users.length === 0)
+      return res.status(400).json({
+        message: "User not found!",
+      });
     res.status(200).json({
       success: true,
-      users ,
+      users,
     });
   } catch (error) {
     return res.status(500).json({

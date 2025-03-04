@@ -11,6 +11,7 @@ import cors from "cors";
 import userRouter from "./routes/user.router.js";
 import chatRouter from "./routes/chat.router.js";
 import { createMessagesInAChat, createSingleChats } from "./seeders/chat.js";
+import { createUser } from "./seeders/user.js";
 
 const port = process.env.PORT || 8000;
 const app = express();
@@ -35,5 +36,6 @@ app.listen(port, ()=> {
     connectDb();
 });
 
+// createUser(10);
 // createSingleChats()
 // createMessagesInAChat("67b9ce4e74c62ad7acafa4ad", 50);
