@@ -1,6 +1,7 @@
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { FontAwesome } from '@expo/vector-icons'
+import { router } from 'expo-router'
 
 const group = () => {
   return (
@@ -14,7 +15,7 @@ const group = () => {
         />
       </View>
       <View>
-        <TouchableOpacity style={styles.chatContainer}>
+        <TouchableOpacity style={styles.chatContainer} onPress={()=> router.push("../conversationId/23874ehgd")}>
           {/* <Image source={}/> */}
           <FontAwesome name="user-circle-o" size={30} color="black" />
           <View style={styles.messageSection}>
