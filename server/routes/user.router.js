@@ -5,7 +5,10 @@ import {
     userLogout, 
     userRegistration, 
     searchUser, 
-    refreshAccessToken 
+    refreshAccessToken, 
+    sendFriendRequest,
+    acceptFriendRequest,
+    getAllNotifications
 } from "../controllers/user.controller.js";
 import { IsAuthenticated } from "../middlewares/IsAuthenticated.js";
 import { loginValidator, registerValidator, validateHandler } from "../lib/validator.js";
@@ -18,5 +21,8 @@ userRouter.get("/user-logout", IsAuthenticated, userLogout);
 userRouter.post("/refresh-token", refreshAccessToken);
 userRouter.get("/get-user", IsAuthenticated, getProfile);
 userRouter.get("/search-user", IsAuthenticated, searchUser);
+userRouter.post("/send-friendrequest", IsAuthenticated, sendFriendRequest);
+userRouter.post("/accept-friendrequest", IsAuthenticated, acceptFriendRequest);
+userRouter.get("/get-notifications", getAllNotifications);
 
 export default userRouter;

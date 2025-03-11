@@ -16,7 +16,7 @@ import { createUser } from "./seeders/user.js";
 const port = process.env.PORT || 8000;
 const app = express();
 app.use(cors({
-    origin: "http://192.168.1.6:8081",
+    origin: "http://localhost:3000",
     credentials: true
 }));
 app.use(express.json({limit: "50mb"}));

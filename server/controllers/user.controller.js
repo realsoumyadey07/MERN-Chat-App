@@ -6,6 +6,9 @@ import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { Chat } from "../models/chat.model.js";
+import { Request } from "../models/request.model.js";
+import { emitEvent } from "../utils/features.js";
+import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 
 export const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -260,6 +263,100 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Internal server error!",
+    });
+  }
+});
+
+export const sendFriendRequest = AsyncHandler(async (req, res, next)=> {
+  try {
+    const { receiverId } = req.body;
+    if(!receiverId) return res.status(400).json({
+      success: false,
+      message: "Sender is required!"
+    });
+    const request = await Request.findOne({
+      $or: [
+        {sender: req.user, receiver: receiverId},
+        {sender: receiverId, receiver: req.user}
+      ]
+    });
+    if(request) return res.status(400).json({
+      success: false,
+      message: "Request already sent!"
+    });
+    emitEvent(req, NEW_REQUEST, [receiverId]);
+    await Request.create({
+      sender: req.user,
+      receiver: receiverId
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Friend request sent!"
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.members || "Internal server error!"
+    });
+  }
+});
+
+export const acceptFriendRequest = AsyncHandler(async(req, res, next)=> {
+  try {
+    const {requestId, accept} = req.body;
+    if(!requestId) return res.status(404).json({
+      success: false,
+      message: "RequestId is required!"
+    });
+    if(!accept) return res.status(400).json({
+      success: false,
+      message: "provide accept or reject!"
+    });
+    const request = await Request.findById(requestId).populate("sender", "username").populate("receiver", "username");
+    if(!request) return res.status(400).json({
+      success: false,
+      message: "request not found!"
+    });
+    if(request.receiver.toString() === req.user.toString()) return res.status(400).json({
+      success: false,
+      message: "Cannot accept request from your own account!"
+    });
+    if(accept === false){
+      await request.deleteOne();
+      return res.status(200).json({
+        success: true,
+        message: "Friend request rejected!"
+      });
+    }
+    const members = [request.receiver._id, request.sender._id];
+    await Promise.all([
+      Chat.create({
+        members,
+        name: `${request.sender.username} - ${request.receiver.name}`
+      }),
+      request.deleteOne()
+    ]);
+    emitEvent(req, REFETCH_CHATS, members);
+    return res.status(200).json({
+      success: true,
+      message: "Friend request accepted!",
+      senderId: request.sender._id
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!"
+    })
+  }
+});
+
+export const getAllNotifications = AsyncHandler(async(req, res, next)=> {
+  try {
+     
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!"
     });
   }
 });

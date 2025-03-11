@@ -1,5 +1,6 @@
 import ConversationContainer from "@/components/shared/conversations/ConversationContainer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IoIosSend } from "react-icons/io";
 import { IoAttachOutline, IoMic } from "react-icons/io5";
 import { LuVideo } from "react-icons/lu";
 import { MdCall, MdEmojiEmotions } from "react-icons/md";
@@ -34,7 +35,8 @@ export default function page() {
           className="bg-transparent border-none w-[85%] focus:border-none focus:outline-none"
           placeholder="Type your message here"
         />
-        <div>
+        <div className="flex gap-3 items-center cursor-pointer">
+          <IoIosSend size={25} />
           <IoMic size={25} />
         </div>
       </footer>
