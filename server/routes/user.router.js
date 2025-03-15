@@ -23,6 +23,6 @@ userRouter.get("/get-user", IsAuthenticated, getProfile);
 userRouter.get("/search-user", IsAuthenticated, searchUser);
 userRouter.post("/send-friendrequest", IsAuthenticated, sendFriendRequest);
 userRouter.post("/accept-friendrequest", IsAuthenticated, acceptFriendRequest);
-userRouter.get("/get-notifications", getAllNotifications);
+userRouter.get("/get-notifications",IsAuthenticated , getAllNotifications);
 
 export default userRouter;

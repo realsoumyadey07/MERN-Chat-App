@@ -238,11 +238,9 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
       });
     const chats = await Chat.find({
       groupChat: false,
-      $or: [
-        {members: req.user}
-      ]
+      $or: [{ members: req.user }],
     });
-    const allUsersOfMyChat = chats.flatMap(chat => chat.members);
+    const allUsersOfMyChat = chats.flatMap((chat) => chat.members);
     const searchedUsers = await User.find({
       _id: { $in: allUsersOfMyChat },
       username: { $regex: name, $options: "i" },
@@ -267,96 +265,141 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export const sendFriendRequest = AsyncHandler(async (req, res, next)=> {
+export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
     const { receiverId } = req.body;
-    if(!receiverId) return res.status(400).json({
-      success: false,
-      message: "Sender is required!"
-    });
+    if (!receiverId)
+      return res.status(400).json({
+        success: false,
+        message: "Sender is required!",
+      });
     const request = await Request.findOne({
       $or: [
-        {sender: req.user, receiver: receiverId},
-        {sender: receiverId, receiver: req.user}
-      ]
+        { sender: req.user, receiver: receiverId },
+        { sender: receiverId, receiver: req.user },
+      ],
     });
-    if(request) return res.status(400).json({
-      success: false,
-      message: "Request already sent!"
-    });
+    if (request)
+      return res.status(400).json({
+        success: false,
+        message: "Request already sent!",
+      });
     emitEvent(req, NEW_REQUEST, [receiverId]);
     await Request.create({
       sender: req.user,
-      receiver: receiverId
+      receiver: receiverId,
     });
     return res.status(200).json({
       success: true,
-      message: "Friend request sent!"
+      message: "Friend request sent!",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.members || "Internal server error!"
+      message: error.members || "Internal server error!",
     });
   }
 });
 
-export const acceptFriendRequest = AsyncHandler(async(req, res, next)=> {
+export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
-    const {requestId, accept} = req.body;
-    if(!requestId) return res.status(404).json({
-      success: false,
-      message: "RequestId is required!"
-    });
-    if(!accept) return res.status(400).json({
-      success: false,
-      message: "provide accept or reject!"
-    });
-    const request = await Request.findById(requestId).populate("sender", "username").populate("receiver", "username");
-    if(!request) return res.status(400).json({
-      success: false,
-      message: "request not found!"
-    });
-    if(request.receiver.toString() === req.user.toString()) return res.status(400).json({
-      success: false,
-      message: "Cannot accept request from your own account!"
-    });
-    if(accept === false){
+    const { requestId, accept } = req.body;
+    if (!requestId)
+      return res.status(404).json({
+        success: false,
+        message: "RequestId is required!",
+      });
+    if (!accept)
+      return res.status(400).json({
+        success: false,
+        message: "provide accept or reject!",
+      });
+    const request = await Request.findById(requestId)
+      .populate("sender", "username")
+      .populate("receiver", "username");
+    if (!request)
+      return res.status(400).json({
+        success: false,
+        message: "request not found!",
+      });
+    if (request.receiver.toString() === req.user.toString())
+      return res.status(400).json({
+        success: false,
+        message: "Cannot accept request from your own account!",
+      });
+    if (accept === false) {
       await request.deleteOne();
       return res.status(200).json({
         success: true,
-        message: "Friend request rejected!"
+        message: "Friend request rejected!",
       });
     }
     const members = [request.receiver._id, request.sender._id];
     await Promise.all([
       Chat.create({
         members,
-        name: `${request.sender.username} - ${request.receiver.name}`
+        name: `${request.sender.username} - ${request.receiver.name}`,
       }),
-      request.deleteOne()
+      request.deleteOne(),
     ]);
     emitEvent(req, REFETCH_CHATS, members);
     return res.status(200).json({
       success: true,
       message: "Friend request accepted!",
-      senderId: request.sender._id
+      senderId: request.sender._id,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Internal server error!"
-    })
+      message: error.message || "Internal server error!",
+    });
   }
 });
 
-export const getAllNotifications = AsyncHandler(async(req, res, next)=> {
+export const getAllNotifications = AsyncHandler(async (req, res, next) => {
   try {
-     
+    console.log(req.user);
+    
+    const requests = await Request.find({ receiver: req.user }).populate(
+      "sender",
+      "username"
+    );
+    console.log(requests);
+    
+    if (requests.length < 1) {
+      return res.status(200).json({
+        success: true,
+        requests: [],
+        message: "No new requests",
+      });
+    }
+    const allRequests = requests.map(({ _id, sender }) => ({
+      _id,
+      sender: {
+        _id: sender._id,
+        username: sender.username,
+      },
+    }));
+    return res.status(200).json({
+      success: true,
+      requests: allRequests,
+      message: "All new requests",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Internal server error!"
+      message: error.message || "Internal server error!",
     });
   }
 });
+
+export const getMyFriends = AsyncHandler(async(req, res, next)=> {
+  try {
+    
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal; server error!"
+    });
+  }
+})

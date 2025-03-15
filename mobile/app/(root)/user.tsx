@@ -15,7 +15,7 @@ import { logout } from "@/redux/slices/auth.slice";
 import { AppDispatch } from "@/redux/store";
 import { router } from "expo-router";
 
-const user = () => {
+const User = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { logoutUserData, error, isLoading } = useSelector(
     (state: any) => state.auth
@@ -88,7 +88,7 @@ const user = () => {
   );
 };
 
-export default user;
+export default User;
 
 const styles = StyleSheet.create({
   container: {

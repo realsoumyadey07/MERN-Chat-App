@@ -19,7 +19,7 @@ import { store } from "@/redux/store";
 
 
 
-const handleUserLogin = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch<typeof store.dispatch>();
@@ -87,7 +87,7 @@ const handleUserLogin = () => {
   );
 };
 
-export default handleUserLogin;
+export default Login;
 
 const styles = StyleSheet.create({
   container: {
