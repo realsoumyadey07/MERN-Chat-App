@@ -9,6 +9,7 @@ import { Chat } from "../models/chat.model.js";
 import { Request } from "../models/request.model.js";
 import { emitEvent } from "../utils/features.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
+import { getOtherMember } from "../lib/helper.js";
 
 export const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -359,13 +360,13 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
 export const getAllNotifications = AsyncHandler(async (req, res, next) => {
   try {
     console.log(req.user);
-    
+
     const requests = await Request.find({ receiver: req.user }).populate(
       "sender",
       "username"
     );
     console.log(requests);
-    
+
     if (requests.length < 1) {
       return res.status(200).json({
         success: true,
@@ -393,13 +394,39 @@ export const getAllNotifications = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export const getMyFriends = AsyncHandler(async(req, res, next)=> {
+export const getMyFriends = AsyncHandler(async (req, res, next) => {
   try {
-    
+    const chatId = req.query.chatId;
+    const chats = await Chat.find({
+      members: req.user,
+      groupChat: false,
+    }).populate("members", "username");
+    const friends = chats.map(({ members }) => {
+      const otherUser = getOtherMember(members, req.user);
+      return {
+        _id: otherUser._id,
+        username: otherUser.username,
+      };
+    });
+    if (chatId) {
+      const chat = await Chat.findById(chatId);
+      const availableFriend = friends.filter(
+        (friend) => !chat.members.includes(friend._id)
+      );
+      return res.status(400).json({
+        success: true,
+        friends: availableFriend,
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        friends,
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Internal; server error!"
+      message: error.message || "Internal; server error!",
     });
   }
-})
+});

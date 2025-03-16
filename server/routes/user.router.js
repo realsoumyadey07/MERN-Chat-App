@@ -8,7 +8,8 @@ import {
     refreshAccessToken, 
     sendFriendRequest,
     acceptFriendRequest,
-    getAllNotifications
+    getAllNotifications,
+    getMyFriends
 } from "../controllers/user.controller.js";
 import { IsAuthenticated } from "../middlewares/IsAuthenticated.js";
 import { loginValidator, registerValidator, validateHandler } from "../lib/validator.js";
@@ -24,5 +25,6 @@ userRouter.get("/search-user", IsAuthenticated, searchUser);
 userRouter.post("/send-friendrequest", IsAuthenticated, sendFriendRequest);
 userRouter.post("/accept-friendrequest", IsAuthenticated, acceptFriendRequest);
 userRouter.get("/get-notifications",IsAuthenticated , getAllNotifications);
+userRouter.get("/get-friends",IsAuthenticated , getMyFriends);
 
 export default userRouter;
