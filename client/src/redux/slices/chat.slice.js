@@ -54,3 +54,6 @@ export const chatSlice = createSlice({
           
      }
 })
+
+export default chatSlice.reducer;
+export const { resetError } = chatSlice.actions;

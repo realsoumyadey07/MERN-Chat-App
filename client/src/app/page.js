@@ -39,7 +39,7 @@ export default function Home() {
           <p className="text-base md:text-lg mt-4 text-white font-normal inter-var text-center">
             Share every special message with your closeone
           </p>
-          <Link href="/login" className="my-4">
+          <Link href="/authentication" className="my-4">
             <SpeacialButton title="Get Started" />
           </Link>
         </WavyBackground>

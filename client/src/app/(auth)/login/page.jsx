@@ -37,7 +37,7 @@ const LoginPage = () => {
     resolver: yupResolver(schema),
   });
   const dispatch = useDispatch();
-  const { loginUserData, error, isLoading } = useSelector(
+  const { loginUserData, registerUserData, error, isLoading } = useSelector(
     (state) => state.auth
   );
   const [isHidePassword, setIsHidePassword] = useState(false);
