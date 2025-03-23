@@ -39,7 +39,7 @@ export default function ProfileComponent() {
       dispatch(resetError());
       dispatch(resetLoginUserData());
       dispatch(resetUserData());
-      router.push("/login");
+      router.push("/authentication");
     }
   },[logoutUserData]);
 

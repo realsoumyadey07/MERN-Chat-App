@@ -81,7 +81,7 @@ export const login = createAsyncThunk<
       email: formData?.email,
       password: formData?.password,
     });
-    const data = response.data;
+    const data = await response.data;
     console.log("login data: " + data?.access_token);
     await AsyncStorage.setItem("access_token", String(data?.access_token));
     await AsyncStorage.setItem("refresh_token", String(data?.refresh_token));
@@ -97,7 +97,7 @@ export const login = createAsyncThunk<
 export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
   try {
     const response = await tokenApi.get("/user/user-logout");
-    const data = response.data;
+    const data = await response.data;
     if (response.status === 200) {
       await AsyncStorage.removeItem("access_token");
       await AsyncStorage.removeItem("refresh_token");
@@ -109,6 +109,16 @@ export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
     return thunkAPI.rejectWithValue(
       error?.response?.data || "Something went wrong"
     );
+  }
+});
+
+export const getUserData = createAsyncThunk("auth/getUserData", async (_, thunkAPI) => {
+  try {
+    const response = await tokenApi.get("/user/get-user");
+    const data = await response.data;
+    return data?.user;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error?.response?.data || "Something went wrong");
   }
 });
 
@@ -151,6 +161,18 @@ export const authSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(logout.rejected, (state, action)=> {
+      state.error = action?.payload;
+      state.isLoading = false;
+    });
+    //for user data
+    builder.addCase(getUserData.pending, (state, action)=> {
+      state.isLoading = true;
+    });
+    builder.addCase(getUserData.fulfilled, (state, action)=> {
+      state.userData = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(getUserData.rejected, (state, action)=> {
       state.error = action?.payload;
       state.isLoading = false;
     });

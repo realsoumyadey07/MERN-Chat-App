@@ -8,12 +8,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import CustomButton from "@/components/CustomButton";
 import { useDispatch, useSelector } from "react-redux";
+import { store } from "@/redux/store";
 import { registration } from "@/redux/slices/auth.slice";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
@@ -35,9 +36,9 @@ const schema = yup.object({
       "Password must contain at least one special character"
     ),
 });
-
 const Signup = () => {
-  const dispatch = useDispatch();
+  const [screen, setScreen] = useState<"Login" | "Registration">("Login");
+  const dispatch = useDispatch<typeof store.dispatch>();
   const { registerUserData, error, isLoading } = useSelector(
     (state: any) => state.auth
   );
@@ -90,80 +91,86 @@ const Signup = () => {
         <Text style={styles.text}>
           A chat app where you can have unlimited chats...
         </Text>
-        <View style={{ marginTop: 20 }}>
-          {/* Username Field */}
-          <Controller
-            control={control}
-            name="username"
-            render={({ field: { onChange, value } }) => (
-              <>
-                <TextInput
-                  placeholder="Enter your username here..."
-                  onChangeText={onChange}
-                  value={value}
-                  style={styles.input}
-                />
-                {errors.username && (
-                  <Text style={styles.errorText}>{errors.username.message}</Text>
-                )}
-              </>
-            )}
+        <>
+          <View style={{ marginTop: 20 }}>
+            {/* Username Field */}
+            <Controller
+              control={control}
+              name="username"
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <TextInput
+                    placeholder="Enter your username here..."
+                    onChangeText={onChange}
+                    value={value}
+                    style={styles.input}
+                  />
+                  {errors.username && (
+                    <Text style={styles.errorText}>
+                      {errors.username.message}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+
+            {/* Email Field */}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <TextInput
+                    placeholder="Enter your email here..."
+                    onChangeText={onChange}
+                    value={value}
+                    style={styles.input}
+                  />
+                  {errors.email && (
+                    <Text style={styles.errorText}>{errors.email.message}</Text>
+                  )}
+                </>
+              )}
+            />
+
+            {/* Password Field */}
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <TextInput
+                    placeholder="Enter your password here..."
+                    secureTextEntry
+                    onChangeText={onChange}
+                    value={value}
+                    style={styles.input}
+                  />
+                  {errors.password && (
+                    <Text style={styles.errorText}>
+                      {errors.password.message}
+                    </Text>
+                  )}
+                </>
+              )}
+            />
+          </View>
+
+          {/* Signup Button */}
+          <CustomButton
+            title="Signup"
+            handleSubmit={handleSubmit(onSubmit)}
+            textStyle={styles.buttonText}
+            buttonStyle={styles.buttonStyle}
           />
 
-          {/* Email Field */}
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <>
-                <TextInput
-                  placeholder="Enter your email here..."
-                  onChangeText={onChange}
-                  value={value}
-                  style={styles.input}
-                />
-                {errors.email && (
-                  <Text style={styles.errorText}>{errors.email.message}</Text>
-                )}
-              </>
-            )}
-          />
-
-          {/* Password Field */}
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value } }) => (
-              <>
-                <TextInput
-                  placeholder="Enter your password here..."
-                  secureTextEntry
-                  onChangeText={onChange}
-                  value={value}
-                  style={styles.input}
-                />
-                {errors.password && (
-                  <Text style={styles.errorText}>{errors.password.message}</Text>
-                )}
-              </>
-            )}
-          />
-        </View>
-
-        {/* Signup Button */}
-        <CustomButton
-          title="Signup"
-          handleSubmit={handleSubmit(onSubmit)}
-          textStyle={styles.buttonText}
-          buttonStyle={styles.buttonStyle}
-        />
-
-        <TouchableOpacity
-          onPress={() => router.push("../conversations")}
-          style={{ marginTop: 10 }}
-        >
-          <Text style={{ color: "blue" }}>Do you have an account?</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push("../conversations")}
+            style={{ marginTop: 10 }}
+          >
+            <Text style={{ color: "blue" }}>Do you have an account?</Text>
+          </TouchableOpacity>
+        </>
       </View>
       <StatusBar
         translucent

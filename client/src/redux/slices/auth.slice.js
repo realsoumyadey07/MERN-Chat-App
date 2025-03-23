@@ -85,6 +85,9 @@ export const authSlice = createSlice({
     resetLoginUserData: (state)=> {
       state.loginUserData = null;
     },
+    resetRegisterUserData: (state)=> {
+      state.registerUserData = null;
+    },
     resetLogoutData: {
       reducer: (state) => {
         state.logoutUserData = null;
@@ -151,4 +154,4 @@ export const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
-export const { resetError, resetLoginUserData, resetLogoutData, resetUserData } = authSlice.actions;
+export const { resetError, resetLoginUserData, resetRegisterUserData, resetLogoutData, resetUserData } = authSlice.actions;
