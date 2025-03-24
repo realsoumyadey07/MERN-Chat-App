@@ -18,26 +18,26 @@ export default function layout({ children }) {
     dispatch(getMyChats());
   }, []);
   const user = [
-    // {
-    //   id: "jdfeftgergrrw548235",
-    //   name: "Soumya"
-    // },
-    // {
-    //   id: "jdfertherurgw548235",
-    //   name: "Sourav"
-    // },
-    // {
-    //   id: "jdferggerfrgw548235",
-    //   name: "Ayush"
-    // },
-    // {
-    //   id: "jdfertgergrgwh48235",
-    //   name: "Rahul"
-    // },
-    // {
-    //   id: "jdfedtgergngw548235",
-    //   name: "Rohit"
-    // }
+    {
+      id: "jdfeftgergrrw548235",
+      name: "Soumya"
+    },
+    {
+      id: "jdfertherurgw548235",
+      name: "Sourav"
+    },
+    {
+      id: "jdferggerfrgw548235",
+      name: "Ayush"
+    },
+    {
+      id: "jdfertgergrgwh48235",
+      name: "Rahul"
+    },
+    {
+      id: "jdfedtgergngw548235",
+      name: "Rohit"
+    }
   ];
   return (
     <>

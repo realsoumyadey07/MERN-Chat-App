@@ -27,7 +27,7 @@ export const getMyChats = createAsyncThunk(
                );
           }
      }
-)
+);
 
 export const chatSlice = createSlice({
      name: "chat",
