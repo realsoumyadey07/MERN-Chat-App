@@ -1,17 +1,29 @@
-import mongoose, { Schema, Types, model } from "mongoose";
+import mongoose, { Schema, Types, model, mongo } from "mongoose";
 
 const messageSchema = new Schema({
-    content: String,
+    content: {
+        type: String,
+        require: true
+    },
     attchments: {
         public_id: {
             type: String,
-            required: false
+            default: null
         },
         url: {
             type: String,
-            required: false
+            default: null
         }
     },
+    message_type: {
+        type: String,
+        enum: ["text", "image", "video", "file"],
+        default: "text"
+    },
+    seen_by: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
     sender: {
         type: Types.ObjectId,
         ref: "User"

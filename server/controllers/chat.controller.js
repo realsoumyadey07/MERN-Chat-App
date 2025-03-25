@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { Chat } from "../models/chat.model.js";
 import { deleteFilesFromCloudinary, emitEvent } from "../utils/features.js";

@@ -3,7 +3,6 @@ import { User } from "../models/user.model.js";
 import { Chat } from "../models/chat.model.js";
 import { Message } from "../models/message.model.js";
 
-
 const createSingleChats = async () => {
   try {
     const users = await User.find().select("_id");
@@ -17,16 +16,26 @@ const createSingleChats = async () => {
 
     for (let i = 0; i < users.length; i++) {
       for (let j = i + 1; j < users.length; j++) {
-        chats.push({
-          name: faker.lorem.words(2),
-          members: [users[i]._id, users[j]._id].sort(),
+        const existingChat = await Chat.findOne({
+          members: { $all: [users[i]._id, users[j]._id] },
         });
+
+        if (!existingChat) {
+          chats.push({
+            members: [users[i]._id, users[j]._id].sort((a, b) =>
+              a.toString().localeCompare(b.toString())
+            ),
+          });
+        }
       }
     }
 
-    await Chat.insertMany(chats);
-
-    console.log("Chats created successfully");
+    if (chats.length > 0) {
+      await Chat.insertMany(chats);
+      console.log("Chats created successfully");
+    } else {
+      console.log("No new chats to create");
+    }
     process.exit();
   } catch (error) {
     console.error(error);
@@ -132,9 +141,21 @@ const createMessagesInAChat = async (chatId, numMessages) => {
   }
 };
 
+const deleteAllChats = async () => {
+  try {
+    await Chat.deleteMany({});
+    console.log("all data deleted!");
+    process.exit();
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+};
+
 export {
   createGroupChats,
   createMessages,
   createMessagesInAChat,
   createSingleChats,
+  deleteAllChats,
 };

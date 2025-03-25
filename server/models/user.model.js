@@ -2,9 +2,7 @@ import doetnv from "dotenv";
 import mongoose, { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-doetnv.config({
-    path: "../.env"
-});
+doetnv.config();
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -12,19 +10,24 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
+        unique: true,
         validate: {
             validator: function (value){
                 return emailRegex.test(value)
-            }
+            },
+            message: "Invalid email format!"
         } 
     },
     username: {
         type: String,
-        required: true
+        unique: true,
+        required: true,
+        trim: true
     },
     password: {
         type: String,
-        required: [true, "password is required"]
+        required: [true, "password is required"],
+        minlength: [6, "Password must be at least 6 characters long"]
     },
     avatar: {
         public_id: String,
@@ -32,7 +35,32 @@ const userSchema = new Schema({
     },
     refresh_token: {
         type: String
-    }
+    },
+    role: {
+        type: String,
+        default: "user",
+        enum: ["user", "admin"]
+    },
+    status: {
+        type: String,
+        default: "Hay there! I am using MERN Chat App"
+    },
+    is_online: {
+        type: Boolean,
+        default: false
+    },
+    last_seen: {
+        type: Date,
+        default: Date.now
+    },
+    chats: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chat"
+    }],
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 }, {timestamps: true});
 
 userSchema.pre("save", async function(next){

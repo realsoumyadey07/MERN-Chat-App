@@ -14,10 +14,20 @@ export const createUser = async (numUsers) => {
     }
     await Promise.all(userPromise);
     console.log("User created ", numUsers);
-    process.exit(1);
+    process.exit();
   } catch (error) {
     console.log(error);
     process.exit(1);
   }
 };
 
+export const deleteAllUsers = async ()=> {
+  try {
+    await User.deleteMany({});
+    console.log("All users are deleted!");
+    process.exit();
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+}

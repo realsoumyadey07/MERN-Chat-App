@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({
-  path: "../.env",
-});
+dotenv.config();
 import { AsyncHandler } from "../middlewares/AsyncHandler.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
@@ -79,6 +77,12 @@ export const userLogin = AsyncHandler(async (req, res) => {
         message: "All fields are required!",
       });
     }
+    if(req.cookies.access_token){
+      return res.status(200).json({
+        success: true,
+        message: "User is already loggedin!"
+      })
+    }
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(400).json({
@@ -127,7 +131,7 @@ export const userLogin = AsyncHandler(async (req, res) => {
 export const userLogout = AsyncHandler(async (req, res) => {
   try {
     await User.findByIdAndUpdate(
-      req.user,
+      req.user.id,
       {
         $unset: {
           refresh_token: 1,
@@ -208,7 +212,7 @@ export const refreshAccessToken = AsyncHandler(async (req, res) => {
 
 export const getProfile = AsyncHandler(async (req, res) => {
   try {
-    const user_id = req.user;
+    const user_id = req.user.id;
     const user = await User.findById({ _id: user_id }).select(
       "-password -refresh_token"
     );
@@ -239,7 +243,7 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
       });
     const chats = await Chat.find({
       groupChat: false,
-      $or: [{ members: req.user }],
+      $or: [{ members: req.user.id }],
     });
     const allUsersOfMyChat = chats.flatMap((chat) => chat.members);
     const searchedUsers = await User.find({
@@ -250,11 +254,12 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
       _id,
       username,
     }));
-    if (users.length === 0)
+    if (users.length === 0){
       return res.status(400).json({
         message: "User not found!",
       });
-    res.status(200).json({
+    }
+    return res.status(200).json({
       success: true,
       users,
     });
@@ -276,8 +281,8 @@ export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
       });
     const request = await Request.findOne({
       $or: [
-        { sender: req.user, receiver: receiverId },
-        { sender: receiverId, receiver: req.user },
+        { sender: req.user.id, receiver: receiverId },
+        { sender: receiverId, receiver: req.user.id },
       ],
     });
     if (request)
@@ -287,7 +292,7 @@ export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
       });
     emitEvent(req, NEW_REQUEST, [receiverId]);
     await Request.create({
-      sender: req.user,
+      sender: req.user.id,
       receiver: receiverId,
     });
     return res.status(200).json({
@@ -323,7 +328,7 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
         success: false,
         message: "request not found!",
       });
-    if (request.receiver.toString() === req.user.toString())
+    if (request.receiver.toString() === req.user.id.toString())
       return res.status(400).json({
         success: false,
         message: "Cannot accept request from your own account!",
@@ -361,7 +366,7 @@ export const getAllNotifications = AsyncHandler(async (req, res, next) => {
   try {
     console.log(req.user);
 
-    const requests = await Request.find({ receiver: req.user }).populate(
+    const requests = await Request.find({ receiver: req.user.id }).populate(
       "sender",
       "username"
     );
@@ -398,11 +403,11 @@ export const getMyFriends = AsyncHandler(async (req, res, next) => {
   try {
     const chatId = req.query.chatId;
     const chats = await Chat.find({
-      members: req.user,
+      members: req.user.id,
       groupChat: false,
     }).populate("members", "username");
     const friends = chats.map(({ members }) => {
-      const otherUser = getOtherMember(members, req.user);
+      const otherUser = getOtherMember(members, req.user.id);
       return {
         _id: otherUser._id,
         username: otherUser.username,

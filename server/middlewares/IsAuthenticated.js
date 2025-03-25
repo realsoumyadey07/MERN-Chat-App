@@ -26,7 +26,8 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
         success: false,
         message: "Invalid access token!",
       });
-    req.user = user._id;
+    // req.user = user._id;
+    req.user = user;
     console.log("user id is: ",req?.user);
     next();
   } catch (error) {
@@ -36,3 +37,15 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
     });
   }
 });
+
+export const authorizeRole = (...roles)=> {
+  return (req, res, next)=> {
+    if(!roles.includes(req.user?.role || "")) {
+      return next(res.status(400).json({
+        success: false,
+        message: `Role ${req.user?.role} is not allowed to access this resourses`
+      }));
+    }
+    next();
+  }
+}

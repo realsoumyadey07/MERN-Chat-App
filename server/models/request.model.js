@@ -3,8 +3,8 @@ import mongoose, { model, Schema, Types } from "mongoose";
 const requestSchema = new Schema({
     status: {
         type: String,
-        default: "pendding",
-        enum: ["pendding", "accepted", "rejected"]
+        enum: ["pendding", "accepted", "rejected"],
+        default: "pendding"
     },
     sender: {
         type: Types.ObjectId,
