@@ -17,40 +17,46 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { useRouter } from "next/navigation";
-import { logOut, resetError, resetLoginUserData, resetUserData } from "@/redux/slices/auth.slice";
+import {
+  logOut,
+  resetError,
+  resetLoginUserData,
+  resetUserData,
+} from "@/redux/slices/auth.slice";
 import LoadingSpinner from "./LoadingSpinner";
-
+import { MdEdit } from "react-icons/md";
 
 export default function ProfileComponent() {
   const [openModal, setOpenModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { userData, error, logoutUserData, isLoading } = useSelector((state) => state.auth);
+  const { userData, error, logoutUserData, isLoading } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
   const router = useRouter();
   const handleLogout = () => {
     console.log("Logout clicked");
     dispatch(logOut());
     setOpenModal(false);
-    // Add your logout logic here
   };
 
-  useEffect(()=> {
-    if(logoutUserData) {
+  useEffect(() => {
+    if (logoutUserData) {
       dispatch(resetError());
       dispatch(resetLoginUserData());
       dispatch(resetUserData());
       router.push("/authentication");
     }
-  },[logoutUserData]);
+  }, [logoutUserData]);
 
-  if(isLoading) {
-    return <LoadingSpinner/>
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
     <>
       <div className="flex items-center justify-center">
-        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen} >
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="p-0">
               <Avatar className="w-8 h-8">
@@ -64,21 +70,32 @@ export default function ProfileComponent() {
           </DropdownMenuTrigger>
 
           {userData && (
-            <DropdownMenuContent className="w-48">
-              <DropdownMenuItem onClick={() => console.log("Profile clicked!")}>
-                <Avatar className="w-8 h-8">
-                  <AvatarImage
-                    src="/path-to-your-profile-image.jpg"
-                    alt="Profile"
-                  />
-                  <AvatarFallback>DP</AvatarFallback>
-                </Avatar>
-                {userData.username}
+            <DropdownMenuContent className="w-fit">
+              <DropdownMenuItem className="p-4">
+                <div className="flex flex-col items-center gap-2">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage
+                      src="/path-to-your-profile-image.jpg"
+                      alt="Profile"
+                    />
+                    <AvatarFallback>DP</AvatarFallback>
+                  </Avatar>
+                  <p>{userData.username}</p>
+                  <div>
+                  <div>
+                    <label className="font-bold">Email</label>
+                    <p className="flex justify-between">{userData.email}</p>
+                  </div>
+                  <div>
+                    <label className="font-bold">About</label>
+                    <p className="flex justify-between items-center gap-4">{userData.status}</p>
+                  </div>
+                  </div>
+                </div>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log("Settings clicked!")}>
-                Settings
-              </DropdownMenuItem>
+              
               <DropdownMenuItem
+                className="p-4"
                 onClick={() => {
                   setOpenModal(true);
                   setDropdownOpen(false); // Close dropdown when opening modal
@@ -97,7 +114,7 @@ export default function ProfileComponent() {
             <DialogHeader>
               <DialogTitle>Do you really want to sign out?</DialogTitle>
             </DialogHeader>
-            <DialogFooter>
+            <DialogFooter className="gap-2">
               <button
                 onClick={() => {
                   setOpenModal(false);

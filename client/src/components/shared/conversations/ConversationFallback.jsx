@@ -7,7 +7,7 @@ export default function ConversationFallback() {
     <Card className="hidden lg:flex h-full w-full p-2 items-center justify-center bg-secondary text-secondary-foreground">
       <div className="text-center flex flex-col items-center gap-3">
         <Image
-          src={"/images/whatsapp-logo.webp"}
+          src={"/images/whatsapp-logo2.webp"}
           width={80}
           height={80}
           alt="logo"
