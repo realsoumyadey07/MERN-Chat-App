@@ -38,24 +38,8 @@ app.use("/api/chat", chatRouter);
 
 io.on("connection", (socket)=> {
     console.log(`a user connected: ${socket.id}`);   
-    const user = {
-        _id: "bg48h",
-        name: "soumya"
-    }
-    socket.on(NEW_MESSAGE, async ({chatId, numbers, message})=> {
+    socket.on(NEW_MESSAGE, (data)=> {
         console.log("New message: ", data);
-        const messageForRealtime = {
-            _id: uuid(),
-            content: message,
-            sender: {
-                _id: user._id,
-                nsme: user.name
-            },
-            chat: chatId,
-            createdAt: new Date().toISOString()
-        }
-        console.log("New Message: ", messageForRealtime);
-        
     });
     socket.on("disconnect", ()=> {
         console.log("user disconnected!");

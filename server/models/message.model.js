@@ -15,11 +15,6 @@ const messageSchema = new Schema({
             default: null
         }
     },
-    message_type: {
-        type: String,
-        enum: ["text", "image", "video", "file"],
-        default: "text"
-    },
     seen_by: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

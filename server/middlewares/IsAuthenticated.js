@@ -28,7 +28,6 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
       });
     // req.user = user._id;
     req.user = user;
-    console.log("user id is: ",req?.user);
     next();
   } catch (error) {
     return res.status(500).json({

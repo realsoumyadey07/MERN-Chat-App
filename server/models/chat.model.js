@@ -11,7 +11,7 @@ const chatSchema = new Schema({
     },
     creator: {
         type: Types.ObjectId,
-        ref: "User"
+        ref: "User" //only for group chats
     },
     members: [{
         type: Types.ObjectId,

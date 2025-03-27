@@ -8,6 +8,7 @@ import { Request } from "../models/request.model.js";
 import { emitEvent } from "../utils/features.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 import { getOtherMember } from "../lib/helper.js";
+import ErrorHandler from "../utils/errorHandler.js";
 
 export const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -77,11 +78,11 @@ export const userLogin = AsyncHandler(async (req, res) => {
         message: "All fields are required!",
       });
     }
-    if(req.cookies.access_token){
+    if (req.cookies.access_token) {
       return res.status(200).json({
         success: true,
-        message: "User is already loggedin!"
-      })
+        message: "User is already loggedin!",
+      });
     }
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
@@ -254,7 +255,7 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
       _id,
       username,
     }));
-    if (users.length === 0){
+    if (users.length === 0) {
       return res.status(400).json({
         message: "User not found!",
       });
@@ -275,10 +276,7 @@ export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
     const { receiverId } = req.body;
     if (!receiverId)
-      return res.status(400).json({
-        success: false,
-        message: "Sender is required!",
-      });
+      return next(new ErrorHandler("Receiver is required!", 400));
     const request = await Request.findOne({
       $or: [
         { sender: req.user.id, receiver: receiverId },
@@ -288,8 +286,11 @@ export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
     if (request)
       return res.status(400).json({
         success: false,
-        message: "Request already sent!",
+        message: "Request has already made!",
       });
+    if (receiverId.toString() === req.user.id.toString()) {
+      return next(new ErrorHandler("cannot send request to yourself!", 400));
+    }
     emitEvent(req, NEW_REQUEST, [receiverId]);
     await Request.create({
       sender: req.user.id,
@@ -315,11 +316,13 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
         success: false,
         message: "RequestId is required!",
       });
-    if (!accept)
-      return res.status(400).json({
-        success: false,
-        message: "provide accept or reject!",
-      });
+    if (accept === undefined)
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "provide accept (true/false) to accept or reject!",
+        })
+      );
     const request = await Request.findById(requestId)
       .populate("sender", "username")
       .populate("receiver", "username");
@@ -328,31 +331,49 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
         success: false,
         message: "request not found!",
       });
-    if (request.receiver.toString() === req.user.id.toString())
+    if (request.receiver._id.toString() !== req.user.id.toString())
       return res.status(400).json({
         success: false,
-        message: "Cannot accept request from your own account!",
+        message: "You are not authorized to accept this request!",
       });
+    if (request.status !== "pendding") {
+      return res.status(400).json({
+        success: false,
+        message: `This request is already ${request.status}!`,
+      });
+    }
     if (accept === false) {
-      await request.deleteOne();
+      request.status = "rejected";
+      await request.save();
       return res.status(200).json({
         success: true,
         message: "Friend request rejected!",
       });
     }
-    const members = [request.receiver._id, request.sender._id];
-    await Promise.all([
-      Chat.create({
+    request.status = "accepted";
+    await request.save();
+    const members = [request.receiver._id, request.sender._id].sort();
+    const existingChat = await Chat.findOne({
+      members: { $all: members },
+    });
+    if (!existingChat) {
+      const chat = await Chat.create({
         members,
-        name: `${request.sender.username} - ${request.receiver.name}`,
-      }),
-      request.deleteOne(),
-    ]);
-    emitEvent(req, REFETCH_CHATS, members);
+      });
+      const user = await User.findById({ _id: req.user.id });
+      if (user) {
+        user.chats.push(chat._id);
+        await user.save();
+      }
+      emitEvent(req, REFETCH_CHATS, members);
+    }
     return res.status(200).json({
       success: true,
       message: "Friend request accepted!",
-      senderId: request.sender._id,
+      sender: {
+        id: request.sender._id,
+        username: request.sender.username,
+      },
     });
   } catch (error) {
     return res.status(500).json({
@@ -366,7 +387,7 @@ export const getAllNotifications = AsyncHandler(async (req, res, next) => {
   try {
     console.log(req.user);
 
-    const requests = await Request.find({ receiver: req.user.id }).populate(
+    const requests = await Request.find({ receiver: req.user.id, status: "pendding" }).populate(
       "sender",
       "username"
     );

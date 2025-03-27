@@ -32,11 +32,11 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
         })
       );
     }
-    const allMembers = [...members, req.user];
+    const allMembers = [...members, req.user.id];
     await Chat.create({
       name,
       groupChat: true,
-      creator: req.user,
+      creator: req.user.id,
       members: allMembers,
     });
     emitEvent(req, ALERT, allMembers, `Welcome to ${name} group`);
@@ -59,9 +59,9 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
 
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
-    const chats = await Chat.find({ members: req.user });
+    const chats = await Chat.find({ members: req.user.id });
     const transeformedChats = chats.map(({ _id, name, members, groupChat }) => {
-      const otherMember = getOtherMember(members, req.user);
+      const otherMember = getOtherMember(members, req.user.id);
       return {
         _id,
         name: groupChat ? name : otherMember?.username,
@@ -93,9 +93,9 @@ export const getMyChat = AsyncHandler(async (req, res, next) => {
 export const getMyGroups = AsyncHandler(async (req, res, next) => {
   try {
     const chats = await Chat.find({
-      members: req.user,
+      members: req.user.id,
       groupChat: true,
-      creator: req.user,
+      creator: req.user.id,
     }).populate("members", "username");
     const groups = chats.map(({ members, _id, groupChat, name }) => ({
       _id,
@@ -150,7 +150,7 @@ export const addMember = AsyncHandler(async (req, res, next) => {
           message: "This is not a group chat!",
         })
       );
-    if (chat.creator.toString() !== req.user.toString())
+    if (chat.creator.toString() !== req.user.id.toString())
       return next(
         res.status(400).json({
           success: false,
@@ -223,7 +223,7 @@ export const removeMember = AsyncHandler(async (req, res, next) => {
         })
       );
     }
-    if (chat.creator.toString() !== req.user.toString()) {
+    if (chat.creator.toString() !== req.user.id.toString()) {
       return next(
         res.status(400).json({
           success: false,
@@ -287,16 +287,16 @@ export const leaveGroup = AsyncHandler(async (req, res, next) => {
       );
     }
     const remainingMambers = chat.members.filter(
-      (member) => member.toString() !== req.user.toString()
+      (member) => member.toString() !== req.user.id.toString()
     );
-    if (chat.creator.toString() === req.user.toString()) {
+    if (chat.creator.toString() === req.user.id.toString()) {
       const randomElement = Math.floor(Math.random() * remainingMambers.length);
       const newCreator = remainingMambers[randomElement];
       chat.creator = newCreator;
     }
     chat.members = remainingMambers;
     const [user] = await Promise.all([
-      User.findById(req.user, "username"),
+      User.findById(req.user.id, "username"),
       chat.save(),
     ]);
     emitEvent(req, ALERT, chat.members, `${user} has left the group`);
@@ -321,7 +321,7 @@ export const sendAttachments = AsyncHandler(async (req, res, next) => {
     const { chatId } = req.body;
     const [chat, me] = await Promise.all([
       Chat.findById(chatId),
-      User.findById(req.user, "username"),
+      User.findById(req.user.id, "username"),
     ]);
     if (!chat)
       return next(
@@ -352,7 +352,7 @@ export const sendAttachments = AsyncHandler(async (req, res, next) => {
       ...messageForDB,
       sender: {
         _id: me._id,
-        name: me.name,
+        username: me.username,
       },
     };
     const message = await Message.create(messageForDB);
@@ -454,7 +454,7 @@ export const renameGroup = AsyncHandler(async (req, res, next) => {
         })
       );
     }
-    if (chat.creator.toString() !== req.user.toString())
+    if (chat.creator.toString() !== req.user.id.toString())
       return next(
         res.status(400).json({
           success: false,
@@ -462,7 +462,7 @@ export const renameGroup = AsyncHandler(async (req, res, next) => {
         })
       );
     chat.name = newName;
-    chat.save();
+    await chat.save();
     emitEvent(req, REFETCH_CHATS, chat.members);
     return next(
       res.status(200).json({
@@ -499,14 +499,14 @@ export const deleteGroup = AsyncHandler(async (req, res, next) => {
         })
       );
     const members = await chat.members;
-    if (chat.groupChat && chat.creator.toString() !== req.user.toString())
+    if (chat.groupChat && chat.creator.toString() !== req.user.id.toString())
       return next(
         res.status(400).json({
           success: false,
           message: "You are not allowed to delete this group!",
         })
       );
-    if (!chat.groupChat && !chat.members.includes(req.user.toString())) {
+    if (!chat.groupChat && !chat.members.includes(req.user.id.toString())) {
       return next(
         res.status(400).json({
           success: false,
