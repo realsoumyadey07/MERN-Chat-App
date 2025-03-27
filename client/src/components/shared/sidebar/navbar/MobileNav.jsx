@@ -48,7 +48,7 @@ export default function MobileNav() {
             <ThemeToggle/>
           </li>
           <li>
-            <div className="flex flex-col items-centergap-4" onClick={getUserProfile}>
+            <div className="flex flex-col items-center gap-4" onClick={getUserProfile}>
               <ProfileComponent/>
             </div>
           </li>
