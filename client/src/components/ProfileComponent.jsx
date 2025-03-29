@@ -56,7 +56,7 @@ export default function ProfileComponent() {
   return (
     <>
       <div className="flex items-center justify-center">
-        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen} >
+        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="p-0">
               <Avatar className="w-8 h-8">
@@ -71,38 +71,40 @@ export default function ProfileComponent() {
 
           {userData && (
             <DropdownMenuContent className="w-fit">
-              <DropdownMenuItem className="p-4">
-                <div className="flex flex-col items-center gap-2">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage
-                      src="/path-to-your-profile-image.jpg"
-                      alt="Profile"
-                    />
-                    <AvatarFallback>DP</AvatarFallback>
-                  </Avatar>
-                  <p>{userData.username}</p>
-                  <div>
+              <div className="flex flex-col items-center gap-2 p-4">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage
+                    src="/path-to-your-profile-image.jpg"
+                    alt="Profile"
+                  />
+                  <AvatarFallback>DP</AvatarFallback>
+                </Avatar>
+                <p>{userData.username}</p>
+                <div>
                   <div>
                     <label className="font-bold">Email</label>
                     <p className="flex justify-between">{userData.email}</p>
                   </div>
                   <div>
                     <label className="font-bold">About</label>
-                    <p className="flex justify-between items-center gap-4">{userData.status}</p>
-                  </div>
+                    <p className="flex justify-between items-center gap-4">
+                      {userData.status}
+                    </p>
                   </div>
                 </div>
-              </DropdownMenuItem>
-              
-              <DropdownMenuItem
-                className="p-4"
-                onClick={() => {
-                  setOpenModal(true);
-                  setDropdownOpen(false); // Close dropdown when opening modal
-                }}
-              >
-                Sign Out
-              </DropdownMenuItem>
+              </div>
+
+              <div className="p-4">
+                <Button
+                  onClick={() => {
+                    setOpenModal(true);
+                    setDropdownOpen(false); // Close dropdown when opening modal
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Sign Out
+                </Button>
+              </div>
             </DropdownMenuContent>
           )}
         </DropdownMenu>

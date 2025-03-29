@@ -18,7 +18,6 @@ import {
 } from "./ui/dialog";
 import { useRouter } from "next/navigation";
 import {
-  logOut,
   resetError,
   resetLoginUserData,
   resetUserData,
@@ -26,20 +25,18 @@ import {
 import LoadingSpinner from "./LoadingSpinner";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaWpexplorer } from "react-icons/fa";
+import { IoSearch } from "react-icons/io5";
 
 export default function ThreeDotComp() {
-  const [openModal, setOpenModal] = useState(false);
+  const [openFriendModal, setOpenFriendModal] = useState(false);
+  const [openGroupModal, setOpenGroupModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { userData, error, logoutUserData, isLoading } = useSelector(
     (state) => state.auth
   );
   const dispatch = useDispatch();
   const router = useRouter();
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    dispatch(logOut());
-    setOpenModal(false);
-  };
+  
 
   useEffect(() => {
     if (logoutUserData) {
@@ -65,49 +62,84 @@ export default function ThreeDotComp() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="w-fit">
-            <DropdownMenuItem className="p-4">
-                <MdGroups size={20} /> Create New Group
-
+            <DropdownMenuItem className="p-4" onClick={()=> {
+              setOpenGroupModal(true);
+              setDropdownOpen(false);
+            }}>
+              <MdGroups size={20} /> Create New Group
             </DropdownMenuItem>
 
             <DropdownMenuItem
               className="p-4"
               onClick={() => {
-                setOpenModal(true);
+                setOpenFriendModal(true);
                 setDropdownOpen(false); // Close dropdown when opening modal
               }}
             >
-             <FaWpexplorer />{" "} Find New Friends
+              <FaWpexplorer /> Find New Friends
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {openModal && (
-        <Dialog open={openModal}>
+      {openFriendModal && (
+        <Dialog open={openFriendModal}>
           <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Do you really want to sign out?</DialogTitle>
+            <DialogHeader className="flex flex-col gap-2 justify-center items-center">
+              <DialogTitle>Add New Friends</DialogTitle>
+              <div className="flex w-full bg-gray-200 dark:bg-blue-950 rounded-lg justify-between items-center px-4">
+                <input
+                  type="text"
+                  placeholder="Search users here..."
+                  className="bg-transparent h-full py-3 basis-[90%] outline-none"
+                />
+                <div>
+                  <IoSearch size={23} color="#a6a6a6" />
+                </div>
+              </div>
             </DialogHeader>
-            <DialogFooter className="gap-2">
+            <DialogFooter>
               <button
                 onClick={() => {
-                  setOpenModal(false);
+                  setOpenFriendModal(false);
                   console.log("Cancel clicked");
                 }}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               >
                 Cancel
               </button>
+              
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+      {openGroupModal && (
+        <Dialog open={openGroupModal}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader className="flex flex-col gap-2 justify-center items-center">
+              <DialogTitle>Create New Group</DialogTitle>
+              <div className="flex w-full bg-gray-200 dark:bg-blue-950 rounded-lg justify-between items-center px-4">
+                <input
+                  type="text"
+                  placeholder="Search users here..."
+                  className="bg-transparent h-full py-3 basis-[90%] outline-none"
+                />
+                <div>
+                  <IoSearch size={23} color="#a6a6a6" />
+                </div>
+              </div>
+            </DialogHeader>
+            <DialogFooter>
               <button
                 onClick={() => {
-                  console.log("Confirm clicked");
-                  handleLogout();
+                  setOpenGroupModal(false);
+                  console.log("Cancel clicked");
                 }}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               >
-                Confirm
+                Cancel
               </button>
+              
             </DialogFooter>
           </DialogContent>
         </Dialog>

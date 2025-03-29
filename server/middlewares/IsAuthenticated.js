@@ -12,7 +12,7 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
       req.cookies.access_token ||
       req.header("Authorization")?.replace("Bearer ", "");
     if (!access_token)
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "Token is not found. Please log in!",
       });
@@ -22,7 +22,7 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
     const user = await User.findById(decoded?.id).select(
       "-password -refresh_token"
     );
-    if (!user) return res.status(400).json({
+    if (!user) return res.status(401).json({
         success: false,
         message: "Invalid access token!",
       });
@@ -30,7 +30,7 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    return res.status(500).json({
+    return res.status(401).json({
       success: false,
       message: "The token is not authenticated!",
     });

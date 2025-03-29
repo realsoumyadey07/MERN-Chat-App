@@ -13,7 +13,6 @@ import EmptyListComp from "@/components/EmptyListComp";
 export default function layout({ children }) {
   const dispatch = useDispatch();
   const { myChatsData, isLoading, error } = useSelector((state) => state.chat);
-  myChatsData ? console.log("my chat data ", myChatsData) : null;
 
   useEffect(() => {
     dispatch(getMyChats());
