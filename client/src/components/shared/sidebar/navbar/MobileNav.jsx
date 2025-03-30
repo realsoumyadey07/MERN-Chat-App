@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useNavigation } from "@/hooks/useNavigation";
-import { getUserData } from "@/redux/slices/auth.slice";
+import { getProfileData } from "@/redux/slices/auth.slice";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 
@@ -19,7 +19,7 @@ export default function MobileNav() {
   if(isActive) return null;
   const dispatch = useDispatch();
   const getUserProfile = () => {
-    dispatch(getUserData());
+    dispatch(getProfileData());
   };
   return (
     <Card className="fixed bottom-4 w-[calc(100vw-32px)] flex lg:hidden justify-center items-center p-2">

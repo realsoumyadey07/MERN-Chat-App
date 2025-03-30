@@ -20,7 +20,7 @@ userRouter.post("/user-registration", registerValidator(), validateHandler, user
 userRouter.post("/user-login", loginValidator(), validateHandler, userLogin); 
 userRouter.get("/user-logout", IsAuthenticated, userLogout);
 userRouter.post("/refresh-token", refreshAccessToken);
-userRouter.get("/get-user", IsAuthenticated, getProfile);
+userRouter.get("/get-profile", IsAuthenticated, getProfile);
 userRouter.get("/search-user", IsAuthenticated, searchUser);
 userRouter.post("/send-friendrequest", IsAuthenticated, sendFriendRequest);
 userRouter.post("/accept-friendrequest", IsAuthenticated, acceptFriendRequest);

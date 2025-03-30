@@ -60,26 +60,28 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
     const chats = await Chat.find({ members: req.user.id });
-    const transeformedChats = chats.map(({ _id, name, members, groupChat }) => {
-      const otherMember = getOtherMember(members, req.user.id);
-      return {
-        _id,
-        name: groupChat ? name : otherMember?.username,
-        groupChat,
-        members: members.reduce((prev, curr) => {
-          if (curr._id.toString() !== req.user.toString()) {
-            prev.push(curr._id);
-          }
-          return prev;
-        }, []),
-      };
-    });
-    return next(
-      res.status(200).json({
-        success: true,
-        chats: transeformedChats,
+    const transeformedChats = await Promise.all(
+      chats.map(async ({ _id, name, members, groupChat }) => {
+        const otherMember = getOtherMember(members, req.user.id);
+        const otherMemberUser = await User.findById(otherMember);
+        return {
+          _id,
+          name: groupChat ? name : otherMemberUser?.username,
+          groupChat,
+          members: members.reduce((prev, curr) => {
+            if (curr._id.toString() !== req.user.id.toString()) {
+              prev.push(curr._id);
+            }
+            return prev;
+          }, []),
+        };
       })
     );
+
+    return res.status(200).json({
+      success: true,
+      chats: transeformedChats,
+    });
   } catch (error) {
     return next(
       res.status(500).json({
@@ -97,10 +99,11 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
       groupChat: true,
       creator: req.user.id,
     }).populate("members", "username");
-    const groups = chats.map(({ members, _id, groupChat, name }) => ({
+    const groups = chats.map(({ _id, members, groupChat, name }) => ({
       _id,
       name,
       groupChat,
+      members
     }));
     return next(
       res.status(200).json({

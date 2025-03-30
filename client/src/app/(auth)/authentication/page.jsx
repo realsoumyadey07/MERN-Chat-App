@@ -93,10 +93,10 @@ export default function Authentication() {
     dispatch(registration(data));
     console.log("registration button clicked!");
   };
-  const handleLoginClick = ()=> {
+  const handleLoginClick = () => {
     setScreen("Login");
     dispatch(resetRegisterUserData());
-  }
+  };
   useEffect(() => {
     const access_token = localStorage.getItem("access_token");
     if (access_token) {
@@ -329,7 +329,10 @@ export default function Authentication() {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <p onClick={handleLoginClick} className="hover:underline cursor-pointer">
+                  <p
+                    onClick={handleLoginClick}
+                    className="hover:underline cursor-pointer"
+                  >
                     Login to continue
                   </p>
                 </DialogFooter>

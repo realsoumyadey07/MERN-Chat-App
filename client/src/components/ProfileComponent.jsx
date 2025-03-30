@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
@@ -24,7 +23,7 @@ import {
   resetUserData,
 } from "@/redux/slices/auth.slice";
 import LoadingSpinner from "./LoadingSpinner";
-import { MdEdit } from "react-icons/md";
+import Link from "next/link";
 
 export default function ProfileComponent() {
   const [openModal, setOpenModal] = useState(false);
@@ -71,7 +70,7 @@ export default function ProfileComponent() {
 
           {userData && (
             <DropdownMenuContent className="w-fit">
-              <div className="flex flex-col items-center gap-2 p-4">
+              <Link href={`/conversations/profile/${"jdhfvdjfdf"}`} className="flex flex-col items-center gap-2 p-4">
                 <Avatar className="w-8 h-8">
                   <AvatarImage
                     src="/path-to-your-profile-image.jpg"
@@ -92,7 +91,7 @@ export default function ProfileComponent() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </Link>
 
               <div className="p-4">
                 <Button

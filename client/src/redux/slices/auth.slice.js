@@ -62,11 +62,11 @@ export const logOut = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
   }
 });
 
-export const getUserData = createAsyncThunk(
-  "auth/userData",
+export const getProfileData = createAsyncThunk(
+  "auth/profileData",
   async (_, thunkAPI) => {
     try {
-      const response = await tokenApi.get("/user/get-user");
+      const response = await tokenApi.get("/user/get-profile");
       const data = await response.data;
       return data.user;
     } catch (error) {
@@ -135,20 +135,20 @@ export const authSlice = createSlice({
     });
     builder.addCase(logOut.rejected, (state, action) => {
       state.isLoading = false
-      state.error = action.error.message
+      state.error = action?.payload?.message
     });
 
     //get user data
-    builder.addCase(getUserData.pending, (state, action) => {
+    builder.addCase(getProfileData.pending, (state, action) => {
       state.isLoading = true
     });
-    builder.addCase(getUserData.fulfilled, (state, action) => {
+    builder.addCase(getProfileData.fulfilled, (state, action) => {
       state.isLoading = false
       state.userData = action.payload
     });
-    builder.addCase(getUserData.rejected, (state, action) => {
+    builder.addCase(getProfileData.rejected, (state, action) => {
       state.isLoading = false
-      state.error = action.error.message
+      state.error = action?.payload?.message
     });
   },
 });

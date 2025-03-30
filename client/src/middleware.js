@@ -5,14 +5,13 @@ export function middleware(request) {
   const access_token = cookies.get("access_token")?.value;
   console.log("middleware ran");
 
-  const publicPaths = ["/login", "/sign-up", "/authentication"];
+  const publicPaths = ["/authentication"];
 
   const isPublicPath = publicPaths.includes(request.nextUrl.pathname);
 
   if (request.nextUrl.pathname === "/") {
     return NextResponse.next();
   }
-
 
   if (isPublicPath) {
     if (access_token) {

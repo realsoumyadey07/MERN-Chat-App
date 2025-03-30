@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useNavigation } from "@/hooks/useNavigation";
-import { getUserData } from "@/redux/slices/auth.slice";
+import { getProfileData } from "@/redux/slices/auth.slice";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 
@@ -17,7 +17,7 @@ export default function DesktopNav() {
   const paths = useNavigation();
   const dispatch = useDispatch();
   const getUserProfile = () => {
-    dispatch(getUserData());
+    dispatch(getProfileData());
   };
   return (
     <Card className="hidden lg:flex lg:flex-col lg:justify-between lg:items-center lg:h-full lg:w-16 lg:px-2 lg:py-4">

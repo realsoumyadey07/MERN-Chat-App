@@ -326,6 +326,7 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
     const request = await Request.findById(requestId)
       .populate("sender", "username")
       .populate("receiver", "username");
+    console.log("request is: ",request);
     if (!request)
       return res.status(400).json({
         success: false,
@@ -456,3 +457,21 @@ export const getMyFriends = AsyncHandler(async (req, res, next) => {
     });
   }
 });
+
+export const getUserDetails = AsyncHandler(async(req, res, next)=> {
+  try {
+    const {userId} = req.body;
+    if(userId) {
+      return req.status(400).json({
+        success: false,
+        message: "User id is required!"
+      });
+    }
+    
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!"
+    })
+  }
+})

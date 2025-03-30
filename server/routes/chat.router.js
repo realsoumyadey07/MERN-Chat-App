@@ -18,7 +18,7 @@ import { attchmentsMulter } from "../middlewares/Multer.js";
 const chatRouter = express.Router();
 chatRouter.use(IsAuthenticated);
 
-chatRouter.post("/new", newGroupChat);
+chatRouter.post("/new-group-chat", newGroupChat);
 chatRouter.get("/get-my-chat", getMyChat);
 chatRouter.get("/get-my-group", getMyGroups);
 chatRouter.put("/add-member", addMember);

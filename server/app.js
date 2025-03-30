@@ -53,7 +53,7 @@ server.listen(port, ()=> {
 });
 
 // createUser(5);
-// createSingleChats()
+// createSingleChats();
 // createMessagesInAChat("67b9ce4e74c62ad7acafa4ad", 50);
 // deleteAllChats();
 // deleteAllUsers();

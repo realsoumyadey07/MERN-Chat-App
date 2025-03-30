@@ -6,39 +6,19 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import NoContact from "../../../../public/images/no-contact.png"
-import Image from "next/image";
 import EmptyListComp from "@/components/EmptyListComp";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function layout({ children }) {
   const dispatch = useDispatch();
   const { myChatsData, isLoading, error } = useSelector((state) => state.chat);
-
   useEffect(() => {
     dispatch(getMyChats());
   }, []);
-  const user = [
-    // {
-    //   id: "jdfeftgergrrw548235",
-    //   name: "Soumya"
-    // },
-    // {
-    //   id: "jdfertherurgw548235",
-    //   name: "Sourav"
-    // },
-    // {
-    //   id: "jdferggerfrgw548235",
-    //   name: "Ayush"
-    // },
-    // {
-    //   id: "jdfertgergrgwh48235",
-    //   name: "Rahul"
-    // },
-    // {
-    //   id: "jdfedtgergngw548235",
-    //   name: "Rohit"
-    // }
-  ];
+  console.log("my chat datas are: ",myChatsData);
+  if(!myChatsData && isLoading) {
+    return <LoadingSpinner/>
+  }
   return (
     <>
       <ItemList title="Conversations">
@@ -53,11 +33,11 @@ export default function layout({ children }) {
           </div>
         </div>
         <ul className="flex flex-col gap-2 w-full cursor-pointer">
-          {user && user.length > 0 ? (
-            user.map((item, index) => (
+          {myChatsData && myChatsData.length > 0 ? (
+            myChatsData.map((item, index) => (
               <Link
                 className="w-full hover:bg-gray-200 dark:hover:bg-blue-950 rounded-lg p-2"
-                href={`/conversations/${item.id}`}
+                href={`/conversations/${item._id}`}
                 key={index}
               >
                 <div className="flex items-center gap-2">

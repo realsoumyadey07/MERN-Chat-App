@@ -121,6 +121,14 @@ export default function ThreeDotComp() {
               <div className="flex w-full bg-gray-200 dark:bg-blue-950 rounded-lg justify-between items-center px-4">
                 <input
                   type="text"
+                  placeholder="New Group Name"
+                  className="bg-transparent h-full py-3 basis-full outline-none"
+                />
+                
+              </div>
+              <div className="flex w-full bg-gray-200 dark:bg-blue-950 rounded-lg justify-between items-center px-4">
+                <input
+                  type="text"
                   placeholder="Search users here..."
                   className="bg-transparent h-full py-3 basis-[90%] outline-none"
                 />

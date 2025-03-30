@@ -1,5 +1,6 @@
+import tokenApi from "@/lib/axios/tokenApi";
 import openApi from "@/lib/axios/tokenApi";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
      newCreatedChatData: null,
@@ -15,11 +16,11 @@ const initialState = {
 
 export const getMyChats = createAsyncThunk(
      "chat/getMyChats",
-     async (formData, thunkApi) => {
+     async (_, thunkApi) => {
           try {
-               const response = await openApi.get("/chat/get-my-chat");
-               const data = await response.json();
-               return data.chats;
+               const response = await tokenApi.get("/chat/get-my-chat");
+               const data = await response.data;
+               return data?.chats;
           } catch (error) {
                console.log(error);
                return thunkApi.rejectWithValue(
@@ -28,6 +29,18 @@ export const getMyChats = createAsyncThunk(
           }
      }
 );
+
+export const getMyGroups = createAsyncThunk("chat/getMyGroups", async(_, thunkApi)=> {
+     try {
+          const response = await tokenApi.get("/chat/get-my-group");
+          const data = await response.data;
+          return data?.groups;
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          );
+     }
+});
 
 export const chatSlice = createSlice({
      name: "chat",
@@ -38,20 +51,30 @@ export const chatSlice = createSlice({
           }
      },
      extraReducers: (builder)=> {
-          //grt my chats
+          //get my chats
           builder.addCase(getMyChats.pending, (state, action)=> {
                state.isLoading = true;
           }),
           builder.addCase(getMyChats.fulfilled, (state, action)=> {
                state.isLoading = false;
-               state.myChatsData = action.payload;
-               console.log("action.payload: "+ action.payload);
+               state.myChatsData = action?.payload;
           }),
           builder.addCase(getMyChats.rejected, (state, action)=> {
                state.isLoading = false;
-               state.error = action.error || action.error.message
+               state.error = action?.payload?.message || "Something went wrong!"
           })
-          
+          //get my groups
+          builder.addCase(getMyGroups.pending, (state, action)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(getMyGroups.fulfilled, (state, action)=> {
+               state.myGroupsData = action?.payload;
+               state.isLoading = false;
+          }),
+          builder.addCase(getMyGroups.rejected, (state, action)=> {
+               state.error = action?.payload?.message || "Something went wrong!";
+               state.isLoading = false;
+          })
      }
 })
 

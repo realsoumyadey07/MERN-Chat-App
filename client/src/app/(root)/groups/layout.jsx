@@ -3,33 +3,22 @@ import ItemList from "@/components/shared/item-list/ItemList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { IoSearch } from "react-icons/io5";
-import NoContact from "../../../../public/images/no-contact.png"
-import Image from "next/image";
 import EmptyListComp from "@/components/EmptyListComp";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getMyGroups } from "@/redux/slices/chat.slice";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function layout({ children }) {
-  const user = [
-    {
-      id: "jdfeftgergrrw548235",
-      name: "School"
-    },
-    {
-      id: "jdfertherurgw548235",
-      name: "College"
-    },
-    {
-      id: "jdferggerfrgw548235",
-      name: "Ajantrik"
-    },
-    {
-      id: "jdfertgergrgwh48235",
-      name: "BCA Official"
-    },
-    {
-      id: "jdfedtgergngw548235",
-      name: "TCS Smart Training"
-    }
-  ];
+  const dispath = useDispatch();
+  const { myGroupsData, isLoading, error } = useSelector((state)=> state.chat);
+  useEffect(()=> {
+    dispath(getMyGroups());
+  },[])
+  
+  if(!myGroupsData && isLoading){
+    return <LoadingSpinner/>
+  }
   return (
     <>
       <ItemList title="Groups">
@@ -44,11 +33,11 @@ export default function layout({ children }) {
           </div>
         </div>
         <ul className="flex flex-col gap-2 w-full cursor-pointer">
-          {user && user.length > 0 ? (
-            user.map((item, index) => (
+          {myGroupsData && myGroupsData.length > 0 ? (
+            myGroupsData.map((item, index) => (
               <Link
                 className="w-full hover:bg-gray-200 dark:hover:bg-blue-950 rounded-lg p-2"
-                href={`/conversations/${item.id}`}
+                href={`/groups/${item._id}`}
                 key={index}
               >
                 <div className="flex items-center gap-2">
