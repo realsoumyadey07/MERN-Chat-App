@@ -9,6 +9,7 @@ import { emitEvent } from "../utils/features.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 import { getOtherMember } from "../lib/helper.js";
 import ErrorHandler from "../utils/errorHandler.js";
+import mongoose from "mongoose";
 
 export const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -109,6 +110,8 @@ export const userLogin = AsyncHandler(async (req, res) => {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
+      expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // Expires in 7 days
+      maxAge: 10 * 24 * 60 * 60 * 1000,
     };
     return res
       .status(200)
@@ -272,6 +275,40 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
   }
 });
 
+export const searchUnknownUser = AsyncHandler(async (req, res, next) => {
+  try {
+    const { name } = req.query;
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Search param is required!",
+      });
+    }
+    const users = await User.find({
+      username: { $regex: name, $options: "i" },
+    });
+    const filteredUsers = users.map(({ _id, username }) => ({
+      _id,
+      username,
+    }));
+    if (filteredUsers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      users: filteredUsers,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!",
+    });
+  }
+});
+
 export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
     const { receiverId } = req.body;
@@ -326,7 +363,7 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
     const request = await Request.findById(requestId)
       .populate("sender", "username")
       .populate("receiver", "username");
-    console.log("request is: ",request);
+    console.log("request is: ", request);
     if (!request)
       return res.status(400).json({
         success: false,
@@ -344,30 +381,21 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
       });
     }
     if (accept === false) {
-      request.status = "rejected";
-      await request.save();
+      await request.deleteOne();
+
       return res.status(200).json({
         success: true,
-        message: "Friend request rejected!",
+        message: "Friend Request Rejected",
       });
     }
-    request.status = "accepted";
-    await request.save();
     const members = [request.receiver._id, request.sender._id].sort();
-    const existingChat = await Chat.findOne({
-      members: { $all: members },
-    });
-    if (!existingChat) {
-      const chat = await Chat.create({
+    const [chat, _] = await Promise.all([
+      Chat.create({
         members,
-      });
-      const user = await User.findById({ _id: req.user.id });
-      if (user) {
-        user.chats.push(chat._id);
-        await user.save();
-      }
-      emitEvent(req, REFETCH_CHATS, members);
-    }
+      }),
+      request.deleteOne(),
+    ]);
+    emitEvent(req, REFETCH_CHATS, members);
     return res.status(200).json({
       success: true,
       message: "Friend request accepted!",
@@ -375,6 +403,7 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
         id: request.sender._id,
         username: request.sender.username,
       },
+      chatId: chat._id
     });
   } catch (error) {
     return res.status(500).json({
@@ -384,14 +413,12 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export const getAllNotifications = AsyncHandler(async (req, res, next) => {
+export const getAllRequests = AsyncHandler(async (req, res, next) => {
   try {
-    console.log(req.user);
-
-    const requests = await Request.find({ receiver: req.user.id, status: "pendding" }).populate(
-      "sender",
-      "username"
-    );
+    const requests = await Request.find({
+      receiver: req.user.id,
+      status: "pendding",
+    }).populate("sender", "username");
     console.log(requests);
 
     if (requests.length < 1) {
@@ -458,20 +485,36 @@ export const getMyFriends = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export const getUserDetails = AsyncHandler(async(req, res, next)=> {
+export const getUserDetails = AsyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid profileId",
+    });
+  }
   try {
-    const {userId} = req.body;
-    if(userId) {
-      return req.status(400).json({
+    if (!id) {
+      return res.status(400).json({
         success: false,
-        message: "User id is required!"
+        message: "User id is required!",
       });
     }
-    
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      user,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Internal server error!"
-    })
+      message: error.message || "Internal server error!",
+    });
   }
-})
+});

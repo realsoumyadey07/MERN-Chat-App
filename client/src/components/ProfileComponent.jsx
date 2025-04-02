@@ -33,6 +33,7 @@ export default function ProfileComponent() {
   );
   const dispatch = useDispatch();
   const router = useRouter();
+
   const handleLogout = () => {
     console.log("Logout clicked");
     dispatch(logOut());
@@ -70,7 +71,7 @@ export default function ProfileComponent() {
 
           {userData && (
             <DropdownMenuContent className="w-fit">
-              <Link href={`/conversations/profile/${"jdhfvdjfdf"}`} className="flex flex-col items-center gap-2 p-4">
+              <div className="flex flex-col items-center gap-2 p-4">
                 <Avatar className="w-8 h-8">
                   <AvatarImage
                     src="/path-to-your-profile-image.jpg"
@@ -91,7 +92,7 @@ export default function ProfileComponent() {
                     </p>
                   </div>
                 </div>
-              </Link>
+              </div>
 
               <div className="p-4">
                 <Button

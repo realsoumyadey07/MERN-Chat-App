@@ -1,6 +1,7 @@
-import { MessageSquare, Users } from "lucide-react";
+import { Contact, MessageSquare, Users } from "lucide-react";
 import { usePathname } from "next/navigation"
 import { useMemo } from "react";
+
 
 export const useNavigation = () => {
     const pathname = usePathname();
@@ -17,6 +18,12 @@ export const useNavigation = () => {
             href: "/groups",
             icon: <Users/>,
             active: pathname === "/groups"
+        },
+        {
+            name: "Friends",
+            href: "/friends",
+            icon: <Contact/>,
+            active: pathname === "/friends"
         }
     ], [pathname]);
 

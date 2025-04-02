@@ -103,7 +103,7 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
       _id,
       name,
       groupChat,
-      members
+      members,
     }));
     return next(
       res.status(200).json({
@@ -382,21 +382,18 @@ export const sendAttachments = AsyncHandler(async (req, res, next) => {
 
 export const getChatDetails = AsyncHandler(async (req, res, next) => {
   try {
-    if (req.query.populate === "true") {
-      const chat = await Chat.findById(req.params.id)
-        .populate("members", "username")
-        .lean();
-      if (!chat)
-        return next(
-          res.status(404).json({
-            success: false,
-            message: "Chat not found",
-          })
-        );
-      chat.members = chat.members.map(({ _id, username }) => ({
-        _id,
-        username,
-      }));
+    const chat = await Chat.findById(req.params.id)
+      .populate("members", "username")
+      .populate("creator", "username")
+      .lean();
+    if (!chat)
+      return next(
+        res.status(404).json({
+          success: false,
+          message: "Chat not found",
+        })
+      );
+    if (chat.groupChat === true) {
       return next(
         res.status(200).json({
           success: true,
@@ -404,14 +401,19 @@ export const getChatDetails = AsyncHandler(async (req, res, next) => {
         })
       );
     } else {
-      const chat = await Chat.findById(req.params.id);
-      if (!chat)
-        return next(
-          res.status(404).json({
-            success: false,
-            message: "Chat not found",
-          })
-        );
+      let otherMember =
+        chat.groupChat === false
+          ? chat.members.find(
+              (member) => member._id.toString() !== req.user.id.toString()
+            )
+          : null;
+      if (otherMember) {
+        return res.status(200).json({
+          success: true,
+          chat,
+          otherMember,
+        });
+      }
       return next(
         res.status(200).json({
           success: true,

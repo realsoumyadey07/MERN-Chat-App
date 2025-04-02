@@ -13,7 +13,7 @@ export default function Home() {
   const router = useRouter();
   useEffect(() => {
     const access_token = localStorage.getItem("access_token");
-    if(access_token) {
+    if (access_token) {
       setLoggedIn(true);
     } else {
       setLoggedIn(false);
@@ -21,28 +21,29 @@ export default function Home() {
     setLoading(false);
   }, []);
 
-  useEffect(()=> {
-    if(loggedIn) router.push("/conversations")
-  },[loggedIn]);
+  useEffect(() => {
+    if (loggedIn) router.push("/conversations");
+  }, [loggedIn]);
 
-  if (loading) {
-    return <LoadingComp />;
-  }
 
   return (
     <>
-      {!loggedIn && (
-        <WavyBackground className="max-w-4xl mx-auto pb-40 min-h-svh flex flex-col justify-center items-center px-5">
-          <p className="text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center">
-            Explore the new world of chatting
-          </p>
-          <p className="text-base md:text-lg mt-4 text-white font-normal inter-var text-center">
-            Share every special message with your closeone
-          </p>
-          <Link href="/authentication" className="my-4">
-            <SpeacialButton title="Get Started" />
-          </Link>
-        </WavyBackground>
+      {!loggedIn && loading ? (
+        <LoadingComp />
+      ) : (
+        <>
+          <WavyBackground className="max-w-4xl mx-auto pb-40 min-h-svh flex flex-col justify-center items-center px-5">
+            <p className="text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center">
+              Explore the new world of chatting
+            </p>
+            <p className="text-base md:text-lg mt-4 text-white font-normal inter-var text-center">
+              Share every special message with your closeone
+            </p>
+            <Link href="/authentication" className="my-4">
+              <SpeacialButton title="Get Started" />
+            </Link>
+          </WavyBackground>
+        </>
       )}
     </>
   );

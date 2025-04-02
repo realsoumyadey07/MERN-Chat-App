@@ -7,6 +7,7 @@ const initialState = {
   loginUserData: null,
   logoutUserData: null,
   userData: null,
+  userDetails: null,
   isLoading: false,
   error: null,
 };
@@ -53,7 +54,7 @@ export const login = createAsyncThunk(
 export const logOut = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
   try {
     const response = await tokenApi.get("/user/user-logout");
-    const data = response.data;
+    const data = await response.data;
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     return data;
@@ -75,6 +76,19 @@ export const getProfileData = createAsyncThunk(
   }
 );
 
+export const getUserDetails = createAsyncThunk(
+  "auth/userDetails",
+  async (profileId, thunkAPI)=> {
+    try {
+      const response = await tokenApi.get(`/user/get-user-details/${profileId}`);
+      const data = await response.data;
+      return data.user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error?.response?.data || "Something went wrong!");
+    }
+  }
+)
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -95,6 +109,9 @@ export const authSlice = createSlice({
     },
     resetUserData: (state)=> {
       state.userData = null;
+    },
+    resetUserDetails: (state)=> {
+      state.userDetails = null;
     }
   },
   extraReducers: (builder) => {
@@ -150,8 +167,21 @@ export const authSlice = createSlice({
       state.isLoading = false
       state.error = action?.payload?.message
     });
+
+    //get user details
+    builder.addCase(getUserDetails.pending, (state, action)=> {
+      state.isLoading = true;
+    }),
+    builder.addCase(getUserDetails.fulfilled, (state, action)=> {
+      state.userDetails = action?.payload;
+      state.isLoading = false;
+    }),
+    builder.addCase(getUserDetails.rejected, (state, action)=> {
+      state.error = action?.payload?.message;
+      state.isLoading = false;
+    })
   },
 });
 
 export default authSlice.reducer;
-export const { resetError, resetLoginUserData, resetRegisterUserData, resetLogoutData, resetUserData } = authSlice.actions;
+export const { resetError, resetLoginUserData, resetRegisterUserData, resetLogoutData, resetUserData, resetUserDetails } = authSlice.actions;

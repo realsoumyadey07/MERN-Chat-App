@@ -8,8 +8,10 @@ import {
     refreshAccessToken, 
     sendFriendRequest,
     acceptFriendRequest,
-    getAllNotifications,
-    getMyFriends
+    getMyFriends,
+    getUserDetails,
+    getAllRequests,
+    searchUnknownUser
 } from "../controllers/user.controller.js";
 import { IsAuthenticated } from "../middlewares/IsAuthenticated.js";
 import { loginValidator, registerValidator, validateHandler } from "../lib/validator.js";
@@ -22,9 +24,11 @@ userRouter.get("/user-logout", IsAuthenticated, userLogout);
 userRouter.post("/refresh-token", refreshAccessToken);
 userRouter.get("/get-profile", IsAuthenticated, getProfile);
 userRouter.get("/search-user", IsAuthenticated, searchUser);
+userRouter.get("/search-unknown-user", IsAuthenticated, searchUnknownUser);
 userRouter.post("/send-friendrequest", IsAuthenticated, sendFriendRequest);
 userRouter.post("/accept-friendrequest", IsAuthenticated, acceptFriendRequest);
-userRouter.get("/get-notifications",IsAuthenticated , getAllNotifications);
+userRouter.get("/get-all-requests",IsAuthenticated , getAllRequests);
 userRouter.get("/get-friends",IsAuthenticated , getMyFriends);
+userRouter.get("/get-user-details/:id", IsAuthenticated, getUserDetails);
 
 export default userRouter;

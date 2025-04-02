@@ -3,7 +3,7 @@ import openApi from "@/lib/axios/tokenApi";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-     newCreatedChatData: null,
+     myChatDetails: null,
      myChatsData: null,
      myGroupsData: null,
      addMemberData: null,
@@ -42,12 +42,27 @@ export const getMyGroups = createAsyncThunk("chat/getMyGroups", async(_, thunkAp
      }
 });
 
+export const getMyChatDetails = createAsyncThunk("chat/getMyChatDetails", async(chatId, thunkApi)=> {
+     try {
+          const response = await tokenApi.get(`/chat/${chatId}`);
+          const data = await response.data;
+          return data;
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          )
+     }
+});
+
 export const chatSlice = createSlice({
      name: "chat",
      initialState,
      reducers: {
           resetError: (state, action)=> {
                state.error = null
+          },
+          resetMyChatDetails: (state, action)=> {
+               state.myChatDetails = null;
           }
      },
      extraReducers: (builder)=> {
@@ -62,7 +77,7 @@ export const chatSlice = createSlice({
           builder.addCase(getMyChats.rejected, (state, action)=> {
                state.isLoading = false;
                state.error = action?.payload?.message || "Something went wrong!"
-          })
+          }),
           //get my groups
           builder.addCase(getMyGroups.pending, (state, action)=> {
                state.isLoading = true;
@@ -74,9 +89,21 @@ export const chatSlice = createSlice({
           builder.addCase(getMyGroups.rejected, (state, action)=> {
                state.error = action?.payload?.message || "Something went wrong!";
                state.isLoading = false;
+          }),
+          //get my chat details
+          builder.addCase(getMyChatDetails.pending, (state, action)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(getMyChatDetails.fulfilled, (state, action)=> {
+               state.myChatDetails = action?.payload;
+               state.isLoading = false;
+          }),
+          builder.addCase(getMyChatDetails.rejected, (state, action)=> {
+               state.error = action?.payload?.message || "Something went wrong!";
+               state.isLoading = false;
           })
      }
 })
 
 export default chatSlice.reducer;
-export const { resetError } = chatSlice.actions;
+export const { resetError, resetMyChatDetails } = chatSlice.actions;

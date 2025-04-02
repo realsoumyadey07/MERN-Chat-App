@@ -52,11 +52,7 @@ const userSchema = new Schema({
     last_seen: {
         type: Date,
         default: Date.now
-    },
-    chats: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Chat"
-    }]
+    }
 }, {timestamps: true});
 
 userSchema.pre("save", async function(next){
