@@ -27,6 +27,21 @@ export const searchUnknownUser = createAsyncThunk(
   }
 );
 
+export const getAllUnknownUsers = createAsyncThunk(
+  "user/getAllUnknownUsers",
+  async (_, thunkAPI) => {
+    try {
+      const response = await tokenApi.get("/user/get-all-unknown-users");
+      const data = await response.data;
+      return data?.users;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data || "Something went wrong!"
+      );
+    }
+  }
+);
+
 export const getAllRequests = createAsyncThunk(
   "user/getAllRequests",
   async (_, thunkAPI) => {
@@ -75,6 +90,23 @@ export const acceptFriendRequest = createAsyncThunk(
   }
 );
 
+export const sendFriendRequest = createAsyncThunk(
+  "user/sendFriendRequest",
+  async (userId, thunkAPI) => {
+    try {
+      const response = await tokenApi.post("/user/send-friendrequest", {
+        receiverId: userId,
+      });
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data || "Something went wrong!"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -88,9 +120,11 @@ const userSlice = createSlice({
     resetAcceptedRequestData: (state) => {
       state.acceptedRequestData = null;
     },
+    resetError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
-
     //search unknown user
     builder.addCase(searchUnknownUser.pending, (state, action) => {
       state.isLoading = true;
@@ -103,7 +137,18 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = action?.payload?.message || "Something went wrong!";
       }),
-
+      //get all unknown users
+      builder.addCase(getAllUnknownUsers.pending, (state, action) => {
+        state.isLoading = true;
+      }),
+      builder.addCase(getAllUnknownUsers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.unknownUsers = action?.payload;
+      }),
+      builder.addCase(getAllUnknownUsers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action?.payload?.message || "Something went wrong!";
+      }),
       //get all requests
       builder.addCase(getAllRequests.pending, (state, action) => {
         state.isLoading = true;
@@ -116,7 +161,6 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = action?.payload?.message || "Something went wrong!";
       }),
-
       //get all friends
       builder.addCase(getMyFriends.pending, (state, action) => {
         state.isLoading = true;
@@ -129,7 +173,6 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = action?.payload?.message || "Something went wrong!";
       }),
-
       //accept friend request
       builder.addCase(acceptFriendRequest.pending, (state, action) => {
         state.isLoading = true;
@@ -142,9 +185,24 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = action?.payload?.message || "Something went wrong!";
       });
+      //send friend request
+      builder.addCase(sendFriendRequest.pending, (state, action) => {
+        state.isLoading = true;
+      }),
+      builder.addCase(sendFriendRequest.fulfilled, (state, action) => {
+        state.isLoading = false;
+      }),
+      builder.addCase(sendFriendRequest.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action?.payload?.message || "Something went wrong!";
+      });
   },
 });
 
 export default userSlice.reducer;
-export const { resetUnknownUsers, resetRequests, resetAcceptedRequestData } =
-  userSlice.actions;
+export const {
+  resetUnknownUsers,
+  resetRequests,
+  resetAcceptedRequestData,
+  resetError,
+} = userSlice.actions;

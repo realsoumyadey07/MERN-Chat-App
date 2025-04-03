@@ -16,36 +16,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { useRouter } from "next/navigation";
-import {
-  resetError,
-  resetLoginUserData,
-  resetUserData,
-} from "@/redux/slices/auth.slice";
 import LoadingSpinner from "./LoadingSpinner";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaWpexplorer } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
+import { getMyFriends } from "@/redux/slices/user.slice";
 
 export default function ThreeDotComp() {
-  const [openFriendModal, setOpenFriendModal] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupMembers, setGroupMembers] = useState([]);
+  // const [openFriendModal, setOpenFriendModal] = useState(false);
   const [openGroupModal, setOpenGroupModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { userData, error, logoutUserData, isLoading } = useSelector(
-    (state) => state.auth
+  const { friends, error, isLoading } = useSelector(
+    (state) => state.user
   );
   const dispatch = useDispatch();
-  const router = useRouter();
-  
-
-  useEffect(() => {
-    if (logoutUserData) {
-      dispatch(resetError());
-      dispatch(resetLoginUserData());
-      dispatch(resetUserData());
-      router.push("/authentication");
-    }
-  }, [logoutUserData]);
+  // useEffect(()=>{
+  //   if(openGroupModal){
+  //     dispatch(getMyFriends());
+  //   }
+  // },[openGroupModal])
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -69,7 +59,7 @@ export default function ThreeDotComp() {
               <MdGroups size={20} /> Create New Group
             </DropdownMenuItem>
 
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               className="p-4"
               onClick={() => {
                 setOpenFriendModal(true);
@@ -77,12 +67,12 @@ export default function ThreeDotComp() {
               }}
             >
               <FaWpexplorer /> Find New Friends
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {openFriendModal && (
+      {/* {openFriendModal && (
         <Dialog open={openFriendModal}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader className="flex flex-col gap-2 justify-center items-center">
@@ -112,7 +102,7 @@ export default function ThreeDotComp() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
+      )} */}
       {openGroupModal && (
         <Dialog open={openGroupModal}>
           <DialogContent className="sm:max-w-[425px]">

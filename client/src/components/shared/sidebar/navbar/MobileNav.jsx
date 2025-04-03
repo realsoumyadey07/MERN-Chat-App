@@ -12,15 +12,18 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { getProfileData } from "@/redux/slices/auth.slice";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 
 export default function MobileNav() {
   const paths = useNavigation();
   const {isActive} = useNavigation();
   if(isActive) return null;
   const dispatch = useDispatch();
-  const getUserProfile = () => {
+
+  useEffect(() => {
     dispatch(getProfileData());
-  };
+  }, [dispatch]);
+
   return (
     <Card className="fixed bottom-4 w-[calc(100vw-32px)] flex lg:hidden justify-center items-center p-2">
       <nav className="w-full">
@@ -48,9 +51,7 @@ export default function MobileNav() {
             <ThemeToggle/>
           </li>
           <li>
-            <div className="flex flex-col items-center gap-4" onClick={getUserProfile}>
-              <ProfileComponent/>
-            </div>
+            <ProfileComponent/>
           </li>
         </ul>
       </nav>

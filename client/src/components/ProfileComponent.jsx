@@ -23,7 +23,6 @@ import {
   resetUserData,
 } from "@/redux/slices/auth.slice";
 import LoadingSpinner from "./LoadingSpinner";
-import Link from "next/link";
 
 export default function ProfileComponent() {
   const [openModal, setOpenModal] = useState(false);

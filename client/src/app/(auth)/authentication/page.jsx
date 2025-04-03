@@ -343,7 +343,7 @@ export default function Authentication() {
             <Dialog open={!!error}>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Error: {error}</DialogTitle>
+                  <DialogTitle>{error}</DialogTitle>
                 </DialogHeader>
                 <DialogFooter>
                   <Link

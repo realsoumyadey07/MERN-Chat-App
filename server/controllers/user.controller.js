@@ -309,6 +309,47 @@ export const searchUnknownUser = AsyncHandler(async (req, res, next) => {
   }
 });
 
+export const getAllUnknownUsers = AsyncHandler(async (req, res, next)=> {
+  try {
+    const chats = await Chat.find({members: req.user.id});
+    const chattedUserIds = new Set(
+      chats.flatMap(chat => chat.members)
+    );
+    
+    // Find all users except the current user and those already in chats
+    const users = await User.find({ 
+      _id: { 
+        $nin: [...chattedUserIds, req.user.id] 
+      } 
+    });
+
+    if (users.length < 1) {
+      return res.status(200).json({
+        success: true,
+        message: "No new users found!",
+        users: []
+      });
+    }
+
+    // Filter only required fields
+    const filteredUsers = users.map(({ _id, username, status }) => ({
+      _id,
+      username,
+      status,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      users: filteredUsers,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!",
+    });
+  }
+});
+
 export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
     const { receiverId } = req.body;
@@ -323,10 +364,13 @@ export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
     if (request)
       return res.status(400).json({
         success: false,
-        message: "Request has already made!",
+        message: "Request has already made! check your requests",
       });
     if (receiverId.toString() === req.user.id.toString()) {
-      return next(new ErrorHandler("cannot send request to yourself!", 400));
+      return res.status(400).json({
+        success: false,
+        message: "cannot send request to yourself!",
+      });
     }
     emitEvent(req, NEW_REQUEST, [receiverId]);
     await Request.create({
@@ -386,6 +430,7 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
       return res.status(200).json({
         success: true,
         message: "Friend Request Rejected",
+        status: "rejected",
       });
     }
     const members = [request.receiver._id, request.sender._id].sort();
@@ -403,7 +448,8 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
         id: request.sender._id,
         username: request.sender.username,
       },
-      chatId: chat._id
+      chatId: chat._id,
+      status: "accepted",
     });
   } catch (error) {
     return res.status(500).json({
@@ -518,3 +564,4 @@ export const getUserDetails = AsyncHandler(async (req, res, next) => {
     });
   }
 });
+
