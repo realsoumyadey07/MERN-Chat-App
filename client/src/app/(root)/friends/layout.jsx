@@ -27,13 +27,29 @@ export default function FriendsLayout({ children }) {
     (state) => state.user
   );
 
-  const handleRequestAccept = (requestId) => {
-    dispatch(acceptFriendRequest({ requestId, accept: true }));
+  const handleRequestAccept = async (requestId) => {
+    try {
+      await dispatch(acceptFriendRequest({ requestId, accept: true })).unwrap();
+    } catch (error) {
+      console.error("Failed to accept friend request:", error);
+    }
   };
 
-  const handleRequestDecline = (requestId) => {
-    dispatch(acceptFriendRequest({ requestId, accept: false }));
-    setRefresh(!refresh);
+  const handleRequestDecline = async (requestId) => {
+    try {
+      await dispatch(acceptFriendRequest({ requestId, accept: false })).unwrap();
+    } catch (error) {
+      console.error("Failed to decline friend request:", error);
+    }
+  };
+
+  const handleSendRequest = async (userId) => {
+    try {
+      await dispatch(sendFriendRequest(userId)).unwrap();
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error("Failed to send friend request:", error);
+    }
   };
 
   useEffect(() => {
@@ -48,7 +64,7 @@ export default function FriendsLayout({ children }) {
     }
   }, [screen, refresh]);
 
-  if (isLoading) return <LoadingSpinner />;
+  // if (isLoading) return <LoadingSpinner />;
 
   return (
     <>
@@ -97,7 +113,6 @@ export default function FriendsLayout({ children }) {
                     <div className="flex gap-2">
                       {acceptedRequestData !== null ? (
                         <Link
-                          onClick={() => setRefresh(!refresh)}
                           href={`/friends/${acceptedRequestData?.chatId}`}
                         >
                           <Button size="sm" className="dark:bg-white text-black">
@@ -145,7 +160,7 @@ export default function FriendsLayout({ children }) {
                       <h2>{unknownUser?.username}</h2>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" className="bg-green-500 hover:bg-green-600 dark:text-white" onClick={()=> dispatch(sendFriendRequest(unknownUser?._id))}>
+                      <Button size="sm" className="bg-green-500 hover:bg-green-600 dark:text-white" onClick={() => handleSendRequest(unknownUser?._id)}>
                         {isLoading ? <p>Sending...</p> : <p>Add Friend</p>}
                       </Button>
                     </div>

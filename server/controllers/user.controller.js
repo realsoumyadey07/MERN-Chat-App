@@ -315,11 +315,22 @@ export const getAllUnknownUsers = AsyncHandler(async (req, res, next)=> {
     const chattedUserIds = new Set(
       chats.flatMap(chat => chat.members)
     );
-    
-    // Find all users except the current user and those already in chats
+    // Get both sent and received requests
+    const requests = await Request.find({
+      $or: [
+        { receiver: req.user.id },
+        { sender: req.user.id }
+      ]
+    });
+    const requestedUserIds = new Set(requests.flatMap(request => 
+      request.sender.toString() === req.user.id.toString() 
+        ? request.receiver 
+        : request.sender
+    ));
+    // Find all users except the current user, those in chats, and those in requests
     const users = await User.find({ 
       _id: { 
-        $nin: [...chattedUserIds, req.user.id] 
+        $nin: [...chattedUserIds, ...requestedUserIds, req.user.id] 
       } 
     });
 

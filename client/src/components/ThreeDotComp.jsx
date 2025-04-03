@@ -31,11 +31,11 @@ export default function ThreeDotComp() {
     (state) => state.user
   );
   const dispatch = useDispatch();
-  // useEffect(()=>{
-  //   if(openGroupModal){
-  //     dispatch(getMyFriends());
-  //   }
-  // },[openGroupModal])
+  useEffect(()=>{
+    if(openGroupModal){
+      dispatch(getMyFriends());
+    }
+  },[openGroupModal])
 
   if (isLoading) {
     return <LoadingSpinner />;
