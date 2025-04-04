@@ -16,9 +16,9 @@ export default function layout({ children }) {
     dispath(getMyGroups());
   },[])
   
-  if(!myGroupsData && isLoading){
-    return <LoadingSpinner/>
-  }
+  // if(!myGroupsData && isLoading){
+  //   return <LoadingSpinner/>
+  // }
   return (
     <>
       <ItemList title="Groups">

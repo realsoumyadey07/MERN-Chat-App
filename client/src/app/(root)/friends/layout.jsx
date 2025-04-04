@@ -7,21 +7,22 @@ import {
   resetAcceptedRequestData,
   resetError,
   resetRequests,
+  resetUnknownUsers,
   sendFriendRequest,
 } from "@/redux/slices/user.slice";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import EmptyListComp from "@/components/EmptyListComp";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function FriendsLayout({ children }) {
   const [screen, setScreen] = useState("requests");
   const [refresh, setRefresh] = useState(false);
+  const [acceptedRequestId, setAcceptedRequestId] = useState(null);
+  const [loadingRequestId, setLoadingRequestId] = useState(null);
   const dispatch = useDispatch();
   const { requests, unknownUsers, acceptedRequestData, isLoading, error } = useSelector(
     (state) => state.user
@@ -29,9 +30,14 @@ export default function FriendsLayout({ children }) {
 
   const handleRequestAccept = async (requestId) => {
     try {
-      await dispatch(acceptFriendRequest({ requestId, accept: true })).unwrap();
+      setLoadingRequestId(requestId);
+      const result = await dispatch(acceptFriendRequest({ requestId, accept: true })).unwrap();
+      setAcceptedRequestId(requestId);
     } catch (error) {
-      console.error("Failed to accept friend request:", error);
+      console.error("Failed to accept request:", error);
+    } finally {
+      setRefresh(!refresh);
+      setLoadingRequestId(null);
     }
   };
 
@@ -40,6 +46,8 @@ export default function FriendsLayout({ children }) {
       await dispatch(acceptFriendRequest({ requestId, accept: false })).unwrap();
     } catch (error) {
       console.error("Failed to decline friend request:", error);
+    } finally {
+      setRefresh(!refresh);
     }
   };
 
@@ -61,10 +69,11 @@ export default function FriendsLayout({ children }) {
       };
     } else if (screen === "suggested") {
       dispatch(getAllUnknownUsers());
+      return () => {
+        dispatch(resetUnknownUsers());
+      };
     }
   }, [screen, refresh]);
-
-  // if (isLoading) return <LoadingSpinner />;
 
   return (
     <>
@@ -111,32 +120,23 @@ export default function FriendsLayout({ children }) {
                       <h2>{request?.sender?.username}</h2>
                     </div>
                     <div className="flex gap-2">
-                      {acceptedRequestData !== null ? (
-                        <Link
-                          href={`/friends/${acceptedRequestData?.chatId}`}
-                        >
-                          <Button size="sm" className="dark:bg-white text-black">
-                            Open Chat
-                          </Button>
-                        </Link>
-                      ) : (
-                        <>
-                          <Button
-                            size="sm"
-                            className="bg-green-500 hover:bg-green-600 dark:text-white"
-                            onClick={() => handleRequestAccept(request?._id)}
-                          >
-                            {isLoading ? <p>Accepting...</p> : <p>Accept</p>}
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="bg-red-500 hover:bg-red-600 dark:text-white"
-                            onClick={() => handleRequestDecline(request?._id)}
-                          >
-                            Decline
-                          </Button>
-                        </>
-                      )}
+                      <Button
+                        size="sm"
+                        className="bg-green-500 hover:bg-green-600 dark:text-white"
+                        onClick={() => handleRequestAccept(request?._id)}
+                        disabled={loadingRequestId === request._id}
+                      >
+                        {loadingRequestId === request._id ? <p>Accepting...</p> : <p>Accept</p>}
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-red-500 hover:bg-red-600 dark:text-white"
+                        onClick={() => handleRequestDecline(request?._id)}
+                        disabled={loadingRequestId === request._id}
+                      >
+                        Decline
+                      </Button>
+
                     </div>
                   </li>
                 ))}
@@ -161,7 +161,7 @@ export default function FriendsLayout({ children }) {
                     </div>
                     <div className="flex gap-2">
                       <Button size="sm" className="bg-green-500 hover:bg-green-600 dark:text-white" onClick={() => handleSendRequest(unknownUser?._id)}>
-                        {isLoading ? <p>Sending...</p> : <p>Add Friend</p>}
+                        {unknownUser && isLoading ? <p>Sending...</p> : <p>Add Friend</p>}
                       </Button>
                     </div>
                   </li>

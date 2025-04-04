@@ -20,26 +20,26 @@ import LoadingSpinner from "./LoadingSpinner";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoSearch } from "react-icons/io5";
 import { getMyFriends } from "@/redux/slices/user.slice";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function ThreeDotComp() {
   const [groupName, setGroupName] = useState("");
   const [groupMembers, setGroupMembers] = useState([]);
-  // const [openFriendModal, setOpenFriendModal] = useState(false);
   const [openGroupModal, setOpenGroupModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { friends, error, isLoading } = useSelector(
     (state) => state.user
   );
   const dispatch = useDispatch();
-  useEffect(()=>{
-    if(openGroupModal){
+  useEffect(() => {
+    if (openGroupModal) {
       dispatch(getMyFriends());
     }
-  },[openGroupModal])
+  }, [openGroupModal])
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  // if (isLoading) {
+  //   return <LoadingSpinner />;
+  // }
 
   return (
     <>
@@ -52,7 +52,7 @@ export default function ThreeDotComp() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="w-fit">
-            <DropdownMenuItem className="p-4" onClick={()=> {
+            <DropdownMenuItem className="p-4" onClick={() => {
               setOpenGroupModal(true);
               setDropdownOpen(false);
             }}>
@@ -114,7 +114,7 @@ export default function ThreeDotComp() {
                   placeholder="New Group Name"
                   className="bg-transparent h-full py-3 basis-full outline-none"
                 />
-                
+
               </div>
               <div className="flex w-full bg-gray-200 dark:bg-blue-950 rounded-lg justify-between items-center px-4">
                 <input
@@ -127,6 +127,23 @@ export default function ThreeDotComp() {
                 </div>
               </div>
             </DialogHeader>
+            <main className="">
+              <h1 className="p-2 top-0">All Friends</h1>
+              <div className="space-y-2 h-[200px] overflow-y-auto">
+                {friends.map((friend) => (
+                  <div key={friend._id} className="flex items-center gap-2 bg-gray-200 dark:bg-blue-950 rounded-lg p-2 hover:bg-gray-300 dark:hover:bg-gray-800 cursor-pointer">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage
+                        src="/path-to-your-profile-image.jpg"
+                        alt="Profile"
+                      />
+                      <AvatarFallback>DP</AvatarFallback>
+                    </Avatar>
+                    <p>{friend?.username}</p>
+                  </div>
+                ))}
+              </div>
+            </main>
             <DialogFooter>
               <button
                 onClick={() => {
@@ -137,7 +154,7 @@ export default function ThreeDotComp() {
               >
                 Cancel
               </button>
-              
+
             </DialogFooter>
           </DialogContent>
         </Dialog>

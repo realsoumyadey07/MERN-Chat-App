@@ -15,10 +15,10 @@ export default function layout({ children }) {
   useEffect(() => {
     dispatch(getMyChats());
   }, []);
-  console.log("my chat datas are: ",myChatsData);
-  if(!myChatsData && isLoading) {
-    return <LoadingSpinner/>
-  }
+  console.log("my chat datas are: ", myChatsData);
+  // if(!myChatsData && isLoading) {
+  //   return <LoadingSpinner/>
+  // }
   return (
     <>
       <ItemList title="Conversations">
@@ -54,7 +54,7 @@ export default function layout({ children }) {
             ))
           ) : (
             <>
-            <EmptyListComp heading="No conversations found." description="Start a new conversation by searching for users above."/>
+              <EmptyListComp heading="No conversations found." description="Start a new conversation by searching for users above." />
             </>
           )}
         </ul>
