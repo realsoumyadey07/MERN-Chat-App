@@ -15,15 +15,17 @@ export default function Home() {
     const access_token = localStorage.getItem("access_token");
     if (access_token) {
       setLoggedIn(true);
-    } else {
-      setLoggedIn(false);
-    }
+      router.push("/conversations");
+    } 
+    // else {
+    //   setLoggedIn(false);
+    // }
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (loggedIn) router.push("/conversations");
-  }, [loggedIn]);
+  // useEffect(() => {
+  //   if (loggedIn) router.push("/conversations");
+  // }, [loggedIn]);
 
 
   return (

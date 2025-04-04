@@ -21,8 +21,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 export default function FriendsLayout({ children }) {
   const [screen, setScreen] = useState("requests");
   const [refresh, setRefresh] = useState(false);
-  const [acceptedRequestId, setAcceptedRequestId] = useState(null);
   const [loadingRequestId, setLoadingRequestId] = useState(null);
+  const [sendingRequestId, setSendingRequestId] = useState(null);
   const dispatch = useDispatch();
   const { requests, unknownUsers, acceptedRequestData, isLoading, error } = useSelector(
     (state) => state.user
@@ -32,7 +32,6 @@ export default function FriendsLayout({ children }) {
     try {
       setLoadingRequestId(requestId);
       const result = await dispatch(acceptFriendRequest({ requestId, accept: true })).unwrap();
-      setAcceptedRequestId(requestId);
     } catch (error) {
       console.error("Failed to accept request:", error);
     } finally {
@@ -53,10 +52,13 @@ export default function FriendsLayout({ children }) {
 
   const handleSendRequest = async (userId) => {
     try {
+      setSendingRequestId(userId);
       await dispatch(sendFriendRequest(userId)).unwrap();
-      setRefresh(!refresh);
     } catch (error) {
       console.error("Failed to send friend request:", error);
+    } finally {
+      setRefresh(!refresh);
+      setSendingRequestId(null);
     }
   };
 
@@ -160,8 +162,13 @@ export default function FriendsLayout({ children }) {
                       <h2>{unknownUser?.username}</h2>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" className="bg-green-500 hover:bg-green-600 dark:text-white" onClick={() => handleSendRequest(unknownUser?._id)}>
-                        {unknownUser && isLoading ? <p>Sending...</p> : <p>Add Friend</p>}
+                      <Button 
+                        size="sm" 
+                        className="bg-green-500 hover:bg-green-600 dark:text-white" 
+                        onClick={() => handleSendRequest(unknownUser?._id)}
+                        disabled={sendingRequestId === unknownUser._id}
+                      >
+                        {sendingRequestId === unknownUser._id ? <p>Sending...</p> : <p>Add Friend</p>}
                       </Button>
                     </div>
                   </li>
