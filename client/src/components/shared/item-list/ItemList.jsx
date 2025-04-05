@@ -8,7 +8,7 @@ import ThreeDotComp from '@/components/ThreeDotComp'
 export default function ItemList({children, title, action: Action}) {
   const {isActive} = useConversation();  
   return (
-    <Card className={cn("hidden h-full w-full lg:flex-none lg:w-80 p-2", {
+    <Card className={cn("hidden h-full w-full lg:flex-none lg:w-80 p-2 overflow-y-auto no-scrollbar", {
       "block": !isActive,
       "lg:block": isActive
     })}>

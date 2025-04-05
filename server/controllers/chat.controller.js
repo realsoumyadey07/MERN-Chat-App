@@ -32,7 +32,7 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
         })
       );
     }
-    const allMembers = [...members, req.user.id];
+    const allMembers = [...new Set([...members, req.user.id])];
     await Chat.create({
       name,
       groupChat: true,

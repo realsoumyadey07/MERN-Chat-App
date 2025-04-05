@@ -3,6 +3,7 @@ import openApi from "@/lib/axios/tokenApi";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+     newCreatedGroup: null,
      myChatDetails: null,
      myChatsData: null,
      myGroupsData: null,
@@ -54,6 +55,21 @@ export const getMyChatDetails = createAsyncThunk("chat/getMyChatDetails", async(
      }
 });
 
+export const createNewGroup = createAsyncThunk("chat/createNewGroup", async(groupData, thunkApi)=> {
+     try {
+          const response = await tokenApi.post("/chat/new-group-chat", {
+               name: groupData?.name,
+               members: groupData?.members
+          });
+          const data = await response.data;
+          return data;
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          )
+     }
+})
+
 export const chatSlice = createSlice({
      name: "chat",
      initialState,
@@ -99,6 +115,18 @@ export const chatSlice = createSlice({
                state.isLoading = false;
           }),
           builder.addCase(getMyChatDetails.rejected, (state, action)=> {
+               state.error = action?.payload?.message || "Something went wrong!";
+               state.isLoading = false;
+          }),
+          //create new group
+          builder.addCase(createNewGroup.pending, (state, action)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(createNewGroup.fulfilled, (state, action)=> {
+               state.newCreatedGroup = action?.payload;
+               state.isLoading = false;
+          }),
+          builder.addCase(createNewGroup.rejected, (state, action)=> {
                state.error = action?.payload?.message || "Something went wrong!";
                state.isLoading = false;
           })

@@ -72,6 +72,21 @@ export const getMyFriends = createAsyncThunk(
   }
 );
 
+export const searchMyFriendByName = createAsyncThunk(
+  "user/searchMyFriendByName",
+  async (name, thunkAPI) => {
+    try {
+      const response = await tokenApi.get(`/user/search-user?name=${name}`);
+      const data = await response.data;
+      return data?.users;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data || "Something went wrong!"
+      );
+    }
+  }
+);
+
 export const acceptFriendRequest = createAsyncThunk(
   "user/acceptFriendRequest",
   async (formData, thunkAPI) => {
@@ -170,6 +185,18 @@ const userSlice = createSlice({
         state.friends = action?.payload;
       }),
       builder.addCase(getMyFriends.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action?.payload?.message || "Something went wrong!";
+      }),
+      //search my friend by name
+      builder.addCase(searchMyFriendByName.pending, (state, action) => {
+        state.isLoading = true;
+      }),
+      builder.addCase(searchMyFriendByName.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.friends = action?.payload;
+      }),
+      builder.addCase(searchMyFriendByName.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action?.payload?.message || "Something went wrong!";
       }),

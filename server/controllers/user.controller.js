@@ -259,8 +259,10 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
       username,
     }));
     if (users.length === 0) {
-      return res.status(400).json({
+      return res.status(200).json({
+        success: true,
         message: "User not found!",
+        users: [],
       });
     }
     return res.status(200).json({

@@ -181,7 +181,7 @@ export default function FriendsLayout({ children }) {
         </div>
       </ItemList>
       {children}
-      {error && (
+      {/* {error && (
         <Dialog open={!!error}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -192,7 +192,7 @@ export default function FriendsLayout({ children }) {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
+      )} */}
     </>
   );
 }

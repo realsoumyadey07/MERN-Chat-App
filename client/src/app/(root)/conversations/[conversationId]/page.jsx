@@ -8,7 +8,6 @@ import { MdEmojiEmotions } from "react-icons/md";
 import { IoAttachOutline } from "react-icons/io5";
 import { IoMic } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
-import Link from "next/link";
 import { getMyChatDetails } from "@/redux/slices/chat.slice";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingSpinner from "@/components/LoadingSpinner";
