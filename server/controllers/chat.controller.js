@@ -92,6 +92,69 @@ export const getMyChat = AsyncHandler(async (req, res, next) => {
   }
 });
 
+export const getMyChatByName = AsyncHandler(async (req, res, next) => {
+  try {
+    const { name } = req.query;
+    if (!name) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "Name is required!",
+        })
+      );
+    }
+    const grpChats = await Chat.find({ 
+      name: { $regex: name, $options: "i" },
+      members: req.user.id 
+    });
+    const transeformedGrpChats = grpChats.map(({_id, name})=> {
+      return {
+        _id,
+        name
+      }
+    });
+    const singleChats = await Chat.find({
+      groupChat: false,
+      $or: [{ members: req.user.id }],
+    });
+    const allUsersOfMyChat = singleChats.flatMap((chat) => chat.members);
+    const searchedUsers = await User.find({
+      _id: { $in: allUsersOfMyChat },
+      username: { $regex: name, $options: "i" },
+    });
+    const transeformedSingleChats = searchedUsers.map(({_id, username})=> {
+      return {
+        _id,
+        name: username
+      }
+    });
+    if([...transeformedGrpChats, ...transeformedSingleChats].length === 0) {
+      return next(
+        res.status(200).json({
+          success: true,
+          chats: [],
+          message: "No chats found!",
+        })
+      );
+    }
+    
+    
+    return next(
+      res.status(200).json({
+        success: true,
+        chats: [...transeformedGrpChats, ...transeformedSingleChats],
+      })
+    );
+  } catch (error) {
+    return next(
+      res.status(500).json({
+        success: false,
+        message: error.message || "Internal server error!",
+      })
+    );
+  }
+});
+
 export const getMyGroups = AsyncHandler(async (req, res, next) => {
   try {
     const chats = await Chat.find({
@@ -120,6 +183,53 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
     );
   }
 });
+
+export const getMyGroupByName = AsyncHandler(async(req, res, next)=> {
+  try {
+    const {name} = req.query;
+    if(!name) {
+      return next(
+        res.status(400).json({
+          success: false,
+          message: "Name is required!",
+        })
+      );
+    }
+    const groups = await Chat.find({
+      name: { $regex: name, $options: "i" },
+      members: req.user.id,
+      groupChat: true,
+    }).populate("members", "username");
+    if(groups.length === 0) {
+      return next(
+        res.status(200).json({
+          success: true,
+          groups: [],
+          message: "No groups found!",
+        })
+      );
+    }
+    const transeformedGroups = groups.map(({_id, members, groupChat, name})=> ({
+      _id,
+      name,
+      groupChat,
+      members,
+    }));
+    return next(
+      res.status(200).json({
+        success: true,
+        groups: transeformedGroups,
+      })
+    );
+  } catch (error) {
+    return next(
+      res.status(500).json({
+        success: false,
+        message: error.message || "Internal server error!",
+      })
+    );
+  }
+})
 
 export const addMember = AsyncHandler(async (req, res, next) => {
   try {

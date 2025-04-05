@@ -61,7 +61,7 @@ export default function ThreeDotComp() {
       }
       
       const memberIds = groupMembers.map(member => member._id);
-      await dispatch(createNewGroup({ 
+      dispatch(createNewGroup({ 
         name: groupName.trim(), 
         members: memberIds 
       }));
@@ -83,9 +83,9 @@ export default function ThreeDotComp() {
   //   return <LoadingSpinner />;
   // }
 
-  if(groupLoading){
-    return <LoadingSpinner />
-  }
+  // if(groupLoading){
+  //   return <LoadingSpinner />
+  // }
 
   return (
     <>
@@ -152,7 +152,7 @@ export default function ThreeDotComp() {
                 </div>
               </section>
               <h1 className="p-2">All Friends</h1>
-              <div className="space-y-2 h-[150px] overflow-y-auto">
+              <div className="space-y-2 h-[100px] overflow-y-auto no-scrollbar">
                 {friends.map((friend) => (
                   <div key={friend._id} className="flex items-center gap-2 bg-gray-200 dark:bg-blue-950 rounded-lg p-2 hover:bg-gray-300 dark:hover:bg-gray-800 cursor-pointer" onClick={() => {
                     if (!groupMembers.some(member => member._id === friend._id)) {
@@ -216,7 +216,7 @@ export default function ThreeDotComp() {
                 >
                   <ChevronLeft /> Back
                 </button>
-                <button className="px-4 py-2 text-white rounded-sm bg-green-600 hover:bg-green-700 flex items-center " onClick={handleCreateGroup}>Create</button>
+                <button className="px-4 py-2 text-white rounded-sm bg-green-600 hover:bg-green-700 flex items-center " onClick={handleCreateGroup}>{groupLoading? <h1>Loading...</h1> : <h1>Create</h1>}</button>
               </DialogFooter>
             </>}
           </DialogContent>

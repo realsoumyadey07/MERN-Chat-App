@@ -48,9 +48,9 @@ export default function ProfileComponent() {
     }
   }, [logoutUserData]);
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  // if (isLoading) {
+  //   return <LoadingSpinner />;
+  // }
 
   return (
     <>

@@ -1,20 +1,26 @@
 "use client";
 import ItemList from "@/components/shared/item-list/ItemList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getMyChats } from "@/redux/slices/chat.slice";
+import { getMyChatByName, getMyChats } from "@/redux/slices/chat.slice";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import EmptyListComp from "@/components/EmptyListComp";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function layout({ children }) {
+  const [name, setName] = useState("");
   const dispatch = useDispatch();
   const { myChatsData, isLoading, error } = useSelector((state) => state.chat);
   useEffect(() => {
-    dispatch(getMyChats());
+    if(name === ""){
+      dispatch(getMyChats());
+    }
   }, []);
+  const handleSearch = ()=> {
+    dispatch(getMyChatByName(name));
+  }
   console.log("my chat datas are: ", myChatsData);
   // if(!myChatsData && isLoading) {
   //   return <LoadingSpinner/>
@@ -27,8 +33,16 @@ export default function layout({ children }) {
             type="text"
             placeholder="Search here..."
             className="bg-transparent h-full py-3 basis-[90%] outline-none"
+            value={name}
+            onChange={(e)=> {
+              setName(e.target.value);
+              dispatch(getMyChatByName(e.target.value));
+              if(e.target.value === ""){
+                dispatch(getMyChats());
+              }
+            }}
           />
-          <div>
+          <div className="cursor-pointer" onClick={handleSearch}>
             <IoSearch size={23} color="#a6a6a6" />
           </div>
         </div>

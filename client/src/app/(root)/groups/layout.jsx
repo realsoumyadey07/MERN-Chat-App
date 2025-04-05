@@ -4,16 +4,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { IoSearch } from "react-icons/io5";
 import EmptyListComp from "@/components/EmptyListComp";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getMyGroups } from "@/redux/slices/chat.slice";
+import { getMyGroupByName, getMyGroups } from "@/redux/slices/chat.slice";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function layout({ children }) {
+  const [groupName, setGroupName] = useState("");
   const dispath = useDispatch();
   const { myGroupsData, isLoading, error } = useSelector((state)=> state.chat);
   useEffect(()=> {
+    if(groupName.length === 0) {
+      
     dispath(getMyGroups());
+    }
   },[])
   
   // if(!myGroupsData && isLoading){
@@ -27,6 +31,14 @@ export default function layout({ children }) {
             type="text"
             placeholder="Search here..."
             className="bg-transparent h-full py-3 basis-[90%] outline-none"
+            value={groupName}
+            onChange={(e)=> {
+              setGroupName(e.target.value);
+              dispath(getMyGroupByName(e.target.value));
+              if(e.target.value === "") {
+                dispath(getMyGroups());
+              }
+            }}
           />
           <div>
             <IoSearch size={23} color="#a6a6a6" />

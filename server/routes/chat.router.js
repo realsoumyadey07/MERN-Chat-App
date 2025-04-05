@@ -6,6 +6,8 @@ import {
   getChatDetails,
   getMessages,
   getMyChat,
+  getMyChatByName,
+  getMyGroupByName,
   getMyGroups,
   leaveGroup,
   newGroupChat,
@@ -20,7 +22,9 @@ chatRouter.use(IsAuthenticated);
 
 chatRouter.post("/new-group-chat", newGroupChat);
 chatRouter.get("/get-my-chat", getMyChat);
+chatRouter.get("/get-my-chat-by-name", getMyChatByName);
 chatRouter.get("/get-my-group", getMyGroups);
+chatRouter.get("/get-my-group-by-name", getMyGroupByName);
 chatRouter.put("/add-member", addMember);
 chatRouter.put("/remove-member", removeMember);
 chatRouter.delete("/leave-chat/:id", leaveGroup);

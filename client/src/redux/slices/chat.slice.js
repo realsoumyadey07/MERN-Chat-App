@@ -31,9 +31,33 @@ export const getMyChats = createAsyncThunk(
      }
 );
 
+export const getMyChatByName = createAsyncThunk("chat/getMyChatByName", async(name, thunkApi)=> {
+     try {
+          const response = await tokenApi.get(`/chat/get-my-chat-by-name?name=${name}`);
+          const data = await response.data;
+          return data?.chats;
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          )
+     }
+});
+
 export const getMyGroups = createAsyncThunk("chat/getMyGroups", async(_, thunkApi)=> {
      try {
           const response = await tokenApi.get("/chat/get-my-group");
+          const data = await response.data;
+          return data?.groups;
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          );
+     }
+});
+
+export const getMyGroupByName = createAsyncThunk("chat/getMyGroupByName", async(groupName, thunkApi)=> {
+     try {
+          const response = await tokenApi.get(`/chat/get-my-group-by-name?name=${groupName}`);
           const data = await response.data;
           return data?.groups;
      } catch (error) {
@@ -94,6 +118,19 @@ export const chatSlice = createSlice({
                state.isLoading = false;
                state.error = action?.payload?.message || "Something went wrong!"
           }),
+          //get my chats by name
+          builder.addCase(getMyChatByName.pending, (state, action)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(getMyChatByName.fulfilled, (state, action)=> {
+               state.isLoading = false;
+               state.myChatsData = action?.payload;
+          }),
+          builder.addCase(getMyChatByName.rejected, (state, action)=> {
+               state.isLoading = false;
+               state.error = action?.payload?.message || "Something went wrong!"
+          }),
+          
           //get my groups
           builder.addCase(getMyGroups.pending, (state, action)=> {
                state.isLoading = true;
@@ -103,6 +140,18 @@ export const chatSlice = createSlice({
                state.isLoading = false;
           }),
           builder.addCase(getMyGroups.rejected, (state, action)=> {
+               state.error = action?.payload?.message || "Something went wrong!";
+               state.isLoading = false;
+          }),
+          //get my group by name
+          builder.addCase(getMyGroupByName.pending, (state, action)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(getMyGroupByName.fulfilled, (state, action)=> {
+               state.myGroupsData = action?.payload;
+               state.isLoading = false;
+          }),
+          builder.addCase(getMyGroupByName.rejected, (state, action)=> {
                state.error = action?.payload?.message || "Something went wrong!";
                state.isLoading = false;
           }),
