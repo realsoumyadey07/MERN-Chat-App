@@ -27,7 +27,7 @@ export default function MobileNav() {
   return (
     <Card className="fixed bottom-4 w-[calc(100vw-32px)] flex lg:hidden justify-center items-center p-2 z-50">
       <nav className="w-full">
-        <ul className="flex flex-row justify-evenly items-center">
+        <ul className="flex flex-row justify-between items-center">
           {paths.map((path, id) => {
             return (
               <li key={id} className="relative">
