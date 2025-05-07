@@ -16,16 +16,9 @@ export default function Home() {
     if (access_token) {
       setLoggedIn(true);
       router.push("/conversations");
-    } 
-    // else {
-    //   setLoggedIn(false);
-    // }
+    }
     setLoading(false);
   }, []);
-
-  // useEffect(() => {
-  //   if (loggedIn) router.push("/conversations");
-  // }, [loggedIn]);
 
 
   return (
