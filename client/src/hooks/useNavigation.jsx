@@ -11,19 +11,19 @@ export const useNavigation = () => {
             name: "Conversations",
             href: "/conversations",
             icon: <MessageSquare/>,
-            active: pathname ==="/conversations"
+            active: pathname.startsWith("/conversations")
         },
         {
             name: "Groups",
             href: "/groups",
             icon: <Users/>,
-            active: pathname === "/groups"
+            active: pathname.startsWith("/groups")
         },
         {
             name: "Friends",
             href: "/friends",
             icon: <Contact/>,
-            active: pathname === "/friends"
+            active: pathname.startsWith("/friends")
         }
     ], [pathname]);
 

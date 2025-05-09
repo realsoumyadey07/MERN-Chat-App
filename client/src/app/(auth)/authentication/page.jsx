@@ -73,6 +73,7 @@ export default function Authentication() {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({
     resolver: yupResolver(
       screen === "Login" ? loginSchema : registrationSchema
@@ -111,14 +112,14 @@ export default function Authentication() {
       ) : (
         <>
           <div className="flex h-screen">
-            <section className="w-full lg:w-1/2 flex items-center justify-center">
+            <section className="w-full lg:w-2/3 flex items-center justify-center">
               <BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4">
                 {screen === "Login" && (
                   <>
                     <div className="w-full max-w-[496px] z-50">
                       <Link
                         href={"/"}
-                        className="font-semibold text-gray-300 text-2xl"
+                        className="font-semibold text-gray-800 dark:text-gray-300 text-2xl"
                       >
                         MERN Chat App
                       </Link>
@@ -184,7 +185,7 @@ export default function Authentication() {
                         </div>
                         <button
                           type="submit"
-                          className="py-2 px-3 text-black bg-white rounded-[5px] font-semibold hover:bg-gray-300 my-4"
+                          className="py-2 px-3 text-white dark:text-black bg-gray-900 hover:bg-gray-800 dark:bg-white rounded-[5px] font-semibold dark:hover:bg-gray-300 my-4"
                         >
                           {isLoading ? (
                             <div className="w-5 h-5 border-2 border-gray-500 border-t-transparent rounded-full animate-spin align-middle"></div>
@@ -194,8 +195,11 @@ export default function Authentication() {
                         </button>
                         <span>
                           <p
-                            onClick={() => setScreen("Registration")}
-                            className="hover:underline cursor-pointer"
+                            onClick={() => {
+                              setScreen("Registration");
+                              reset();
+                            }}
+                            className="hover:underline cursor-pointer inline"
                           >
                             Don't have an account??
                           </p>
@@ -209,7 +213,7 @@ export default function Authentication() {
                     <div className="w-full max-w-[496px] z-50">
                       <Link
                         href={"/"}
-                        className="font-semibold text-gray-300 text-2xl"
+                        className="font-semibold text-gray-800 dark:text-gray-300 text-2xl"
                       >
                         MERN Chat App
                       </Link>
@@ -293,14 +297,17 @@ export default function Authentication() {
                         </div>
                         <button
                           type="submit"
-                          className="py-2 px-3 text-black bg-white rounded-[5px] font-semibold hover:bg-gray-300 my-4"
+                          className="py-2 px-3 text-white dark:text-black bg-gray-900 hover:bg-gray-800 dark:bg-white rounded-[5px] font-semibold dark:hover:bg-gray-300 my-4"
                         >
                           Sign Up
                         </button>
                         <span>
                           <p
-                            className="hover:underline cursor-pointer"
-                            onClick={() => setScreen("Login")}
+                            className="hover:underline cursor-pointer inline"
+                            onClick={() => {
+                              setScreen("Login");
+                              reset();
+                            }}
                           >
                             Already have an account??
                           </p>
@@ -311,7 +318,7 @@ export default function Authentication() {
                 )}
               </BackgroundLines>
             </section>
-            <section className="hidden lg:flex w-1/2 h-full">
+            <section className="hidden lg:flex w-1/3 h-full">
               <Image
                 src={BackGroundImage}
                 alt="Onboarding image"

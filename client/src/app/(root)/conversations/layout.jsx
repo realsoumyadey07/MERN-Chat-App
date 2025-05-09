@@ -7,24 +7,19 @@ import React, { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import EmptyListComp from "@/components/EmptyListComp";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function layout({ children }) {
   const [name, setName] = useState("");
   const dispatch = useDispatch();
-  const { myChatsData, isLoading, error } = useSelector((state) => state.chat);
+  const { myChatsData } = useSelector((state) => state.chat);
   useEffect(() => {
-    if(name === ""){
+    if (name === "") {
       dispatch(getMyChats());
     }
   }, []);
-  const handleSearch = ()=> {
+  const handleSearch = () => {
     dispatch(getMyChatByName(name));
-  }
-  console.log("my chat datas are: ", myChatsData);
-  // if(!myChatsData && isLoading) {
-  //   return <LoadingSpinner/>
-  // }
+  };
   return (
     <>
       <ItemList title="Conversations">
@@ -34,10 +29,10 @@ export default function layout({ children }) {
             placeholder="Search here..."
             className="bg-transparent h-full py-3 basis-[90%] outline-none"
             value={name}
-            onChange={(e)=> {
+            onChange={(e) => {
               setName(e.target.value);
               dispatch(getMyChatByName(e.target.value));
-              if(e.target.value === ""){
+              if (e.target.value === "") {
                 dispatch(getMyChats());
               }
             }}
@@ -68,7 +63,10 @@ export default function layout({ children }) {
             ))
           ) : (
             <>
-              <EmptyListComp heading="No conversations found." description="Start a new conversation by searching for users above." />
+              <EmptyListComp
+                heading="No conversations found."
+                description="Start a new conversation by searching for users above."
+              />
             </>
           )}
         </ul>

@@ -57,6 +57,21 @@ export const getAllRequests = createAsyncThunk(
   }
 );
 
+export const getRequestsByName = createAsyncThunk(
+  "user/getRequestsByName",
+  async (name, thunkAPI) => {
+    try {
+      const response = await tokenApi.get(`/user/get-requests-by-name?name=${name}`);
+      const data = await response.data;
+      return data?.requests;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data || "Something went wrong!"
+      )
+    }
+  }
+)
+
 export const getMyFriends = createAsyncThunk(
   "user/getMyFriends",
   async (_, thunkAPI) => {
@@ -173,6 +188,18 @@ const userSlice = createSlice({
         state.requests = action?.payload;
       }),
       builder.addCase(getAllRequests.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action?.payload?.message || "Something went wrong!";
+      }),
+      //get requests by name
+      builder.addCase(getRequestsByName.pending, (state, action) => {
+        state.isLoading = true;
+      }),
+      builder.addCase(getRequestsByName.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.requests = action?.payload;
+      }),
+      builder.addCase(getRequestsByName.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action?.payload?.message || "Something went wrong!";
       }),

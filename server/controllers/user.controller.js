@@ -507,6 +507,48 @@ export const getAllRequests = AsyncHandler(async (req, res, next) => {
   }
 });
 
+export const getRequestsByName = AsyncHandler(async (req, res, next) => {
+  try {
+    const { name } = req.query;
+    if(!name) return res.status(400).json({
+      success: false,
+      message: "Search param is required!",
+    });
+    const requests = await Request.find({
+      receiver: req.user.id,
+      status: "pendding",
+    }).populate("sender", "username");
+    const filterRequests = requests.filter((request) => {
+      const senderName = request.sender.username.toLowerCase();
+      return senderName.includes(name.toLowerCase());
+    });
+    if(filterRequests.length < 1) return res.status(200).json({
+      success: true,
+      requests: [],
+      message: "No new requests",
+    });
+    const allRequests = filterRequests.map(({_id, sender}) => (
+      {
+        _id,
+        sender: {
+          _id: sender._id,
+          username: sender.username,
+        }
+      }
+    ));
+    return res.status(200).json({
+      success: true,
+      requests: allRequests,
+      message: "All new requests",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!",
+    })
+  }
+})
+
 export const getMyFriends = AsyncHandler(async (req, res, next) => {
   try {
     const chatId = req.query.chatId;

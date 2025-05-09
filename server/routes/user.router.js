@@ -12,7 +12,8 @@ import {
     getUserDetails,
     getAllRequests,
     searchUnknownUser,
-    getAllUnknownUsers
+    getAllUnknownUsers,
+    getRequestsByName
 } from "../controllers/user.controller.js";
 import { IsAuthenticated } from "../middlewares/IsAuthenticated.js";
 import { loginValidator, registerValidator, validateHandler } from "../lib/validator.js";
@@ -30,6 +31,7 @@ userRouter.get("/get-all-unknown-users", IsAuthenticated, getAllUnknownUsers);
 userRouter.post("/send-friendrequest", IsAuthenticated, sendFriendRequest);
 userRouter.post("/accept-friendrequest", IsAuthenticated, acceptFriendRequest);
 userRouter.get("/get-all-requests",IsAuthenticated , getAllRequests);
+userRouter.get("/get-requests-by-name",IsAuthenticated , getRequestsByName);
 userRouter.get("/get-friends",IsAuthenticated , getMyFriends);
 userRouter.get("/get-user-details/:id", IsAuthenticated, getUserDetails);
 

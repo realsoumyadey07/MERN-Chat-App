@@ -82,14 +82,6 @@ export default function ThreeDotComp() {
     }
   };
 
-  // if (isLoading) {
-  //   return <LoadingSpinner />;
-  // }
-
-  // if(groupLoading){
-  //   return <LoadingSpinner />
-  // }
-
   return (
     <>
       <div className="flex items-center justify-center">

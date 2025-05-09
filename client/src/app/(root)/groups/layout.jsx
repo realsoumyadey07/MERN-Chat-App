@@ -12,17 +12,13 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 export default function layout({ children }) {
   const [groupName, setGroupName] = useState("");
   const dispath = useDispatch();
-  const { myGroupsData, isLoading, error } = useSelector((state)=> state.chat);
-  useEffect(()=> {
-    if(groupName.length === 0) {
-      
-    dispath(getMyGroups());
+  const { myGroupsData, isLoading, error } = useSelector((state) => state.chat);
+  useEffect(() => {
+    if (groupName.length === 0) {
+      dispath(getMyGroups());
     }
-  },[])
-  
-  // if(!myGroupsData && isLoading){
-  //   return <LoadingSpinner/>
-  // }
+  }, []);
+
   return (
     <>
       <ItemList title="Groups">
@@ -32,10 +28,10 @@ export default function layout({ children }) {
             placeholder="Search here..."
             className="bg-transparent h-full py-3 basis-[90%] outline-none"
             value={groupName}
-            onChange={(e)=> {
+            onChange={(e) => {
               setGroupName(e.target.value);
               dispath(getMyGroupByName(e.target.value));
-              if(e.target.value === "") {
+              if (e.target.value === "") {
                 dispath(getMyGroups());
               }
             }}
@@ -66,7 +62,10 @@ export default function layout({ children }) {
             ))
           ) : (
             <>
-            <EmptyListComp heading="No groups found." description="Start a new group by searching for community above."/>
+              <EmptyListComp
+                heading="No groups found."
+                description="Start a new group by searching for community above."
+              />
             </>
           )}
         </ul>
