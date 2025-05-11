@@ -37,6 +37,36 @@ export const IsAuthenticated = AsyncHandler(async (req, res, next) => {
   }
 });
 
+export const socketAuthenticator = async (err, socket, next) => {
+  try {
+    if(err) {
+      return next(err);
+    }
+    const access_token = socket.request.cookies.access_token;
+    if(!access_token) {
+      return next(res.status(401).json({
+        success: false,
+        message: "Token is not found. Please log in!",
+      }))
+    }
+    const decoded = jwt.verify(access_token, process.env.ACCESS_TOKEN);
+    console.log("decoded id is: "+ decoded?.id);
+    const user = await User.findById(decoded?.id).select(
+      "-password -refresh_token"
+    );
+    if(!user) {
+      return next(res.status(401).json({
+        success: false,
+        message: "Invalid access token!"
+      }))
+    }
+    socket.user = user;
+    return next();
+  } catch (error) {
+    return next(new Error("Please login to access this route", 401));
+  }
+}
+
 export const authorizeRole = (...roles)=> {
   return (req, res, next)=> {
     if(!roles.includes(req.user?.role || "")) {

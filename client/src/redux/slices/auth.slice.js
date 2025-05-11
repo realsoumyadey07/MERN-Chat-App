@@ -155,7 +155,7 @@ export const authSlice = createSlice({
       state.error = action?.payload?.message
     });
 
-    //get user data
+    //get user profile
     builder.addCase(getProfileData.pending, (state, action) => {
       state.isLoading = true
     });

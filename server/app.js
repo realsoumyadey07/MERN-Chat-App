@@ -18,14 +18,23 @@ import { createUser, deleteAllUsers } from "./seeders/user.js";
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.model.js";
+import { socketAuthenticator } from "./middlewares/IsAuthenticated.js";
 
 const port = process.env.PORT || 8000;
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, {
+    cors: {
+        origin: [process.env.ORIGIN],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true
+    }
+});
+
+app.set("io", io);
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: [process.env.ORIGIN],
     credentials: true
 }));
 app.use(express.json({limit: "50mb"}));
@@ -42,14 +51,15 @@ app.use("/api/chat", chatRouter);
 
 
 io.use((socket, next)=> {
-    
+    cookieParser()(
+        socket.request,
+        socket.request.res,
+        async (err) => await socketAuthenticator(err, socket, next)
+    );
 })
 
 io.on("connection", (socket)=> {
-    const user = {
-        _id: "ert8495t",
-        username: "soumya"
-    }
+    const user = socket.user;
     socketUserIds.set(user._id.toString(), socket.id);
     console.log(socketUserIds);
     console.log(`a user connected: ${socket.id}`);   
@@ -82,9 +92,10 @@ io.on("connection", (socket)=> {
             await Message.create(messageForDB);
         } catch (error) {
             console.log("Error in creating message: ", error);
+            throw new Error(error);
         }
     });
-    socket.on("disconnect", ()=> {
+    socket.on("disconnect", () => {
         console.log("user disconnected!");
         socketUserIds.delete(user._id.toString());
     })

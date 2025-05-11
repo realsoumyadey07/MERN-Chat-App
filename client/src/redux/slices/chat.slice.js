@@ -10,7 +10,7 @@ const initialState = {
      addMemberData: null,
      removeMemberData: null,
      leaveChatData: null,
-     messageData: null,
+     messageData: [],
      isLoading: false,
      error: null
 }
@@ -79,6 +79,18 @@ export const getMyChatDetails = createAsyncThunk("chat/getMyChatDetails", async(
      }
 });
 
+export const getMyMessages = createAsyncThunk("chat/getMyMessages", async(chatId, thunkApi)=> {
+     try {
+          const response = await tokenApi.get(`/chat/message/${chatId}`);
+          const data = await response.data;
+          return data?.messages;
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          );
+     }
+});
+
 export const createNewGroup = createAsyncThunk("chat/createNewGroup", async(groupData, thunkApi)=> {
      try {
           const response = await tokenApi.post("/chat/new-group-chat", {
@@ -92,7 +104,7 @@ export const createNewGroup = createAsyncThunk("chat/createNewGroup", async(grou
                error?.response?.data || "Something went wrong!"
           )
      }
-})
+});
 
 export const chatSlice = createSlice({
      name: "chat",
@@ -164,6 +176,18 @@ export const chatSlice = createSlice({
                state.isLoading = false;
           }),
           builder.addCase(getMyChatDetails.rejected, (state, action)=> {
+               state.error = action?.payload?.message || "Something went wrong!";
+               state.isLoading = false;
+          }),
+          //get my messages
+          builder.addCase(getMyMessages.pending, (state, action)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(getMyMessages.fulfilled, (state, action)=> {
+               state.messageData = action?.payload;
+               state.isLoading = false;
+          }),
+          builder.addCase(getMyMessages.rejected, (state, action)=> {
                state.error = action?.payload?.message || "Something went wrong!";
                state.isLoading = false;
           }),
