@@ -7,9 +7,8 @@ import EmptyListComp from "@/components/EmptyListComp";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyGroupByName, getMyGroups } from "@/redux/slices/chat.slice";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
-export default function layout({ children }) {
+export default function Layout({ children }) {
   const [groupName, setGroupName] = useState("");
   const dispath = useDispatch();
   const { myGroupsData, isLoading, error } = useSelector((state) => state.chat);
@@ -17,7 +16,7 @@ export default function layout({ children }) {
     if (groupName.length === 0) {
       dispath(getMyGroups());
     }
-  }, []);
+  }, [dispath, groupName]);
 
   return (
     <>

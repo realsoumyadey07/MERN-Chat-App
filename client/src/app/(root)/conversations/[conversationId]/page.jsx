@@ -17,7 +17,7 @@ const socket = io(process.env.NEXT_PUBLIC_BASE_URL_SOCKET, {
   withCredentials: true,
 });
 
-export default function page() {
+export default function Page() {
   const [userMessage, setUserMessage] = useState("");
   const { conversationId: chatId } = useParams();
   const dispatch = useDispatch();
@@ -29,11 +29,11 @@ export default function page() {
 
   useEffect(() => {
     dispatch(getMyChatDetails(chatId));
-  }, [chatId]);
+  }, [chatId, dispatch]);
 
   useEffect(() => {
     dispatch(getMyMessages(chatId));
-  }, [chatId]);
+  }, [chatId, dispatch]);
 
   // Listen for new messages via socket
   useEffect(() => {

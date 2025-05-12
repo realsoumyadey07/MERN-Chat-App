@@ -11,7 +11,7 @@ import { LuVideo } from "react-icons/lu";
 import { MdCall, MdEmojiEmotions } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function page() {
+export default function Page() {
   const [message, setMessage] = useState([]);
   const [userMessage, setUserMessage] = useState("");
   const { groupId } = useParams();

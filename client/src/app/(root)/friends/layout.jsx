@@ -85,7 +85,7 @@ export default function FriendsLayout({ children }) {
         dispatch(resetUnknownUsers());
       };
     }
-  }, [screen, refresh]);
+  }, [screen, refresh, dispatch]);
 
   return (
     <>

@@ -8,7 +8,7 @@ import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import EmptyListComp from "@/components/EmptyListComp";
 
-export default function layout({ children }) {
+export default function Layout({ children }) {
   const [name, setName] = useState("");
   const dispatch = useDispatch();
   const { myChatsData } = useSelector((state) => state.chat);
@@ -16,7 +16,7 @@ export default function layout({ children }) {
     if (name === "") {
       dispatch(getMyChats());
     }
-  }, []);
+  }, [ name, dispatch ]);
   const handleSearch = () => {
     dispatch(getMyChatByName(name));
   };

@@ -18,7 +18,7 @@ export default function Home() {
       router.push("/conversations");
     }
     setLoading(false);
-  }, []);
+  }, [ router]);
 
 
   return (

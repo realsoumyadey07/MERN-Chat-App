@@ -46,11 +46,8 @@ export default function ProfileComponent() {
       dispatch(resetUserData());
       router.push("/authentication");
     }
-  }, [logoutUserData]);
+  }, [logoutUserData, dispatch, router]);
 
-  // if (isLoading) {
-  //   return <LoadingSpinner />;
-  // }
 
   return (
     <>

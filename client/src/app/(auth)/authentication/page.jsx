@@ -103,7 +103,7 @@ export default function Authentication() {
     if (access_token) {
       router.push("/conversations");
     }
-  }, [loginUserData, registerUserData, isLoading]);
+  }, [loginUserData, registerUserData, router]);
 
   return (
     <>
@@ -201,7 +201,7 @@ export default function Authentication() {
                             }}
                             className="hover:underline cursor-pointer inline"
                           >
-                            Don't have an account??
+                            Don&apos;t have an account??
                           </p>
                         </span>
                       </form>

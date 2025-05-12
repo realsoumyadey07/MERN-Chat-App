@@ -41,7 +41,7 @@ export default function ThreeDotComp() {
     if (openGroupModal) {
       dispatch(getMyFriends());
     }
-  }, [openGroupModal]);
+  }, [openGroupModal, dispatch]);
 
   const handleSearch = () => {
     dispatch(searchMyFriendByName(name));
