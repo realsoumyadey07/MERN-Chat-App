@@ -19,7 +19,7 @@ export default function Page() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getMyChatDetails(groupId));
-  }, [groupId]);
+  }, [groupId, dispatch]);
   return (
     <ConversationContainer>
       {isLoading ? (

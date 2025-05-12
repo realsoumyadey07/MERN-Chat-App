@@ -16,8 +16,8 @@ import { useEffect } from "react";
 
 export default function MobileNav() {
   const paths = useNavigation();
-  const {isActive} = useNavigation();
-  if(isActive) return null;
+  // const {isActive} = useNavigation();
+  // if(isActive) return null;
   const dispatch = useDispatch();
 
   useEffect(() => {
