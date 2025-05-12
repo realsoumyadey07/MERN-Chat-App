@@ -103,32 +103,35 @@ export const getMyChatByName = AsyncHandler(async (req, res, next) => {
         })
       );
     }
-    const grpChats = await Chat.find({ 
-      name: { $regex: name, $options: "i" },
-      members: req.user.id 
-    });
-    const transeformedGrpChats = grpChats.map(({_id, name})=> {
-      return {
-        _id,
-        name
-      }
-    });
+
+    // Find all single chats for the user
     const singleChats = await Chat.find({
       groupChat: false,
-      $or: [{ members: req.user.id }],
+      members: req.user.id,
     });
-    const allUsersOfMyChat = singleChats.flatMap((chat) => chat.members);
-    const searchedUsers = await User.find({
-      _id: { $in: allUsersOfMyChat },
-      username: { $regex: name, $options: "i" },
-    });
-    const transeformedSingleChats = searchedUsers.map(({_id, username})=> {
-      return {
-        _id,
-        name: username
+
+    // For each chat, find the other member and check if their username matches the search
+    const filteredChats = [];
+    for (const chat of singleChats) {
+      const otherMemberId = getOtherMember(chat.members, req.user.id);
+      if (otherMemberId) {
+        const otherUser = await User.findById(otherMemberId);
+        if (
+          otherUser &&
+          otherUser.username &&
+          otherUser.username.toLowerCase().includes(name.toLowerCase())
+        ) {
+          filteredChats.push({
+            _id: chat._id,
+            name: otherUser.username,
+            groupChat: false,
+            members: chat.members,
+          });
+        }
       }
-    });
-    if([...transeformedGrpChats, ...transeformedSingleChats].length === 0) {
+    }
+
+    if (filteredChats.length === 0) {
       return next(
         res.status(200).json({
           success: true,
@@ -137,12 +140,11 @@ export const getMyChatByName = AsyncHandler(async (req, res, next) => {
         })
       );
     }
-    
-    
+
     return next(
       res.status(200).json({
         success: true,
-        chats: [...transeformedGrpChats, ...transeformedSingleChats],
+        chats: filteredChats
       })
     );
   } catch (error) {
