@@ -96,64 +96,53 @@ export const getMyChatByName = AsyncHandler(async (req, res, next) => {
   try {
     const { name } = req.query;
     if (!name) {
-      return next(
-        res.status(400).json({
-          success: false,
-          message: "Name is required!",
-        })
-      );
+      return res.status(400).json({
+        success: false,
+        message: "Name is required!",
+      });
     }
-
-    // Find all single chats for the user
-    const singleChats = await Chat.find({
-      groupChat: false,
+    const grpChats = await Chat.find({
+      name: { $regex: name, $options: "i" },
       members: req.user.id,
     });
-
-    // For each chat, find the other member and check if their username matches the search
-    const filteredChats = [];
-    for (const chat of singleChats) {
-      const otherMemberId = getOtherMember(chat.members, req.user.id);
-      if (otherMemberId) {
-        const otherUser = await User.findById(otherMemberId);
-        if (
-          otherUser &&
-          otherUser.username &&
-          otherUser.username.toLowerCase().includes(name.toLowerCase())
-        ) {
-          filteredChats.push({
-            _id: chat._id,
-            name: otherUser.username,
-            groupChat: false,
-            members: chat.members,
-          });
-        }
-      }
-    }
-
-    if (filteredChats.length === 0) {
-      return next(
-        res.status(200).json({
-          success: true,
-          chats: [],
-          message: "No chats found!",
-        })
-      );
-    }
-
-    return next(
-      res.status(200).json({
+    const transeformedGrpChats = grpChats.map(({ _id, name }) => {
+      return {
+        _id,
+        name,
+      };
+    });
+    const singleChats = await Chat.find({
+      groupChat: false,
+      $or: [{ members: req.user.id }],
+    });
+    const allUsersOfMyChat = singleChats.flatMap((chat) => chat.members);
+    const searchedUsers = await User.find({
+      _id: { $in: allUsersOfMyChat },
+      username: { $regex: name, $options: "i" },
+    });
+    const transeformedSingleChats = searchedUsers.map(({ _id, username }) => {
+      return {
+        _id,
+        name: username,
+      };
+    });
+    if ([...transeformedGrpChats, ...transeformedSingleChats].length === 0) {
+      return res.status(200).json({
         success: true,
-        chats: filteredChats
-      })
-    );
+        chats: [],
+        message: "No chats found!",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      chats: [...transeformedGrpChats, ...transeformedSingleChats],
+    });
   } catch (error) {
-    return next(
-      res.status(500).json({
-        success: false,
-        message: error.message || "Internal server error!",
-      })
-    );
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!",
+    });
   }
 });
 
@@ -162,7 +151,6 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
     const chats = await Chat.find({
       members: req.user.id,
       groupChat: true,
-      creator: req.user.id,
     }).populate("members", "username");
     const groups = chats.map(({ _id, members, groupChat, name }) => ({
       _id,
@@ -186,52 +174,46 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export const getMyGroupByName = AsyncHandler(async(req, res, next)=> {
+export const getMyGroupByName = AsyncHandler(async (req, res, next) => {
   try {
-    const {name} = req.query;
-    if(!name) {
-      return next(
-        res.status(400).json({
-          success: false,
-          message: "Name is required!",
-        })
-      );
+    const { name } = req.query;
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Name is required!",
+      });
     }
     const groups = await Chat.find({
       name: { $regex: name, $options: "i" },
       members: req.user.id,
       groupChat: true,
     }).populate("members", "username");
-    if(groups.length === 0) {
-      return next(
-        res.status(200).json({
-          success: true,
-          groups: [],
-          message: "No groups found!",
-        })
-      );
-    }
-    const transeformedGroups = groups.map(({_id, members, groupChat, name})=> ({
-      _id,
-      name,
-      groupChat,
-      members,
-    }));
-    return next(
-      res.status(200).json({
+    if (groups.length === 0) {
+      return res.status(200).json({
         success: true,
-        groups: transeformedGroups,
+        groups: [],
+        message: "No groups found!",
+      });
+    }
+    const transeformedGroups = groups.map(
+      ({ _id, members, groupChat, name }) => ({
+        _id,
+        name,
+        groupChat,
+        members,
       })
     );
+    return res.status(200).json({
+      success: true,
+      groups: transeformedGroups,
+    });
   } catch (error) {
-    return next(
-      res.status(500).json({
-        success: false,
-        message: error.message || "Internal server error!",
-      })
-    );
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error!",
+    });
   }
-})
+});
 
 export const addMember = AsyncHandler(async (req, res, next) => {
   try {

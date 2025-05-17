@@ -111,7 +111,7 @@ export default function Page() {
             )}
           <div ref={messagesEndRef} />
         </main>
-        <footer className="flex gap-4 justify-between w-full px-4 py-2 mb-16 lg:mb-0">
+        <footer className="flex gap-4 justify-between w-full px-4 py-2">
           <div className="flex gap-4 items-center cursor-pointer">
             <MdEmojiEmotions size={23} />
             <IoAttachOutline size={25} />

@@ -108,9 +108,9 @@ export const userLogin = AsyncHandler(async (req, res) => {
     );
     const cookiesOption = {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // Expires in 7 days
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
       maxAge: 10 * 24 * 60 * 60 * 1000,
     };
     return res

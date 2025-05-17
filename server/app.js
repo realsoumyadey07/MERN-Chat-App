@@ -26,7 +26,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: [process.env.ORIGIN],
+        origin: [process.env.ORIGIN, "http://localhost:3000"],
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
@@ -34,7 +34,7 @@ const io = new Server(server, {
 
 app.set("io", io);
 app.use(cors({
-    origin: [process.env.ORIGIN],
+    origin: [process.env.ORIGIN, "http://localhost:3000"],
     credentials: true
 }));
 app.use(express.json({limit: "50mb"}));
@@ -45,7 +45,12 @@ app.use(cookieParser());
 //user mapping with socketIds
 export const socketUserIds = new Map();
 
-
+app.get("/", (req, res)=> {
+    res.status(200).json({
+        success: true,
+        serverRuning: true
+    });
+});
 app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
 
