@@ -112,6 +112,7 @@ server.listen(port, ()=> {
     connectDb();
 });
 
+export default app;
 
 // createUser(5);
 // createSingleChats();
