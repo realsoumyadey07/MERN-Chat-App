@@ -17,6 +17,7 @@ import {
 } from "../controllers/chat.controller.js";
 import { attchmentsMulter } from "../middlewares/Multer.js";
 
+
 const chatRouter = express.Router();
 chatRouter.use(IsAuthenticated);
 
