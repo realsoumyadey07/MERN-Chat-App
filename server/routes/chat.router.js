@@ -13,9 +13,9 @@ import {
   newGroupChat,
   removeMember,
   renameGroup,
-  sendAttachments,
+  // sendAttachments,
 } from "../controllers/chat.controller.js";
-import { attchmentsMulter } from "../middlewares/Multer.js";
+// import { attchmentsMulter } from "../middlewares/Multer.js";
 
 
 const chatRouter = express.Router();
@@ -29,7 +29,7 @@ chatRouter.get("/get-my-group-by-name", getMyGroupByName);
 chatRouter.put("/add-member", addMember);
 chatRouter.put("/remove-member", removeMember);
 chatRouter.delete("/leave-chat/:id", leaveGroup);
-chatRouter.post("/message", attchmentsMulter, sendAttachments);
+// chatRouter.post("/message", attchmentsMulter, sendAttachments);
 
 // get messages
 chatRouter.get("/message/:id", getMessages);
