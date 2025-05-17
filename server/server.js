@@ -13,8 +13,8 @@ import {v4 as uuid} from "uuid";
 // Routers import
 import userRouter from "./routes/user.router.js";
 import chatRouter from "./routes/chat.router.js";
-import { createMessagesInAChat, createSingleChats, deleteAllChats } from "./seeders/chat.js";
-import { createUser, deleteAllUsers } from "./seeders/user.js";
+// import { createMessagesInAChat, createSingleChats, deleteAllChats } from "./seeders/chat.js";
+// import { createUser, deleteAllUsers } from "./seeders/user.js";
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.model.js";
@@ -112,7 +112,6 @@ server.listen(port, ()=> {
     connectDb();
 });
 
-export default app;
 
 // createUser(5);
 // createSingleChats();
