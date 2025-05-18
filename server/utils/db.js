@@ -6,7 +6,9 @@ const dbUrl = process.env.DATABASE_URL;
 
 export const connectDb = async () => {
   try {
-    const response = await mongoose.connect(dbUrl);
+    const response = await mongoose.connect(dbUrl, {
+      serverSelectionTimeoutMS: 30000
+    });
     console.log(`Database is connected to: ${response.connection.host}`);
   } catch (error) {
     console.log(error.message);
