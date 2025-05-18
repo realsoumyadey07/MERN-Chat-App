@@ -34,6 +34,7 @@ userRouter.get("/get-all-requests",IsAuthenticated , getAllRequests);
 userRouter.get("/get-requests-by-name",IsAuthenticated , getRequestsByName);
 userRouter.get("/get-friends",IsAuthenticated , getMyFriends);
 userRouter.get("/get-user-details/:id", IsAuthenticated, getUserDetails);
+// for testing
 userRouter.get("/try", (req, res)=> {
     res.send("Ok tested!");
 });
