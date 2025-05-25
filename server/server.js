@@ -26,7 +26,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["https://mern-chat-app-six-orpin.vercel.app", "http://localhost:3000"],
+        origin: true, // allow any origin
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
@@ -34,7 +34,8 @@ const io = new Server(server, {
 
 app.set("io", io);
 app.use(cors({
-    origin: ["https://mern-chat-app-six-orpin.vercel.app", "http://localhost:3000"],
+    origin: true, // allow any origin
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
 app.use(express.json({limit: "50mb"}));
