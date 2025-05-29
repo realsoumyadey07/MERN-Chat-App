@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
       },
       buttonContainer: {
         marginTop: 40,
-        paddingHorizontal: 10
+        paddingHorizontal: 20
       },
       heading: {
         fontWeight: 600,

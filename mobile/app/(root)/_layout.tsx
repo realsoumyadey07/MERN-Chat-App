@@ -1,40 +1,22 @@
-import React from "react";
-import { View, Text, TouchableOpacity, Pressable } from "react-native";
+import React, { useEffect } from "react";
 import { Tabs } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
-
-interface TabIconProps {
-  iconName: keyof typeof FontAwesome.glyphMap;
-  color: string;
-  focused: boolean;
-  name: string;
-}
-
-const TabIcon: React.FC<TabIconProps> = ({
-  iconName,
-  color,
-  focused,
-  name,
-}) => {
-  return (
-    <View
-      style={{ alignItems: "center", justifyContent: "center" }}
-    >
-      <FontAwesome name={iconName} size={24} color={color} />
-      <Text
-        style={{
-          color: focused ? color : "gray",
-          fontSize: 10,
-          marginTop: 4,
-        }}
-      >
-        {name}
-      </Text>
-    </View>
-  );
-};
+import Ionicons from "@expo/vector-icons/Ionicons";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
+import UserComponent from "@/components/UserComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserData } from "@/redux/slices/auth.slice";
+import { AppDispatch } from "@/redux/store";
+import { View, TouchableOpacity, Platform } from "react-native";
 
 const TabNavigator: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(getUserData());
+  }, []);
+  const { userData, isLoading, error } = useSelector(
+    (state: any) => state.auth
+  );
   return (
     <Tabs
       screenOptions={{
@@ -42,14 +24,30 @@ const TabNavigator: React.FC = () => {
         tabBarActiveTintColor: "#141414",
         tabBarInactiveTintColor: "#807e7e",
         tabBarStyle: {
-          backgroundColor: "#fff",
-          borderTopWidth: 1,
-          borderTopColor: "#232533",
-          height: 80,
-          paddingBottom: 10,
+          height: 60,
+          backgroundColor: "#fff", // ensure this is set to white
           paddingTop: 10,
+          display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          marginBottom: 15,
+          marginHorizontal: 15,
+          borderRadius: 10,
+        },
+        tabBarButton: (props) => {
+          const filteredProps = Object.fromEntries(
+            Object.entries(props).filter(([_, v]) => v !== null)
+          );
+          return (
+            <TouchableOpacity
+              {...filteredProps}
+              activeOpacity={1}
+              style={[props.style, { backgroundColor: "transparent" }]}
+              {...(Platform.OS === "android"
+                ? { android_ripple: { color: "transparent" } }
+                : {})}
+            />
+          );
         },
         tabBarItemStyle: {
           flex: 1,
@@ -57,6 +55,9 @@ const TabNavigator: React.FC = () => {
           justifyContent: "center",
         },
         headerShadowVisible: false,
+        headerStyle: {
+          backgroundColor: "#f5f5f5"
+        }
       }}
     >
       <Tabs.Screen
@@ -64,25 +65,70 @@ const TabNavigator: React.FC = () => {
         options={{
           title: "Conversations",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              iconName="comment"
-              color={color}
-              focused={focused}
-              name="Chats"
-            />
+            <View
+              style={{
+                width: 35,
+                height: 35,
+                borderRadius: 8,
+                backgroundColor: focused ? "#5091fa" : "transparent",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons
+                name="chatbox-outline"
+                size={20}
+                color={focused ? "white" : "black"}
+              />
+            </View>
           ),
         }}
       />
+
       <Tabs.Screen
         name="group"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              iconName="users"
-              color={color}
-              focused={focused}
-              name="Groups"
-            />
+            <View
+              style={{
+                width: 35,
+                height: 35,
+                borderRadius: 8,
+                backgroundColor: focused ? "#5091fa" : "transparent",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Feather
+                name="users"
+                size={20}
+                color={focused ? "white" : "black"}
+              />
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="friends"
+        options={{
+          title: "Friends",
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                width: 35,
+                height: 35,
+                borderRadius: 8,
+                backgroundColor: focused ? "#5091fa" : "transparent",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <AntDesign
+                name="profile"
+                size={20}
+                color={focused ? "white" : "black"}
+              />
+            </View>
           ),
         }}
       />
@@ -90,14 +136,22 @@ const TabNavigator: React.FC = () => {
         name="user"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              iconName="user"
-              color={color}
-              focused={focused}
-              name="Profile"
-            />
+            <View
+              style={{
+                width: 35,
+                height: 35,
+                borderRadius: 8,
+                backgroundColor: focused ? "#5091fa" : "transparent",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <UserComponent
+                letter={userData?.username[0].toUpperCase() || "U"}
+              />
+            </View>
           ),
-          headerShown: false
+          headerShown: false,
         }}
       />
     </Tabs>

@@ -51,7 +51,6 @@ const loginSchema = yup.object({
     ),
 });
 
-
 const Login = () => {
   const [screen, setScreen] = useState<"Login" | "Registration">("Login");
   const dispatch = useDispatch<typeof store.dispatch>();
@@ -71,7 +70,7 @@ const Login = () => {
     dispatch(login(data));
   };
   const handleRegistration = (data: any) => {
-    dispatch(registration(data))
+    dispatch(registration(data));
   };
   useEffect(() => {
     if (!error && loginUserData) {
