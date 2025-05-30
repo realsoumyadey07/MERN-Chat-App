@@ -79,7 +79,7 @@ export const getMyGroupByName = createAsyncThunk("chat/getMyGroupByName", async(
      }
 });
 
-export const getMyChatDetails = createAsyncThunk("chat/getMyChatDetails", async(chatId, thunkApi)=> {
+export const getMyChatDetails = createAsyncThunk("chat/getMyChatDetails", async(chatId: string, thunkApi)=> {
      try {
           const response = await tokenApi.get(`/chat/${chatId}`);
           const data = await response.data;

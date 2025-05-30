@@ -1,64 +1,37 @@
-import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { getUserData, logout } from "@/redux/slices/auth.slice";
+import { getUserDetails } from "@/redux/slices/auth.slice";
 import { AppDispatch } from "@/redux/store";
-import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
-const User = () => {
+export default function ProfileId() {
+  const { id } = useLocalSearchParams();
   const dispatch = useDispatch<AppDispatch>();
-  const { userData, logoutUserData, error, isLoading } = useSelector(
-    (state: any) => state.auth
-  );
+  const { userDetails } = useSelector((state: any) => state.auth);
+  useEffect(() => {
+    if (typeof id === "string") {
+      dispatch(getUserDetails(id));
+    }
+  }, [id, dispatch]);
+  if (!userDetails) {
+    return <ActivityIndicator size={"large"} color="#0000ff" />; // or a loading indicator
+  }
+  // dummy data
   const user = {
     name: "Soumya Dey",
     about: "Realsoumyadey",
     phoneNumber: "soumyadipdey802@gmail.com",
     profilePicture: require("../../assets/images/user-logo.png"),
-  };
-  useEffect(()=> {
-    dispatch(getUserData());
-  }, [dispatch]);
-  if(!userData){
-    return <ActivityIndicator size={"large"} color="#0000ff" />;
-  }
-  console.log("userData in user screen: ", userData);
-  const handleSignOut = () => {
-    try {
-      Alert.alert(
-        "Sign out",
-        "Are you sure you want to sign out?",
-        [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          {
-            text: "Sign Out",
-            onPress: async () => {
-              console.log("Sign Out Pressed");
-              await dispatch(logout());
-              router.push("/(auth)/login");
-            },
-          },
-        ],
-        { cancelable: false }
-      );
-    } catch (error: any) {
-      console.log(error);
-      Alert.alert("Error", error.message || "Something went wrong");
-    }
   };
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -69,29 +42,20 @@ const User = () => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.userName}>{userData?.username}</Text>
+      <Text style={styles.userName}>{userDetails?.username}</Text>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Username</Text>
-        <Text style={styles.sectionContent}>{userData?.status}</Text>
+        <Text style={styles.sectionContent}>{userDetails?.status}</Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Email</Text>
-        <Text style={styles.sectionContent}>{userData?.email}</Text>
+        <Text style={styles.sectionContent}>{userDetails?.email}</Text>
       </View>
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <TouchableOpacity style={styles.editButton} onPress={handleSignOut}>
-          <Text style={styles.editButtonText}>Sign out</Text>
-        </TouchableOpacity>
-      )}
     </ScrollView>
   );
-};
-
-export default User;
+}
 
 const styles = StyleSheet.create({
   container: {

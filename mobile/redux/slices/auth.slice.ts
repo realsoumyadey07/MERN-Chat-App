@@ -37,6 +37,7 @@ interface AuthState {
   loginUserData: LoginResponse["user"] | null;
   logoutUserData: any;
   userData: any;
+  userDetails: any;
   isLoading: boolean;
   error: any | null;
 }
@@ -46,6 +47,7 @@ const initialState: AuthState = {
   loginUserData: null,
   logoutUserData: null,
   userData: null,
+  userDetails: null,
   isLoading: false,
   error: null,
 };
@@ -114,7 +116,17 @@ export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
 
 export const getUserData = createAsyncThunk("auth/getUserData", async (_, thunkAPI) => {
   try {
-    const response = await tokenApi.get("/user/get-user");
+    const response = await tokenApi.get("/user/get-profile");
+    const data = await response.data;
+    return data?.user;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error?.response?.data || "Something went wrong");
+  }
+});
+
+export const getUserDetails = createAsyncThunk("auth/getUserDetails", async (userId: string, thunkAPI)=> {
+  try {
+    const response = await tokenApi.get(`/user/get-user-details/${userId}`);
     const data = await response.data;
     return data?.user;
   } catch (error: any) {
@@ -133,7 +145,7 @@ export const authSlice = createSlice({
     });
     builder.addCase(registration.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.registerUserData = action.payload;
+      state.registerUserData = action?.payload;
     });
     builder.addCase(registration.rejected, (state, action) => {
       state.isLoading = false;
@@ -146,7 +158,7 @@ export const authSlice = createSlice({
     });
     builder.addCase(login.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.loginUserData = action.payload;
+      state.loginUserData = action?.payload;
     });
     builder.addCase(login.rejected, (state, action) => {
       state.isLoading = false;
@@ -157,7 +169,7 @@ export const authSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(logout.fulfilled, (state, action)=> {
-      state.logoutUserData = action.payload;
+      state.logoutUserData = action?.payload;
       state.isLoading = false;
     });
     builder.addCase(logout.rejected, (state, action)=> {
@@ -169,10 +181,22 @@ export const authSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getUserData.fulfilled, (state, action)=> {
-      state.userData = action.payload;
+      state.userData = action?.payload;
       state.isLoading = false;
     });
     builder.addCase(getUserData.rejected, (state, action)=> {
+      state.error = action?.payload;
+      state.isLoading = false;
+    });
+    //for user details
+    builder.addCase(getUserDetails.pending, (state, _)=> {
+      state.isLoading = true;
+    });
+    builder.addCase(getUserDetails.fulfilled, (state, action)=> {
+      state.userDetails = action?.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(getUserDetails.rejected, (state, action)=> {
       state.error = action?.payload;
       state.isLoading = false;
     });

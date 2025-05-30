@@ -1,52 +1,62 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { FontAwesome } from '@expo/vector-icons'
-import { router } from 'expo-router'
+import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useEffect } from "react";
+import { FontAwesome } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { getMyGroups } from "@/redux/slices/chat.slice";
+import ConversationsComp from "@/components/ConversationsComp";
 
 const group = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { myGroupsData, isLoading } = useSelector((state: any)=> state.chat);
+  useEffect(()=> {
+    dispatch(getMyGroups());
+  }, [dispatch]);
+  console.log("My group data: ", myGroupsData);
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.inputContainer}>
-        <FontAwesome name="search" size={20} color="gray" style={styles.icon} />
         <TextInput
           placeholder="Search your chats..."
           style={styles.input}
           placeholderTextColor="gray"
         />
-      </View>
-      <View>
-        <TouchableOpacity style={styles.chatContainer} onPress={()=> router.push("../conversationId/23874ehgd")}>
-          {/* <Image source={}/> */}
-          <FontAwesome name="user-circle-o" size={30} color="black" />
-          <View style={styles.messageSection}>
-            <Text>Name</Text>
-            <Text>messages...</Text>
-          </View>
-          <Text>Yesterday</Text>
+        <TouchableOpacity>
+          <FontAwesome
+            name="search"
+            size={25}
+            color="#ababab"
+            style={styles.icon}
+          />
         </TouchableOpacity>
       </View>
-    </ScrollView>
-  )
-}
+      <FlatList
+            data={myGroupsData}
+            renderItem={({ item }) => <ConversationsComp {...item} />}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
+          />
+    </View>
+  );
+};
 
-export default group
+export default group;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 20,
     backgroundColor: "#f5f5f5",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderRadius: 25,
+    backgroundColor: "#fff",
+    borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    marginBottom: 20,
-    borderWidth: 1,
+    marginBottom: 10,
     borderColor: "gray",
   },
   icon: {
@@ -64,9 +74,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#e8e8e8",
     padding: 15,
-    borderRadius: 10
+    borderRadius: 10,
   },
   messageSection: {
-    width: "60%"
-  }
+    width: "60%",
+  },
 });

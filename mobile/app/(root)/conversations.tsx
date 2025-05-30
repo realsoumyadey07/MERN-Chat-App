@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import { router } from "expo-router";
 import ConversationsComp from "@/components/ConversationsComp";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyChats } from "@/redux/slices/chat.slice";
@@ -23,7 +22,7 @@ const Conversations = () => {
     } catch (error: any) {
       Alert.alert(error.message);
     }
-  }, []);
+  }, [dispatch]);
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -67,7 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    marginBottom: 20,
+    marginBottom: 10,
     borderColor: "gray",
   },
   icon: {

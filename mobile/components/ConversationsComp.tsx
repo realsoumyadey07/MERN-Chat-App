@@ -13,11 +13,10 @@ interface ConversationProps {
     members?: string[];
 }
 export default function ConversationsComp(props: ConversationProps) {
-  const { userData } = useSelector((state: any)=> state.auth);
   const router = useRouter();
   return (
     <TouchableOpacity style={styles.chatContainer} onPress={()=> router.push(`/conversationId/${props._id}`)}>
-      <UserComponent letter={userData?.username[0].toUpperCase || "U"} />
+      <UserComponent letter={props?.name?.charAt(0).toUpperCase() || "U"} />
       <View style={styles.messageSection}>
         <Text>{props.name? props.name: "Name"}</Text>
         <Text>{props.message? props.message : "messages..."}</Text>

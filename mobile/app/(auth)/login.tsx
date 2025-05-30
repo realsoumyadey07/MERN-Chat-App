@@ -146,6 +146,7 @@ const Login = () => {
               handleSubmit={handleSubmit(handleLogin)}
               textStyle={styles.buttonText}
               buttonStyle={styles.buttonStyle}
+              isLoading = {isLoading}
             />
             <TouchableOpacity
               onPress={() => setScreen("Registration")}
@@ -225,6 +226,7 @@ const Login = () => {
               handleSubmit={handleSubmit(handleRegistration)}
               textStyle={styles.buttonText}
               buttonStyle={styles.buttonStyle}
+              isLoading={isLoading}
             />
 
             <TouchableOpacity

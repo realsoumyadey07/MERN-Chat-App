@@ -11,12 +11,13 @@ import { View, TouchableOpacity, Platform } from "react-native";
 
 const TabNavigator: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
-    dispatch(getUserData());
-  }, []);
   const { userData, isLoading, error } = useSelector(
     (state: any) => state.auth
   );
+  useEffect(() => {
+    dispatch(getUserData());
+  }, [dispatch]);
+  
   return (
     <Tabs
       screenOptions={{
@@ -56,7 +57,11 @@ const TabNavigator: React.FC = () => {
         },
         headerShadowVisible: false,
         headerStyle: {
-          backgroundColor: "#f5f5f5"
+          backgroundColor: "#f5f5f5",          
+        },
+        headerTitleStyle: {
+          fontWeight: "bold",
+          color: "#5091fa"
         }
       }}
     >
@@ -147,7 +152,8 @@ const TabNavigator: React.FC = () => {
               }}
             >
               <UserComponent
-                letter={userData?.username[0].toUpperCase() || "U"}
+                letter={userData?.username?.charAt(0).toUpperCase() || "U"}
+                focused={focused}
               />
             </View>
           ),

@@ -35,6 +35,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(root)" options={{ headerShown: false }} />
           <Stack.Screen name="conversationId/[id]" options={{headerShown: false}} />
+          <Stack.Screen name="profileId/[id]" options={{headerShown: false}} />
           <Stack.Screen name="+not-found" options={{ headerShown: false }} />
         </Stack>
         <StatusBar
