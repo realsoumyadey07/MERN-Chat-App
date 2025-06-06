@@ -1,5 +1,5 @@
-import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import React, { useEffect } from "react";
+import { Alert, FlatList, RefreshControl, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
@@ -7,10 +7,21 @@ import { getMyGroups } from "@/redux/slices/chat.slice";
 import ConversationsComp from "@/components/ConversationsComp";
 
 const group = () => {
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const { myGroupsData, isLoading } = useSelector((state: any)=> state.chat);
+  const handleLoadGroups = (): void => {
+    setRefreshing(true);
+    try {
+      dispatch(getMyGroups());
+    } catch (error: any) {
+      Alert.alert(error.message);
+    } finally {
+      setRefreshing(false);
+    }
+  }
   useEffect(()=> {
-    dispatch(getMyGroups());
+    handleLoadGroups();
   }, [dispatch]);
   console.log("My group data: ", myGroupsData);
   return (
@@ -36,6 +47,9 @@ const group = () => {
             keyExtractor={(item) => item._id}
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={handleLoadGroups} />
+            }
           />
     </View>
   );

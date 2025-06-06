@@ -1,12 +1,13 @@
 import {
   Alert,
   FlatList,
+  RefreshControl,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import ConversationsComp from "@/components/ConversationsComp";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,14 +15,22 @@ import { getMyChats } from "@/redux/slices/chat.slice";
 import { AppDispatch } from "@/redux/store";
 
 const Conversations = () => {
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const { myChatsData } = useSelector((state: any) => state.chat);
   const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
+
+  const handleLoadChats = (): void => {
+    setRefreshing(true);
     try {
       dispatch(getMyChats());
     } catch (error: any) {
       Alert.alert(error.message);
+    } finally {
+      setRefreshing(false);
     }
+  };
+  useEffect(() => {
+    handleLoadChats();
   }, [dispatch]);
   return (
     <View style={styles.container}>
@@ -46,6 +55,9 @@ const Conversations = () => {
         keyExtractor={(item) => item._id}
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleLoadChats} />
+        }
       />
     </View>
   );
