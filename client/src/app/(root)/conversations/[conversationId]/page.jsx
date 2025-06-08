@@ -8,7 +8,7 @@ import { MdEmojiEmotions } from "react-icons/md";
 import { IoAttachOutline } from "react-icons/io5";
 import { IoMic } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
-import { getMyChatDetails, getMyMessages } from "@/redux/slices/chat.slice";
+import { getMyChatDetails, getMyChats, getMyMessages } from "@/redux/slices/chat.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import { io } from "socket.io-client";
@@ -64,6 +64,7 @@ export default function Page() {
     socket.emit("NEW_MESSAGE", { chatId, members, message: userMessage });
     setUserMessage("");
     dispatch(getMyMessages(chatId));
+    dispatch(getMyChats());
   };
   return (
     <ConversationContainer>

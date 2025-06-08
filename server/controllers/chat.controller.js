@@ -59,15 +59,27 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
 
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
-    const chats = await Chat.find({ members: req.user.id });
+    const chats = await Chat.find({ members: req.user.id }).populate({
+      path: "latest_message",
+      select: "createdAt content"
+    });
+
+    // Sort chats by latest_message.createdAt (newest first)
+    chats.sort((a, b) => {
+      const dateA = a.latest_message?.createdAt || a.updatedAt;
+      const dateB = b.latest_message?.createdAt || b.updatedAt;
+      return new Date(dateB) - new Date(dateA); // Descending order
+    });
+
     const transeformedChats = await Promise.all(
-      chats.map(async ({ _id, name, members, groupChat }) => {
+      chats.map(async ({ _id, name, members, groupChat, latest_message }) => {
         const otherMember = getOtherMember(members, req.user.id);
         const otherMemberUser = await User.findById(otherMember);
         return {
           _id,
           name: groupChat ? name : otherMemberUser?.username,
           groupChat,
+          latest_message: latest_message ? latest_message : null,
           members: members.reduce((prev, curr) => {
             if (curr._id.toString() !== req.user.id.toString()) {
               prev.push(curr._id);

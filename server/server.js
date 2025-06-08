@@ -19,6 +19,7 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.model.js";
 import { socketAuthenticator } from "./middlewares/IsAuthenticated.js";
+import { Chat } from "./models/chat.model.js";
 
 const port = process.env.PORT || 8000;
 
@@ -95,7 +96,11 @@ io.on("connection", (socket)=> {
 
         console.log("New Message: ", messageForRealtime);
         try {
-            await Message.create(messageForDB);
+            const newMessage = await Message.create(messageForDB);
+            await Chat.findByIdAndUpdate(chatId, {
+                latest_message: newMessage._id,
+                updatedAt: new Date()
+            });
         } catch (error) {
             console.log("Error in creating message: ", error);
             throw new Error(error);

@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import EmptyListComp from "@/components/EmptyListComp";
+import { Info } from "lucide-react";
 
 export default function Layout({ children }) {
   const [name, setName] = useState("");
@@ -20,6 +21,8 @@ export default function Layout({ children }) {
   const handleSearch = () => {
     dispatch(getMyChatByName(name));
   };
+  console.log("mychats data is here: ",myChatsData);
+  
   return (
     <>
       <ItemList title="Conversations">
@@ -45,7 +48,7 @@ export default function Layout({ children }) {
           {myChatsData && myChatsData.length > 0 ? (
             myChatsData.map((item, index) => (
               <Link
-                className="w-full hover:bg-gray-200 dark:hover:bg-blue-950 rounded-lg p-2"
+                className="w-full hover:bg-gray-200 dark:hover:bg-blue-950 rounded-lg p-2 flex items-center justify-between"
                 href={`/conversations/${item._id}`}
                 key={index}
               >
@@ -57,7 +60,17 @@ export default function Layout({ children }) {
                     />
                     <AvatarFallback>DP</AvatarFallback>
                   </Avatar>
-                  <h2>{item.name}</h2>
+                  <div>
+                    <h2>{item.name}</h2>
+                    <p className="text-sm text-gray-500">{item.latest_message?.content ? item.latest_message?.content : ""}</p>
+                  </div>
+                </div>
+                <div>
+                  <p></p>
+                  {
+                    item.latest_message?.content &&
+                    <Info size={15} />
+                  }
                 </div>
               </Link>
             ))
