@@ -62,15 +62,8 @@ export default function Layout({ children }) {
                   </Avatar>
                   <div>
                     <h2>{item.name}</h2>
-                    <p className="text-sm text-gray-500">{item.latest_message?.content ? item.latest_message?.content : ""}</p>
+                    <p className="text-sm text-gray-500 truncate max-w-[200px] overflow-hidden">{item.latest_message?.content || ""}</p>
                   </div>
-                </div>
-                <div>
-                  <p></p>
-                  {
-                    item.latest_message?.content &&
-                    <Info size={15} />
-                  }
                 </div>
               </Link>
             ))

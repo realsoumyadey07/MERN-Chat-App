@@ -2,7 +2,7 @@
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ConversationContainer from "@/components/shared/conversations/ConversationContainer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getMyChatDetails, getMyMessages } from "@/redux/slices/chat.slice";
+import { getMyChatDetails, getMyGroups, getMyMessages } from "@/redux/slices/chat.slice";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { IoIosSend } from "react-icons/io";
@@ -59,6 +59,7 @@ export default function Page() {
     });
     setUserMessage("");
     dispatch(getMyMessages(groupId));
+    dispatch(getMyGroups());
   }
   return (
     <ConversationContainer>
@@ -84,13 +85,13 @@ export default function Page() {
           messageData?.map((item, index) =>
             item.sender._id === userData?._id ? (
               <div key={index} className="flex justify-end my-2">
-                <span className="float-right bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tr-none">
+                <span className="float-right bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tr-none lg:max-w-[400px] md:max-w-[300px] max-w-[200px]">
                   {item.content}
                 </span>
               </div>
             ) : (
               <div key={index} className="flex justify-start my-2">
-                <span className="bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tl-none">
+                <span className="bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tl-none lg:max-w-[400px] md:max-w-[300px] max-w-[200px]">
                   {item.content}
                 </span>
               </div>

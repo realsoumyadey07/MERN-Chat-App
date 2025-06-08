@@ -108,7 +108,7 @@ export default function ThreeDotComp() {
 
       {openGroupModal && (
         <Dialog open={openGroupModal}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
             <DialogHeader className="flex flex-col gap-2 justify-center items-center">
               <DialogTitle>Create New Group</DialogTitle>
             </DialogHeader>
@@ -136,13 +136,13 @@ export default function ThreeDotComp() {
                   </div>
                   <section>
                     <h1 className="p-2">Selected Friends</h1>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
+                    <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto pb-2 pl-2 scrollbar-thin">
                       {groupMembers.map((member) => (
                         <div
                           key={member._id}
                           className="flex items-center gap-2 bg-gray-200 dark:bg-blue-950 rounded-full px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-800 cursor-pointer whitespace-nowrap"
                         >
-                          <Avatar className="w-6 h-6">
+                          <Avatar className="w-6 h-6 shrink-0">
                             <AvatarImage
                               src="/path-to-your-profile-image.jpg"
                               alt="Profile"

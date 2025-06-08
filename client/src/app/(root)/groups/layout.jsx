@@ -55,7 +55,12 @@ export default function Layout({ children }) {
                     />
                     <AvatarFallback>DP</AvatarFallback>
                   </Avatar>
-                  <h2>{item.name}</h2>
+                  <div>
+                    <h2>{item.name}</h2>
+                    <p className="text-sm text-gray-500 truncate max-w-[200px] overflow-hidden">
+                      {item.latest_message?.content || ""}
+                    </p>
+                  </div>
                 </div>
               </Link>
             ))

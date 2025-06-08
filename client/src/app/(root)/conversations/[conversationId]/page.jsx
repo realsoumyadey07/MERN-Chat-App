@@ -98,13 +98,13 @@ export default function Page() {
             messageData?.map((item, index) =>
               item.sender._id === userData?._id ? (
                 <div key={index} className="flex justify-end my-2">
-                  <span className="float-right bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tr-none">
+                  <span className="float-right bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tr-none lg:max-w-[400px] md:max-w-[300px] max-w-[200px]">
                     {item.content}
                   </span>
                 </div>
               ) : (
                 <div key={index} className="flex justify-start my-2">
-                  <span className="bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tl-none">
+                  <span className="bg-gray-200 dark:bg-blue-950 text-black dark:text-white py-1 px-2 rounded rounded-tl-none lg:max-w-[400px] md:max-w-[300px] max-w-[200px]">
                     {item.content}
                   </span>
                 </div>

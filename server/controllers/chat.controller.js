@@ -163,13 +163,32 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
     const chats = await Chat.find({
       members: req.user.id,
       groupChat: true,
-    }).populate("members", "username");
-    const groups = chats.map(({ _id, members, groupChat, name }) => ({
+    })
+      .populate("members", "username")
+      .populate({
+        path: "latest_message",
+        select: "content createdAt sender", // adjust fields as needed
+        populate: {
+          path: "sender",
+          select: "username", // so you can show sender info in frontend
+        },
+      });
+
+    // Sort by latest_message.createdAt or fallback to updatedAt
+    chats.sort((a, b) => {
+      const dateA = a.latest_message?.createdAt || a.updatedAt;
+      const dateB = b.latest_message?.createdAt || b.updatedAt;
+      return new Date(dateB) - new Date(dateA); // newest first
+    });
+
+    const groups = chats.map(({ _id, name, groupChat, members, latest_message }) => ({
       _id,
       name,
       groupChat,
       members,
+      latest_message: latest_message? latest_message : null,
     }));
+
     return next(
       res.status(200).json({
         success: true,
