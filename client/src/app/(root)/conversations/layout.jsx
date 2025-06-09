@@ -54,11 +54,11 @@ export default function Layout({ children }) {
               >
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
-                    <AvatarImage
+                    {/* <AvatarImage
                       src="/path-to-your-profile-image.jpg"
                       alt="Profile"
-                    />
-                    <AvatarFallback>DP</AvatarFallback>
+                    /> */}
+                    <AvatarFallback>{item.name.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                   </Avatar>
                   <div>
                     <h2>{item.name}</h2>

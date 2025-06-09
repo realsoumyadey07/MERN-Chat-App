@@ -8,10 +8,28 @@ import { MdEmojiEmotions } from "react-icons/md";
 import { IoAttachOutline } from "react-icons/io5";
 import { IoMic } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
-import { getMyChatDetails, getMyChats, getMyMessages } from "@/redux/slices/chat.slice";
+import {
+  getMyChatDetails,
+  getMyChats,
+  getMyMessages,
+} from "@/redux/slices/chat.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import { io } from "socket.io-client";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const socket = io(process.env.NEXT_PUBLIC_BASE_URL_SOCKET, {
   withCredentials: true,
@@ -66,24 +84,106 @@ export default function Page() {
     dispatch(getMyMessages(chatId));
     dispatch(getMyChats());
   };
+
+  console.log("My chat details is: ", myChatDetails);
+
   return (
     <ConversationContainer>
       <>
         <nav className="flex justify-between p-5">
-          <div className="flex items-center gap-2">
-            <Avatar className="w-8 h-8">
-              <AvatarImage
-                src="/path-to-your-profile-image.jpg"
-                alt="Profile"
-              />
-              <AvatarFallback>DP</AvatarFallback>
-            </Avatar>
-            <h1>
-              {myChatDetails?.chat?.groupChat
-                ? myChatDetails?.chat?.name
-                : myChatDetails?.otherMember?.username}
-            </h1>
-          </div>
+          <Popover>
+            <PopoverTrigger className="flex items-center gap-2">
+              <Avatar className="w-8 h-8">
+                {/* <AvatarImage
+                  src="/path-to-your-profile-image.jpg"
+                  alt="Profile"
+                /> */}
+                <AvatarFallback>
+                  {myChatDetails?.chat?.groupChat
+                    ? myChatDetails?.chat?.name?.charAt(0).toUpperCase()
+                    : myChatDetails?.otherMember?.username
+                        ?.charAt(0)
+                        .toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <h1>
+                {myChatDetails?.chat?.groupChat
+                  ? myChatDetails?.chat?.name
+                  : myChatDetails?.otherMember?.username}
+              </h1>
+            </PopoverTrigger>
+            <PopoverContent className="lg:w-[400px]">
+              {myChatDetails && myChatDetails?.chat?.groupChat === false ? (
+                <div className="flex flex-col justify-center items-center gap-2 mb-4">
+                  <Avatar className="w-[100px] h-[100px]">
+                    {/* <AvatarImage
+                      src="/path-to-your-profile-image.jpg"
+                      alt="Profile"
+                    /> */}
+                    <AvatarFallback className="text-3xl">
+                      {myChatDetails?.otherMember?.username?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <h1>{myChatDetails?.otherMember?.username}</h1>
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      <label className="font-bold">Email</label>
+                      <p className="flex justify-between text-sm text-gray-400">
+                        {myChatDetails?.otherMember?.email}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="font-bold">About</label>
+                      <p className="flex justify-between items-center gap-4 text-sm text-gray-400">
+                        {myChatDetails?.otherMember?.status}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col justify-center items-center gap-2 mb-4">
+                  <Avatar className="w-[100px] h-[100px]">
+                    <AvatarFallback className="text-3xl">
+                      {myChatDetails?.chat?.name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <h1>{myChatDetails?.chat?.name}</h1>
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      <label className="font-bold">Creator</label>
+                      <p className="flex justify-between text-sm text-gray-400">
+                        {myChatDetails?.chat?.creator?.username}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="font-bold">CreatedAt</label>
+                      <p className="flex justify-between items-center gap-4 text-sm text-gray-400">
+                        {Date(myChatDetails?.chat?.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="font-bold">Members</label>
+                      <div className="space-y-2 h-[100px] overflow-y-auto no-scrollbar mt-2">
+                        {myChatDetails?.chat?.members?.map((member) => (
+                          <div
+                            key={member._id}
+                            className="flex items-center gap-2 bg-gray-200 dark:bg-blue-950 rounded-lg p-2 hover:bg-gray-300 dark:hover:bg-gray-800 cursor-pointer"
+                          >
+                            <Avatar className="w-8 h-8">
+                              <AvatarFallback>
+                                {member?.username?.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <p>{member?.username}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
           <ul className="flex gap-4 justify-center items-center w-[8%]">
             <li>
               <LuVideo size={23} />

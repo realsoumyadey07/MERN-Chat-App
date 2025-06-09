@@ -66,8 +66,8 @@ export default function Page() {
       <nav className="flex justify-between p-5">
         <div className="flex items-center gap-2">
           <Avatar className="w-8 h-8">
-            <AvatarImage src="/path-to-your-profile-image.jpg" alt="Profile" />
-            <AvatarFallback>DP</AvatarFallback>
+            {/* <AvatarImage src="/path-to-your-profile-image.jpg" alt="Profile" /> */}
+            <AvatarFallback>{myChatDetails?.chat?.name?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <h1>{myChatDetails?.chat?.name}</h1>
         </div>

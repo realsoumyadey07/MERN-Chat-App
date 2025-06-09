@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,7 +21,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoSearch } from "react-icons/io5";
 import { getMyFriends, searchMyFriendByName } from "@/redux/slices/user.slice";
 import { createNewGroup, getMyGroups } from "@/redux/slices/chat.slice";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 export default function ThreeDotComp() {
   const [modalScreen, setModalScreen] = useState("members");
@@ -111,6 +112,7 @@ export default function ThreeDotComp() {
           <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
             <DialogHeader className="flex flex-col gap-2 justify-center items-center">
               <DialogTitle>Create New Group</DialogTitle>
+              <DialogDescription>{""}</DialogDescription>
             </DialogHeader>
             {modalScreen === "members" && (
               <>
@@ -143,11 +145,11 @@ export default function ThreeDotComp() {
                           className="flex items-center gap-2 bg-gray-200 dark:bg-blue-950 rounded-full px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-800 cursor-pointer whitespace-nowrap"
                         >
                           <Avatar className="w-6 h-6 shrink-0">
-                            <AvatarImage
+                            {/* <AvatarImage
                               src="/path-to-your-profile-image.jpg"
                               alt="Profile"
-                            />
-                            <AvatarFallback>DP</AvatarFallback>
+                            /> */}
+                            <AvatarFallback>{member?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                           </Avatar>
                           <p className="text-sm">{member?.username}</p>
                         </div>
@@ -179,11 +181,11 @@ export default function ThreeDotComp() {
                         }}
                       >
                         <Avatar className="w-8 h-8">
-                          <AvatarImage
+                          {/* <AvatarImage
                             src="/path-to-your-profile-image.jpg"
                             alt="Profile"
-                          />
-                          <AvatarFallback>DP</AvatarFallback>
+                          /> */}
+                          <AvatarFallback>{friend?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <p>{friend?.username}</p>
                       </div>
@@ -191,7 +193,7 @@ export default function ThreeDotComp() {
                   </div>
                 </main>
                 <DialogFooter>
-                  <button
+                  <Button
                     onClick={() => {
                       setGroupMembers([]);
                       setOpenGroupModal(false);
@@ -199,23 +201,24 @@ export default function ThreeDotComp() {
                       setName("");
                       console.log("Cancel clicked");
                     }}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    variant="outline"
+                    // className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => {
                       if (groupMembers.length <= 1) {
                         setEmptyMember(true);
                         return;
                       }
                       setModalScreen("groupName");
-                      console.log("Cancel clicked");
+                      console.log("next clicked");
                     }}
-                    className="px-4 py-2 text-white flex items-center justify-center gap-1 bg-green-600 rounded-sm hover:bg-green-700"
+                    // className="px-4 py-2 text-white flex items-center justify-center gap-1 bg-green-600 rounded-sm hover:bg-green-700"
                   >
                     Next
-                  </button>
+                  </Button>
                 </DialogFooter>
               </>
             )}
@@ -235,21 +238,22 @@ export default function ThreeDotComp() {
                   </div>
                 </main>
                 <DialogFooter>
-                  <button
+                  <Button
                     onClick={() => {
                       setGroupName("");
                       setModalScreen("members");
                     }}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    // className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    variant="outline"
                   >
                     Back
-                  </button>
-                  <button
-                    className="px-4 py-2 text-white rounded-sm bg-green-600 hover:bg-green-700 flex items-center "
+                  </Button>
+                  <Button
+                    // className="px-4 py-2 text-white rounded-sm bg-green-600 hover:bg-green-700 flex items-center "
                     onClick={handleCreateGroup}
                   >
                     {groupLoading ? <h1>Loading...</h1> : <h1>Create</h1>}
-                  </button>
+                  </Button>
                 </DialogFooter>
               </>
             )}

@@ -508,7 +508,7 @@ export const sendAttachments = AsyncHandler(async (req, res, next) => {
 export const getChatDetails = AsyncHandler(async (req, res, next) => {
   try {
     const chat = await Chat.findById(req.params.id)
-      .populate("members", "username")
+      .populate("members", "username status email")
       .populate("creator", "username")
       .lean();
     if (!chat)

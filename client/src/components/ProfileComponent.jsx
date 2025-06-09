@@ -56,11 +56,11 @@ export default function ProfileComponent() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="p-0">
               <Avatar className="w-8 h-8">
-                <AvatarImage
+                {/* <AvatarImage
                   src="/path-to-your-profile-image.jpg"
                   alt="Profile"
-                />
-                <AvatarFallback>DP</AvatarFallback>
+                /> */}
+                <AvatarFallback>{userData?.username?.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
@@ -68,12 +68,12 @@ export default function ProfileComponent() {
           {userData && (
             <DropdownMenuContent className="w-fit">
               <div className="flex flex-col items-center gap-2 p-4">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage
+                <Avatar className="w-[100px] h-[100px]">
+                  {/* <AvatarImage
                     src="/path-to-your-profile-image.jpg"
                     alt="Profile"
-                  />
-                  <AvatarFallback>DP</AvatarFallback>
+                  /> */}
+                  <AvatarFallback className="text-3xl">{userData?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <p>{userData.username}</p>
                 <div>
