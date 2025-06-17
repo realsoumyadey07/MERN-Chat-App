@@ -13,6 +13,10 @@
   scrollbar-width: none;     /* Firefox */
 }
 
+[data-nextjs-dev-overlay] {
+  display: none !important;
+}
+
 
 @layer base {
   :root {

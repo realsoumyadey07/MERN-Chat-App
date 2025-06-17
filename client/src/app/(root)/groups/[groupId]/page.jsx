@@ -1,7 +1,6 @@
 "use client";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import ConversationContainer from "@/components/shared/conversations/ConversationContainer";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getMyChatDetails, getMyGroups, getMyMessages } from "@/redux/slices/chat.slice";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +26,7 @@ export default function Page() {
   }, [groupId, dispatch]);
 
   useEffect(()=> {
-    const handleNewMessage = (data) => {
+    const handleNewMessage = () => {
       dispatch(getMyMessages(groupId));
     }
     socket.on("NEW_MESSAGE", handleNewMessage);

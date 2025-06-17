@@ -55,7 +55,7 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
@@ -102,7 +102,7 @@ export const getMyChat = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMyChatByName = AsyncHandler(async (req, res, next) => {
   try {
@@ -156,7 +156,7 @@ export const getMyChatByName = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const getMyGroups = AsyncHandler(async (req, res, next) => {
   try {
@@ -203,7 +203,7 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMyGroupByName = AsyncHandler(async (req, res, next) => {
   try {
@@ -244,7 +244,7 @@ export const getMyGroupByName = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const addMember = AsyncHandler(async (req, res, next) => {
   try {
@@ -321,7 +321,23 @@ export const addMember = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); 
+
+export const getFriendsWhoAreNotPresentInGrp = AsyncHandler(async(req, res, next)=> {
+  try {
+    const { chatId } = req.params;
+    const fiends = await Chat.find({
+      members: req.user.id,
+      groupChat: false
+    });
+
+  } catch (error) {
+    return next(res.status(500).json({
+      success: false,
+      message: error.message,
+    }))
+  }
+})
 
 export const removeMember = AsyncHandler(async (req, res, next) => {
   try {
@@ -554,7 +570,7 @@ export const getChatDetails = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const renameGroup = AsyncHandler(async (req, res, next) => {
   try {
@@ -608,7 +624,7 @@ export const renameGroup = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const deleteGroup = AsyncHandler(async (req, res, next) => {
   try {
@@ -675,7 +691,7 @@ export const deleteGroup = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMessages = AsyncHandler(async (req, res) => {
   try {
@@ -703,4 +719,4 @@ export const getMessages = AsyncHandler(async (req, res) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done

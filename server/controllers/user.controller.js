@@ -30,7 +30,7 @@ export const generateAccessAndRefreshToken = async (userId) => {
         "something went wrong while generating access and refresh token!"
     );
   }
-};
+}; // done
 
 export const userRegistration = AsyncHandler(async (req, res) => {
   try {
@@ -68,7 +68,7 @@ export const userRegistration = AsyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-});
+}); // done
 
 export const userLogin = AsyncHandler(async (req, res) => {
   try {
@@ -130,7 +130,7 @@ export const userLogin = AsyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-});
+}); // done
 
 export const userLogout = AsyncHandler(async (req, res) => {
   try {
@@ -162,7 +162,7 @@ export const userLogout = AsyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-});
+}); // done
 
 export const refreshAccessToken = AsyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookie.refresh_token;
@@ -212,7 +212,7 @@ export const refreshAccessToken = AsyncHandler(async (req, res) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const getProfile = AsyncHandler(async (req, res) => {
   try {
@@ -235,7 +235,7 @@ export const getProfile = AsyncHandler(async (req, res) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const searchUser = AsyncHandler(async (req, res, next) => {
   try {
@@ -275,7 +275,7 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const searchUnknownUser = AsyncHandler(async (req, res, next) => {
   try {
@@ -309,7 +309,7 @@ export const searchUnknownUser = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const getAllUnknownUsers = AsyncHandler(async (req, res, next)=> {
   try {
@@ -361,7 +361,7 @@ export const getAllUnknownUsers = AsyncHandler(async (req, res, next)=> {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
@@ -400,7 +400,7 @@ export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
       message: error.members || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
@@ -470,7 +470,7 @@ export const acceptFriendRequest = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const getAllRequests = AsyncHandler(async (req, res, next) => {
   try {
@@ -505,7 +505,7 @@ export const getAllRequests = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const getRequestsByName = AsyncHandler(async (req, res, next) => {
   try {
@@ -547,7 +547,7 @@ export const getRequestsByName = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     })
   }
-})
+}) // done
 
 export const getMyFriends = AsyncHandler(async (req, res, next) => {
   try {
@@ -584,7 +584,7 @@ export const getMyFriends = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal; server error!",
     });
   }
-});
+}); 
 
 export const getUserDetails = AsyncHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -618,5 +618,5 @@ export const getUserDetails = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 

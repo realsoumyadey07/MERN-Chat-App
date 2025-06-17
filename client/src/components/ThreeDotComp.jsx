@@ -20,7 +20,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoSearch } from "react-icons/io5";
 import { getMyFriends, searchMyFriendByName } from "@/redux/slices/user.slice";
-import { createNewGroup, getMyGroups } from "@/redux/slices/chat.slice";
+import { createNewGroup, getMyChats, getMyGroups } from "@/redux/slices/chat.slice";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 export default function ThreeDotComp() {
@@ -68,15 +68,14 @@ export default function ThreeDotComp() {
           name: groupName.trim(),
           members: memberIds,
         })
-      );
-
-      if (newCreatedGroup) {
+      ).then(() => {
         setOpenGroupModal(false);
         setGroupMembers([]);
         setGroupName("");
         setModalScreen("members");
         dispatch(getMyGroups());
-      }
+        dispatch(getMyChats());
+      });
     } catch (error) {
       console.error("Error creating group:", error);
       alert("Failed to create group. Please try again.");
@@ -145,11 +144,9 @@ export default function ThreeDotComp() {
                           className="flex items-center gap-2 bg-gray-200 dark:bg-blue-950 rounded-full px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-800 cursor-pointer whitespace-nowrap"
                         >
                           <Avatar className="w-6 h-6 shrink-0">
-                            {/* <AvatarImage
-                              src="/path-to-your-profile-image.jpg"
-                              alt="Profile"
-                            /> */}
-                            <AvatarFallback>{member?.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                            <AvatarFallback>
+                              {member?.username?.charAt(0).toUpperCase()}
+                            </AvatarFallback>
                           </Avatar>
                           <p className="text-sm">{member?.username}</p>
                         </div>
@@ -181,11 +178,9 @@ export default function ThreeDotComp() {
                         }}
                       >
                         <Avatar className="w-8 h-8">
-                          {/* <AvatarImage
-                            src="/path-to-your-profile-image.jpg"
-                            alt="Profile"
-                          /> */}
-                          <AvatarFallback>{friend?.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                          <AvatarFallback>
+                            {friend?.username?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
                         </Avatar>
                         <p>{friend?.username}</p>
                       </div>
@@ -202,7 +197,6 @@ export default function ThreeDotComp() {
                       console.log("Cancel clicked");
                     }}
                     variant="outline"
-                    // className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                   >
                     Cancel
                   </Button>
@@ -215,7 +209,6 @@ export default function ThreeDotComp() {
                       setModalScreen("groupName");
                       console.log("next clicked");
                     }}
-                    // className="px-4 py-2 text-white flex items-center justify-center gap-1 bg-green-600 rounded-sm hover:bg-green-700"
                   >
                     Next
                   </Button>
