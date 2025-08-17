@@ -43,7 +43,7 @@ export const getMyChats = createAsyncThunk(
      }
 );
 
-export const getMyChatByName = createAsyncThunk("chat/getMyChatByName", async(name, thunkApi)=> {
+export const getMyChatByName = createAsyncThunk("chat/getMyChatByName", async(name: string, thunkApi)=> {
      try {
           const response = await tokenApi.get(`/chat/get-my-chat-by-name?name=${name}`);
           const data = await response.data;
@@ -67,7 +67,7 @@ export const getMyGroups = createAsyncThunk("chat/getMyGroups", async(_, thunkAp
      }
 });
 
-export const getMyGroupByName = createAsyncThunk("chat/getMyGroupByName", async(groupName, thunkApi)=> {
+export const getMyGroupByName = createAsyncThunk("chat/getMyGroupByName", async(groupName: string, thunkApi)=> {
      try {
           const response = await tokenApi.get(`/chat/get-my-group-by-name?name=${groupName}`);
           const data = await response.data;

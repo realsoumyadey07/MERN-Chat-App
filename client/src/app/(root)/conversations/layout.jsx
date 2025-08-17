@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import EmptyListComp from "@/components/EmptyListComp";
-import { Info } from "lucide-react";
 
 export default function Layout({ children }) {
   const [name, setName] = useState("");

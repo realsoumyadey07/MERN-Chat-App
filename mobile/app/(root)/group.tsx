@@ -1,26 +1,48 @@
-import { Alert, FlatList, RefreshControl, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import { getMyGroups } from "@/redux/slices/chat.slice";
+import { getMyGroupByName, getMyGroups } from "@/redux/slices/chat.slice";
 import ConversationsComp from "@/components/ConversationsComp";
+import CustomEmptyChat from "@/components/CustomEmptyChat";
 
 const group = () => {
+  const [groupName, setGroupName] = useState<string>("");
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
-  const { myGroupsData, isLoading } = useSelector((state: any)=> state.chat);
+  const { myGroupsData, isLoading } = useSelector((state: any) => state.chat);
+
   const handleLoadGroups = (): void => {
     setRefreshing(true);
     try {
-      dispatch(getMyGroups());
+      if (groupName !== "") {
+        dispatch(getMyGroupByName(groupName));
+      } else {
+        dispatch(getMyGroups());
+      }
     } catch (error: any) {
       Alert.alert(error.message);
     } finally {
       setRefreshing(false);
     }
-  }
-  useEffect(()=> {
+  };
+
+  const handleSearch = (): void => {
+    if (groupName !== "") {
+      dispatch(getMyGroupByName(groupName));
+    }
+  };
+
+  useEffect(() => {
     handleLoadGroups();
   }, [dispatch]);
   console.log("My group data: ", myGroupsData);
@@ -31,8 +53,15 @@ const group = () => {
           placeholder="Search your chats..."
           style={styles.input}
           placeholderTextColor="gray"
+          onChangeText={(e) => {
+            setGroupName(e);
+            dispatch(getMyGroupByName(e));
+            if (e === "") {
+              dispatch(getMyGroups());
+            }
+          }}
         />
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSearch}>
           <FontAwesome
             name="search"
             size={25}
@@ -42,15 +71,24 @@ const group = () => {
         </TouchableOpacity>
       </View>
       <FlatList
-            data={myGroupsData}
-            renderItem={({ item }) => <ConversationsComp {...item} />}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={handleLoadGroups} />
-            }
+        data={myGroupsData}
+        renderItem={({ item }) => <ConversationsComp {...item} />}
+        keyExtractor={(item) => item._id}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleLoadGroups}
           />
+        }
+        ListEmptyComponent={
+          <CustomEmptyChat
+            title="No Group found!"
+            description="Please create a group to start chatting."
+          />
+        }
+      />
     </View>
   );
 };

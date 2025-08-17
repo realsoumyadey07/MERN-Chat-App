@@ -7,14 +7,14 @@ import { connectDb } from "./utils/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { Server } from "socket.io";
-import {createServer} from "http";
-import {v4 as uuid} from "uuid";
+import { createServer } from "http";
+import { v4 as uuid } from "uuid";
 
 // Routers import
 import userRouter from "./routes/user.router.js";
 import chatRouter from "./routes/chat.router.js";
 // import { createMessagesInAChat, createSingleChats, deleteAllChats } from "./seeders/chat.js";
-// import { createUser, deleteAllUsers } from "./seeders/user.js";
+import { createUser, deleteAllUsers } from "./seeders/user.js";
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.model.js";
@@ -39,15 +39,15 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
-app.use(express.json({limit: "50mb"}));
-app.use(express.urlencoded({extended: true, limit: "16kb"}));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
 //user mapping with socketIds
 export const socketUserIds = new Map();
 
-app.get("/", (req, res)=> {
+app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
         serverRuning: true
@@ -57,23 +57,23 @@ app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
 
 
-io.use((socket, next)=> {
+io.use((socket, next) => {
     cookieParser()(
         socket.request,
-        socket.request.res,
+        {},
         async (err) => await socketAuthenticator(err, socket, next)
     );
 })
 
-io.on("connection", (socket)=> {
+io.on("connection", (socket) => {
     const user = socket.user;
     socketUserIds.set(user._id.toString(), socket.id);
     console.log(socketUserIds);
-    console.log(`a user connected: ${socket.id}`);   
-    socket.on(NEW_MESSAGE, async ({chatId, members, message}) => {
+    console.log(`a user connected: ${socket.id}`);
+    socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
         console.log("New message: ", message);
         const messageForRealtime = {
-            _id: uuid,
+            _id: uuid(),
             content: message,
             sender: {
                 _id: user._id,
@@ -113,12 +113,20 @@ io.on("connection", (socket)=> {
 });
 
 
-server.listen(port, ()=> {
-    console.log(`⚙ Server is running on port: ${port}`);
-    connectDb();
+connectDb().then(() => {
+    server.listen(port, () => {
+        console.log(`Server is running on: ${port}`);
+    })
+}).catch(err => {
+    console.log("❌ DB connection failed:", err);
 });
 
-export default app;
+// server.listen(port, ()=> {
+//     console.log(`⚙ Server is running on port: ${port}`);
+//     connectDb();
+// });
+
+// export default app;
 
 // createUser(5);
 // createSingleChats();

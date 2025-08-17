@@ -73,18 +73,14 @@ export const userRegistration = AsyncHandler(async (req, res) => {
 export const userLogin = AsyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if ([email, password].some((field) => field?.trim() === "")) {
       return res.status(400).json({
         success: false,
         message: "All fields are required!",
       });
     }
-    if (req.cookies.access_token) {
-      return res.status(200).json({
-        success: true,
-        message: "User is already loggedin!",
-      });
-    }
+
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(400).json({
@@ -92,38 +88,42 @@ export const userLogin = AsyncHandler(async (req, res) => {
         message: "Email is not correct!",
       });
     }
+
     const isMatched = await user.comparePassword(password);
     if (!isMatched) {
       return res.status(400).json({
         success: false,
-        message: "Password is not corrent!",
+        message: "Password is not correct!",
       });
     }
-    const { access_token, refresh_token } = await generateAccessAndRefreshToken(
-      user._id
-    );
+
+    const { access_token, refresh_token } =
+      await generateAccessAndRefreshToken(user._id);
 
     const loggedinUser = await User.findById(user._id).select(
       "-password -refresh_token"
     );
+
+    // Cookie options (for Next.js frontend)
     const cookiesOption = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-      maxAge: 10 * 24 * 60 * 60 * 1000,
     };
-    return res
-      .status(200)
-      .cookie("access_token", access_token, cookiesOption)
-      .cookie("refresh_token", refresh_token, cookiesOption)
-      .json({
-        success: true,
-        user: loggedinUser,
-        access_token,
-        refresh_token,
-        message: "User logged in successfully!",
-      });
+
+    // 🔑 Set cookies (works for Next.js web app)
+    res.cookie("access_token", access_token, cookiesOption);
+    res.cookie("refresh_token", refresh_token, cookiesOption);
+
+    // 🔑 Also send tokens in JSON (works for React Native app)
+    return res.status(200).json({
+      success: true,
+      user: loggedinUser,
+      access_token,
+      refresh_token,
+      message: "User logged in successfully!",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

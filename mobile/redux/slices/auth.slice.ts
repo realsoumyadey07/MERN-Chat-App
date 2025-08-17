@@ -78,23 +78,30 @@ export const login = createAsyncThunk<
   { rejectValue: { message: string } }
 >("auth/login", async (formData, thunkAPI) => {
   try {
-    console.log(process.env.EXPO_PUBLIC_BASE_URL);
+    console.log("Base URL:", process.env.EXPO_PUBLIC_BASE_URL);
+
     const response = await openApi.post("/user/user-login", {
-      email: formData?.email,
-      password: formData?.password,
+      email: formData.email,
+      password: formData.password,
     });
-    const data = await response.data;
-    console.log("login data: " + data?.access_token);
-    await AsyncStorage.setItem("access_token", String(data?.access_token));
-    await AsyncStorage.setItem("refresh_token", String(data?.refresh_token));
+
+    const { data } = response;
+    console.log("Login response:", data);
+
+    if (data?.access_token) {
+      await AsyncStorage.setItem("access_token", String(data.access_token));
+      await AsyncStorage.setItem("refresh_token", String(data.refresh_token));
+    }
+
     return data?.user;
   } catch (error: any) {
-    console.log(error);
+    console.log("Login error:", error?.response?.data || error.message);
     return thunkAPI.rejectWithValue(
-      error?.response?.data || "Something went wrong"
+      error?.response?.data || { message: "Something went wrong" }
     );
   }
 });
+
 
 export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
   try {
