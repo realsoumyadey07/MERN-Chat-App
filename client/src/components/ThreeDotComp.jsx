@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -19,8 +20,8 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoSearch } from "react-icons/io5";
 import { getMyFriends, searchMyFriendByName } from "@/redux/slices/user.slice";
-import { createNewGroup, getMyGroups } from "@/redux/slices/chat.slice";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { createNewGroup, getMyChats, getMyGroups } from "@/redux/slices/chat.slice";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 export default function ThreeDotComp() {
   const [modalScreen, setModalScreen] = useState("members");
@@ -67,15 +68,14 @@ export default function ThreeDotComp() {
           name: groupName.trim(),
           members: memberIds,
         })
-      );
-
-      if (newCreatedGroup) {
+      ).then(() => {
         setOpenGroupModal(false);
         setGroupMembers([]);
         setGroupName("");
         setModalScreen("members");
         dispatch(getMyGroups());
-      }
+        dispatch(getMyChats());
+      });
     } catch (error) {
       console.error("Error creating group:", error);
       alert("Failed to create group. Please try again.");
@@ -108,9 +108,10 @@ export default function ThreeDotComp() {
 
       {openGroupModal && (
         <Dialog open={openGroupModal}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
             <DialogHeader className="flex flex-col gap-2 justify-center items-center">
               <DialogTitle>Create New Group</DialogTitle>
+              <DialogDescription>{""}</DialogDescription>
             </DialogHeader>
             {modalScreen === "members" && (
               <>
@@ -136,18 +137,16 @@ export default function ThreeDotComp() {
                   </div>
                   <section>
                     <h1 className="p-2">Selected Friends</h1>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
+                    <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto pb-2 pl-2 scrollbar-thin">
                       {groupMembers.map((member) => (
                         <div
                           key={member._id}
                           className="flex items-center gap-2 bg-gray-200 dark:bg-blue-950 rounded-full px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-800 cursor-pointer whitespace-nowrap"
                         >
-                          <Avatar className="w-6 h-6">
-                            <AvatarImage
-                              src="/path-to-your-profile-image.jpg"
-                              alt="Profile"
-                            />
-                            <AvatarFallback>DP</AvatarFallback>
+                          <Avatar className="w-6 h-6 shrink-0">
+                            <AvatarFallback>
+                              {member?.username?.charAt(0).toUpperCase()}
+                            </AvatarFallback>
                           </Avatar>
                           <p className="text-sm">{member?.username}</p>
                         </div>
@@ -179,11 +178,9 @@ export default function ThreeDotComp() {
                         }}
                       >
                         <Avatar className="w-8 h-8">
-                          <AvatarImage
-                            src="/path-to-your-profile-image.jpg"
-                            alt="Profile"
-                          />
-                          <AvatarFallback>DP</AvatarFallback>
+                          <AvatarFallback>
+                            {friend?.username?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
                         </Avatar>
                         <p>{friend?.username}</p>
                       </div>
@@ -191,7 +188,7 @@ export default function ThreeDotComp() {
                   </div>
                 </main>
                 <DialogFooter>
-                  <button
+                  <Button
                     onClick={() => {
                       setGroupMembers([]);
                       setOpenGroupModal(false);
@@ -199,23 +196,22 @@ export default function ThreeDotComp() {
                       setName("");
                       console.log("Cancel clicked");
                     }}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    variant="outline"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => {
                       if (groupMembers.length <= 1) {
                         setEmptyMember(true);
                         return;
                       }
                       setModalScreen("groupName");
-                      console.log("Cancel clicked");
+                      console.log("next clicked");
                     }}
-                    className="px-4 py-2 text-white flex items-center justify-center gap-1 bg-green-600 rounded-sm hover:bg-green-700"
                   >
                     Next
-                  </button>
+                  </Button>
                 </DialogFooter>
               </>
             )}
@@ -235,21 +231,22 @@ export default function ThreeDotComp() {
                   </div>
                 </main>
                 <DialogFooter>
-                  <button
+                  <Button
                     onClick={() => {
                       setGroupName("");
                       setModalScreen("members");
                     }}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    // className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    variant="outline"
                   >
                     Back
-                  </button>
-                  <button
-                    className="px-4 py-2 text-white rounded-sm bg-green-600 hover:bg-green-700 flex items-center "
+                  </Button>
+                  <Button
+                    // className="px-4 py-2 text-white rounded-sm bg-green-600 hover:bg-green-700 flex items-center "
                     onClick={handleCreateGroup}
                   >
                     {groupLoading ? <h1>Loading...</h1> : <h1>Create</h1>}
-                  </button>
+                  </Button>
                 </DialogFooter>
               </>
             )}

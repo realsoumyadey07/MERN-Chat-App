@@ -55,19 +55,31 @@ export const newGroupChat = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMyChat = AsyncHandler(async (req, res, next) => {
   try {
-    const chats = await Chat.find({ members: req.user.id });
+    const chats = await Chat.find({ members: req.user.id }).populate({
+      path: "latest_message",
+      select: "createdAt content"
+    });
+
+    // Sort chats by latest_message.createdAt (newest first)
+    chats.sort((a, b) => {
+      const dateA = a.latest_message?.createdAt || a.updatedAt;
+      const dateB = b.latest_message?.createdAt || b.updatedAt;
+      return new Date(dateB) - new Date(dateA); // Descending order
+    });
+
     const transeformedChats = await Promise.all(
-      chats.map(async ({ _id, name, members, groupChat }) => {
+      chats.map(async ({ _id, name, members, groupChat, latest_message }) => {
         const otherMember = getOtherMember(members, req.user.id);
         const otherMemberUser = await User.findById(otherMember);
         return {
           _id,
           name: groupChat ? name : otherMemberUser?.username,
           groupChat,
+          latest_message: latest_message ? latest_message : null,
           members: members.reduce((prev, curr) => {
             if (curr._id.toString() !== req.user.id.toString()) {
               prev.push(curr._id);
@@ -90,7 +102,7 @@ export const getMyChat = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMyChatByName = AsyncHandler(async (req, res, next) => {
   try {
@@ -144,20 +156,39 @@ export const getMyChatByName = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const getMyGroups = AsyncHandler(async (req, res, next) => {
   try {
     const chats = await Chat.find({
       members: req.user.id,
       groupChat: true,
-    }).populate("members", "username");
-    const groups = chats.map(({ _id, members, groupChat, name }) => ({
+    })
+      .populate("members", "username")
+      .populate({
+        path: "latest_message",
+        select: "content createdAt sender", // adjust fields as needed
+        populate: {
+          path: "sender",
+          select: "username", // so you can show sender info in frontend
+        },
+      });
+
+    // Sort by latest_message.createdAt or fallback to updatedAt
+    chats.sort((a, b) => {
+      const dateA = a.latest_message?.createdAt || a.updatedAt;
+      const dateB = b.latest_message?.createdAt || b.updatedAt;
+      return new Date(dateB) - new Date(dateA); // newest first
+    });
+
+    const groups = chats.map(({ _id, name, groupChat, members, latest_message }) => ({
       _id,
       name,
       groupChat,
       members,
+      latest_message: latest_message? latest_message : null,
     }));
+
     return next(
       res.status(200).json({
         success: true,
@@ -172,7 +203,7 @@ export const getMyGroups = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMyGroupByName = AsyncHandler(async (req, res, next) => {
   try {
@@ -213,7 +244,7 @@ export const getMyGroupByName = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done
 
 export const addMember = AsyncHandler(async (req, res, next) => {
   try {
@@ -290,7 +321,23 @@ export const addMember = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); 
+
+export const getFriendsWhoAreNotPresentInGrp = AsyncHandler(async(req, res, next)=> {
+  try {
+    const { chatId } = req.params;
+    const fiends = await Chat.find({
+      members: req.user.id,
+      groupChat: false
+    });
+
+  } catch (error) {
+    return next(res.status(500).json({
+      success: false,
+      message: error.message,
+    }))
+  }
+})
 
 export const removeMember = AsyncHandler(async (req, res, next) => {
   try {
@@ -477,7 +524,7 @@ export const sendAttachments = AsyncHandler(async (req, res, next) => {
 export const getChatDetails = AsyncHandler(async (req, res, next) => {
   try {
     const chat = await Chat.findById(req.params.id)
-      .populate("members", "username")
+      .populate("members", "username status email")
       .populate("creator", "username")
       .lean();
     if (!chat)
@@ -523,7 +570,7 @@ export const getChatDetails = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const renameGroup = AsyncHandler(async (req, res, next) => {
   try {
@@ -577,7 +624,7 @@ export const renameGroup = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const deleteGroup = AsyncHandler(async (req, res, next) => {
   try {
@@ -644,7 +691,7 @@ export const deleteGroup = AsyncHandler(async (req, res, next) => {
       })
     );
   }
-});
+}); // done
 
 export const getMessages = AsyncHandler(async (req, res) => {
   try {
@@ -672,4 +719,4 @@ export const getMessages = AsyncHandler(async (req, res) => {
       message: error.message || "Internal server error!",
     });
   }
-});
+}); // done

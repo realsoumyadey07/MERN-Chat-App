@@ -20,6 +20,8 @@ export default function Layout({ children }) {
   const handleSearch = () => {
     dispatch(getMyChatByName(name));
   };
+  console.log("mychats data is here: ",myChatsData);
+  
   return (
     <>
       <ItemList title="Conversations">
@@ -45,19 +47,22 @@ export default function Layout({ children }) {
           {myChatsData && myChatsData.length > 0 ? (
             myChatsData.map((item, index) => (
               <Link
-                className="w-full hover:bg-gray-200 dark:hover:bg-blue-950 rounded-lg p-2"
+                className="w-full hover:bg-gray-200 dark:hover:bg-blue-950 rounded-lg p-2 flex items-center justify-between"
                 href={`/conversations/${item._id}`}
                 key={index}
               >
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
-                    <AvatarImage
+                    {/* <AvatarImage
                       src="/path-to-your-profile-image.jpg"
                       alt="Profile"
-                    />
-                    <AvatarFallback>DP</AvatarFallback>
+                    /> */}
+                    <AvatarFallback>{item.name.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                   </Avatar>
-                  <h2>{item.name}</h2>
+                  <div>
+                    <h2>{item.name}</h2>
+                    <p className="text-sm text-gray-500 truncate max-w-[200px] overflow-hidden">{item.latest_message?.content || ""}</p>
+                  </div>
                 </div>
               </Link>
             ))

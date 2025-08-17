@@ -94,7 +94,9 @@ const ConversationId = () => {
 
           <ScrollView
             contentContainerStyle={styles.messageSection}
-          ></ScrollView>
+          >
+            
+          </ScrollView>
 
           <View style={styles.textInputSection}>
             <TouchableOpacity>

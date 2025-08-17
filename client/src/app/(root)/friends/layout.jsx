@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import EmptyListComp from "@/components/EmptyListComp";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
@@ -141,11 +141,7 @@ export default function FriendsLayout({ children }) {
                   >
                     <div className="flex items-center gap-2">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage
-                          src="/path-to-your-profile-image.jpg"
-                          alt="Profile"
-                        />
-                        <AvatarFallback>DP</AvatarFallback>
+                        <AvatarFallback>{request?.sender?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <h2>{request?.sender?.username}</h2>
                     </div>
@@ -190,11 +186,7 @@ export default function FriendsLayout({ children }) {
                   >
                     <div className="flex items-center gap-2">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage
-                          src="/path-to-your-profile-image.jpg"
-                          alt="Profile"
-                        />
-                        <AvatarFallback>DP</AvatarFallback>
+                        <AvatarFallback>{unknownUser?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <h2>{unknownUser?.username}</h2>
                     </div>
@@ -225,18 +217,6 @@ export default function FriendsLayout({ children }) {
         </div>
       </ItemList>
       {children}
-      {/* {error && (
-        <Dialog open={!!error}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>{error}</DialogTitle>
-            </DialogHeader>
-            <DialogFooter>
-              <Button onClick={() => dispatch(resetError())}>Cancel</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )} */}
     </>
   );
 }

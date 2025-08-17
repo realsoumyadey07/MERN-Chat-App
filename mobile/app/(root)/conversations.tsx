@@ -11,10 +11,12 @@ import React, { useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import ConversationsComp from "@/components/ConversationsComp";
 import { useDispatch, useSelector } from "react-redux";
-import { getMyChats } from "@/redux/slices/chat.slice";
+import { getMyChatByName, getMyChats } from "@/redux/slices/chat.slice";
 import { AppDispatch } from "@/redux/store";
+import CustomEmptyChat from "@/components/CustomEmptyChat";
 
 const Conversations = () => {
+  const [conversationName, setConversationName] = useState<string>("");
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { myChatsData } = useSelector((state: any) => state.chat);
   const dispatch = useDispatch<AppDispatch>();
@@ -22,16 +24,28 @@ const Conversations = () => {
   const handleLoadChats = (): void => {
     setRefreshing(true);
     try {
-      dispatch(getMyChats());
+      if (conversationName !== "") {
+        dispatch(getMyChatByName(conversationName));
+      } else {
+        dispatch(getMyChats());
+      }
     } catch (error: any) {
       Alert.alert(error.message);
     } finally {
       setRefreshing(false);
     }
   };
+
+  const handleSearch = (): void => {
+    if (conversationName !== "") {
+      dispatch(getMyChatByName(conversationName));
+    }
+  };
+
   useEffect(() => {
     handleLoadChats();
   }, [dispatch]);
+
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -39,8 +53,15 @@ const Conversations = () => {
           placeholder="Search your chats..."
           style={styles.input}
           placeholderTextColor="gray"
+          onChangeText={(e) => {
+            setConversationName(e);
+            dispatch(getMyChatByName(e));
+            if (e === "") {
+              dispatch(getMyChats());
+            }
+          }}
         />
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSearch}>
           <FontAwesome
             name="search"
             size={25}
@@ -57,6 +78,12 @@ const Conversations = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleLoadChats} />
+        }
+        ListEmptyComponent={
+          <CustomEmptyChat
+            title="No Contact found!"
+            description="Please add contacts to have conversation."
+          />
         }
       />
     </View>

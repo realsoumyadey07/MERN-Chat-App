@@ -12,6 +12,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import {
   login,
   registration,
+  resetError,
   resetLogoutData,
   resetRegisterUserData,
 } from "@/redux/slices/auth.slice";
@@ -25,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const loginSchema = yup
   .object({
@@ -353,13 +355,16 @@ export default function Authentication() {
                   <DialogTitle>{error}</DialogTitle>
                 </DialogHeader>
                 <DialogFooter>
-                  <Link
-                    href="/authentication"
-                    onClick={() => dispatch(resetError())}
-                    className="hover:underline"
+                  <Button
+                    varient="outline"
+                    className="text-white"
+                    onClick={() => {
+                      dispatch(resetError());
+                      router.push("/authentication");
+                    }}
                   >
-                    Enter right credentials to proceed
-                  </Link>
+                    go back
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

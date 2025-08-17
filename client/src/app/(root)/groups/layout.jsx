@@ -49,13 +49,18 @@ export default function Layout({ children }) {
               >
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
-                    <AvatarImage
+                    {/* <AvatarImage
                       src="/path-to-your-profile-image.jpg"
                       alt="Profile"
-                    />
-                    <AvatarFallback>DP</AvatarFallback>
+                    /> */}
+                    <AvatarFallback>{item?.name?.charAt(0).toUpperCase()}</AvatarFallback>
                   </Avatar>
-                  <h2>{item.name}</h2>
+                  <div>
+                    <h2>{item.name}</h2>
+                    <p className="text-sm text-gray-500 truncate max-w-[200px] overflow-hidden">
+                      {item.latest_message?.content || ""}
+                    </p>
+                  </div>
                 </div>
               </Link>
             ))

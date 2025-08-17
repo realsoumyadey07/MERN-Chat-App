@@ -1,5 +1,4 @@
 import tokenApi from "@/lib/axios/tokenApi";
-import openApi from "@/lib/axios/tokenApi";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -10,6 +9,7 @@ const initialState = {
      addMemberData: null,
      removeMemberData: null,
      leaveChatData: null,
+     renamedGroupData: null,
      messageData: [],
      isLoading: false,
      error: null
@@ -106,6 +106,28 @@ export const createNewGroup = createAsyncThunk("chat/createNewGroup", async(grou
      }
 });
 
+export const renameGroup = createAsyncThunk("chat/renameGroup", async(groupData, thunkApi)=> {
+     try {
+          await tokenApi.put(`/chat/${groupData?.groupId}`, {
+               newName: groupData?.newName
+          });
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          )       
+     }
+});
+
+export const deleteGroup = createAsyncThunk("chat/deleteGroup", async(groupId, thunkApi)=> {
+     try {
+          await tokenApi.delete(`/chat/${groupId}`);
+     } catch (error) {
+          return thunkApi.rejectWithValue(
+               error?.response?.data || "Something went wrong!"
+          )
+     }
+})
+
 export const chatSlice = createSlice({
      name: "chat",
      initialState,
@@ -200,6 +222,29 @@ export const chatSlice = createSlice({
                state.isLoading = false;
           }),
           builder.addCase(createNewGroup.rejected, (state, action)=> {
+               state.error = action?.payload?.message || "Something went wrong!";
+               state.isLoading = false;
+          }),
+          //rename a group
+          builder.addCase(renameGroup.pending, (state, _)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(renameGroup.fulfilled, (state, action)=> {
+               state.renamedGroupData = action?.payload;
+               state.isLoading = false;
+          }),
+          builder.addCase(renameGroup.rejected, (state, action)=> {
+               state.error = action?.payload?.message || "Something went wrong!";
+               state.isLoading = false;
+          }),
+          //delete a group
+          builder.addCase(deleteGroup.pending, (state, _)=> {
+               state.isLoading = true;
+          }),
+          builder.addCase(deleteGroup.fulfilled, (state, _)=> {
+               state.isLoading = false;
+          }),
+          builder.addCase(deleteGroup.rejected, (state, action)=> {
                state.error = action?.payload?.message || "Something went wrong!";
                state.isLoading = false;
           })
