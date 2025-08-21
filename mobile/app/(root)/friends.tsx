@@ -8,9 +8,11 @@ import {
   getRequestByName,
   getSuggestionByName,
 } from "@/redux/slices/user.slice";
+import { AppDispatch } from "@/redux/store";
 import { useEffect, useState } from "react";
 import {
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -21,36 +23,34 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function Friends() {
   const [screen, setScreen] = useState<"Requests" | "Suggestions">("Requests");
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [searchRequest, setSearchRequest] = useState<string>("");
   const [searchSuggestion, setSearchSuggestion] = useState<string>("");
   const { requests, suggestions } = useSelector((state: any) => state.user);
-  const dispatch = useDispatch();
-
-  // Load data based on screen
-  useEffect(() => {
-    if (screen === "Requests") {
-      dispatch(getAllRequests());
-    } else {
-      dispatch(getAllSuggestions());
-    }
-  }, [screen, dispatch]);
+  const dispatch = useDispatch<AppDispatch>();
 
   // Search handling for Requests
   useEffect(() => {
+    handleLoad();
+  }, [searchRequest, searchSuggestion, screen, dispatch]);
+
+  const handleLoad = () => {
+    setRefreshing(true);
     if (screen === "Requests") {
       if (searchRequest.trim() === "") {
         dispatch(getAllRequests());
       } else {
         dispatch(getRequestByName(searchRequest));
       }
-    }else{
-      if(searchSuggestion === ""){
+    } else {
+      if (searchSuggestion.trim() === "") {
         dispatch(getAllSuggestions());
-      }else{
+      } else {
         dispatch(getSuggestionByName(searchSuggestion));
       }
     }
-  }, [searchRequest, searchSuggestion, screen, dispatch]);
+    setRefreshing(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -70,7 +70,7 @@ export default function Friends() {
             placeholderTextColor="gray"
             style={styles.input}
             value={searchSuggestion}
-            onChangeText={(e)=> setSearchSuggestion(e)}
+            onChangeText={(e) => setSearchSuggestion(e)}
             // TODO: Add search functionality for suggestions if needed
           />
         )}
@@ -114,10 +114,9 @@ export default function Friends() {
           keyExtractor={(item) => item._id}
           contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <CustomEmptyChat
-              title="No request found!"
-            />
+          ListEmptyComponent={<CustomEmptyChat title="No request found!" />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleLoad} />
           }
         />
       ) : (
@@ -133,10 +132,9 @@ export default function Friends() {
           keyExtractor={(item) => item._id}
           contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <CustomEmptyChat
-              title="No suggestion found!"
-            />
+          ListEmptyComponent={<CustomEmptyChat title="No suggestion found!" />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleLoad} />
           }
         />
       )}

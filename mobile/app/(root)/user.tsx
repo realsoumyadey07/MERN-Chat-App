@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,10 +27,11 @@ const User = () => {
     phoneNumber: "soumyadipdey802@gmail.com",
     profilePicture: require("../../assets/images/user-logo.png"),
   };
-  useEffect(()=> {
+  useEffect(() => {
     dispatch(getUserData());
-  }, [dispatch]);
-  if(!userData){
+  }, []);
+  
+  if (!userData) {
     return <ActivityIndicator size={"large"} color="#0000ff" />;
   }
   console.log("userData in user screen: ", userData);
@@ -47,9 +49,18 @@ const User = () => {
           {
             text: "Sign Out",
             onPress: async () => {
-              console.log("Sign Out Pressed");
-              await dispatch(logout());
-              router.push("/(auth)/login");
+              try {
+                console.log("Sign Out Pressed");
+                await dispatch(logout()).unwrap();
+                ToastAndroid.show(
+                  "User successfully logged out!",
+                  ToastAndroid.SHORT
+                );
+                router.push("/(auth)/login");
+              } catch (err) {
+                ToastAndroid.show("Logout failed!", ToastAndroid.SHORT);
+                console.error(err);
+              }
             },
           },
         ],

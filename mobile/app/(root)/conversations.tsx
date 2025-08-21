@@ -44,7 +44,7 @@ const Conversations = () => {
 
   useEffect(() => {
     handleLoadChats();
-  }, [dispatch]);
+  }, []);
 
   return (
     <View style={styles.container}>

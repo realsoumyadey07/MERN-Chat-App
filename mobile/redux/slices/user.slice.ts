@@ -48,6 +48,27 @@ export const getRequestByName = createAsyncThunk(
   }
 );
 
+interface AcceptRequest {
+  requestId: string;
+  accept: boolean;
+}
+
+export const acceptRequest = createAsyncThunk(
+  "user/acceptRequest",
+  async (formData: AcceptRequest, thunkApi) => {
+    try {
+      await tokenApi.post("/user/accept-friendrequest", {
+        requestId: formData?.requestId,
+        accept: formData?.accept,
+      });
+    } catch (error: any) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Something went wrong!"
+      );
+    }
+  }
+);
+
 export const getAllSuggestions = createAsyncThunk(
   "user/getAllSuggestions",
   async (_, thunkApi) => {
@@ -65,13 +86,26 @@ export const getAllSuggestions = createAsyncThunk(
 
 export const getSuggestionByName = createAsyncThunk(
   "user/getSuggestionByName",
-  async (name, thunkApi) => {
+  async (name: string, thunkApi) => {
     try {
       const response = await tokenApi.get(
         `/user/search-unknown-user?name=${name}`
       );
       const data = await response.data;
       return data?.users;
+    } catch (error: any) {
+      return thunkApi.rejectWithValue(
+        error.response?.data || "Something went wrong!"
+      );
+    }
+  }
+);
+
+export const sendRequest = createAsyncThunk(
+  "user/sendRequest",
+  async (receiverId: string, thunkApi) => {
+    try {
+      await tokenApi.post("/user/send-friendrequest", {receiverId});
     } catch (error: any) {
       return thunkApi.rejectWithValue(
         error.response?.data || "Something went wrong!"

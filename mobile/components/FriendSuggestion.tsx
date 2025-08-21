@@ -1,7 +1,10 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import React from "react";
 import UserComponent from "./UserComponent";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useDispatch } from "react-redux";
+import { getAllSuggestions, sendRequest } from "@/redux/slices/user.slice";
+import { AppDispatch } from "@/redux/store";
 
 interface FriendSuggestion {
   userId: string;
@@ -10,6 +13,27 @@ interface FriendSuggestion {
 }
 
 const FriendSuggestion = ({ userId, title, status }: FriendSuggestion) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const handleSendRequest = () => {
+    Alert.alert("Send request", "Do you want to send friend request?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel pressed!"),
+        style: "cancel",
+      },
+      {
+        text: "Send",
+        onPress: async () => {
+          try {
+            await dispatch(sendRequest(userId)).unwrap();
+            dispatch(getAllSuggestions());
+          } catch (err) {
+            console.error(err);
+          }
+        },
+      },
+    ]);
+  };
   return (
     <View style={styles.container} key={userId}>
       <View style={styles.leftSection}>
@@ -19,7 +43,7 @@ const FriendSuggestion = ({ userId, title, status }: FriendSuggestion) => {
           <Text style={styles.status}>{status}</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.iconButton}>
+      <TouchableOpacity style={styles.iconButton} onPress={handleSendRequest}>
         <AntDesign name="adduser" size={22} color="white" />
       </TouchableOpacity>
     </View>

@@ -27,7 +27,7 @@ export const generateAccessAndRefreshToken = async (userId) => {
   } catch (error) {
     throw new Error(
       error.message ||
-        "something went wrong while generating access and refresh token!"
+      "something went wrong while generating access and refresh token!"
     );
   }
 }; // done
@@ -277,7 +277,7 @@ export const searchUser = AsyncHandler(async (req, res, next) => {
   }
 }); // done
 
-export const searchUnknownUser = AsyncHandler(async (req, res, next) => {
+export const searchUnknownUser = AsyncHandler(async (req, res) => {
   try {
     const { name } = req.query;
     if (!name) {
@@ -286,19 +286,38 @@ export const searchUnknownUser = AsyncHandler(async (req, res, next) => {
         message: "Search param is required!",
       });
     }
+
+    // 1️⃣ Find all requests involving current user
+    const requests = await Request.find({
+      $or: [
+        { sender: req.user.id },
+        { receiver: req.user.id },
+      ],
+    });
+
+    // 2️⃣ Collect user IDs already in a request with current user
+    const requestedUserIds = requests.map(r =>
+      r.sender.toString() === req.user.id ? r.receiver.toString() : r.sender.toString()
+    );
+
+    // 3️⃣ Find users by regex, excluding requested users + self
     const users = await User.find({
       username: { $regex: name, $options: "i" },
+      _id: { $nin: [...requestedUserIds, req.user.id] },
     });
+
     const filteredUsers = users.map(({ _id, username }) => ({
       _id,
       username,
     }));
+
     if (filteredUsers.length === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: "User not found!",
       });
     }
+
     return res.status(200).json({
       success: true,
       users: filteredUsers,
@@ -309,31 +328,41 @@ export const searchUnknownUser = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal server error!",
     });
   }
-}); // done
+});
+// done
 
-export const getAllUnknownUsers = AsyncHandler(async (req, res, next)=> {
+export const getAllUnknownUsers = AsyncHandler(async (req, res) => {
   try {
-    const chats = await Chat.find({members: req.user.id});
+    const userId = req.user.id.toString();
+
+    // 1️⃣ Get all chats of current user
+    const chats = await Chat.find({ members: userId });
     const chattedUserIds = new Set(
-      chats.flatMap(chat => chat.members)
+      chats.flatMap(chat =>
+        chat.members.map(m => m.toString())
+      )
     );
-    // Get both sent and received requests
+
+    // 2️⃣ Get all requests (sent OR received)
     const requests = await Request.find({
       $or: [
-        { receiver: req.user.id },
-        { sender: req.user.id }
+        { receiver: userId },
+        { sender: userId }
       ]
     });
-    const requestedUserIds = new Set(requests.flatMap(request => 
-      request.sender.toString() === req.user.id.toString() 
-        ? request.receiver 
-        : request.sender
-    ));
-    // Find all users except the current user, those in chats, and those in requests
-    const users = await User.find({ 
-      _id: { 
-        $nin: [...chattedUserIds, ...requestedUserIds, req.user.id] 
-      } 
+
+    // 3️⃣ Collect "other user" from each request
+    const requestedUserIds = new Set(
+      requests.map(r =>
+        r.sender.toString() === userId ? r.receiver.toString() : r.sender.toString()
+      )
+    );
+
+    // 4️⃣ Exclude current user, chatted users, and requested users
+    const users = await User.find({
+      _id: {
+        $nin: [...chattedUserIds, ...requestedUserIds, userId]
+      }
     });
 
     if (users.length < 1) {
@@ -344,7 +373,7 @@ export const getAllUnknownUsers = AsyncHandler(async (req, res, next)=> {
       });
     }
 
-    // Filter only required fields
+    // 5️⃣ Return required fields only
     const filteredUsers = users.map(({ _id, username, status }) => ({
       _id,
       username,
@@ -361,7 +390,8 @@ export const getAllUnknownUsers = AsyncHandler(async (req, res, next)=> {
       message: error.message || "Internal server error!",
     });
   }
-}); // done
+});
+// done
 
 export const sendFriendRequest = AsyncHandler(async (req, res, next) => {
   try {
@@ -510,7 +540,7 @@ export const getAllRequests = AsyncHandler(async (req, res, next) => {
 export const getRequestsByName = AsyncHandler(async (req, res, next) => {
   try {
     const { name } = req.query;
-    if(!name) return res.status(400).json({
+    if (!name) return res.status(400).json({
       success: false,
       message: "Search param is required!",
     });
@@ -522,12 +552,12 @@ export const getRequestsByName = AsyncHandler(async (req, res, next) => {
       const senderName = request.sender.username.toLowerCase();
       return senderName.includes(name.toLowerCase());
     });
-    if(filterRequests.length < 1) return res.status(200).json({
+    if (filterRequests.length < 1) return res.status(200).json({
       success: true,
       requests: [],
       message: "No new requests",
     });
-    const allRequests = filterRequests.map(({_id, sender}) => (
+    const allRequests = filterRequests.map(({ _id, sender }) => (
       {
         _id,
         sender: {
@@ -584,7 +614,7 @@ export const getMyFriends = AsyncHandler(async (req, res, next) => {
       message: error.message || "Internal; server error!",
     });
   }
-}); 
+});
 
 export const getUserDetails = AsyncHandler(async (req, res, next) => {
   const { id } = req.params;
