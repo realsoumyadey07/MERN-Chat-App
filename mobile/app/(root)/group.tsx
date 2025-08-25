@@ -44,7 +44,8 @@ const group = () => {
 
   useEffect(() => {
     handleLoadGroups();
-  }, [dispatch]);
+  }, []);
+  
   console.log("My group data: ", myGroupsData);
   return (
     <View style={styles.container}>

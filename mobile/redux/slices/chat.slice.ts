@@ -91,7 +91,7 @@ export const getMyChatDetails = createAsyncThunk("chat/getMyChatDetails", async(
      }
 });
 
-export const getMyMessages = createAsyncThunk("chat/getMyMessages", async(chatId, thunkApi)=> {
+export const getMyMessages = createAsyncThunk("chat/getMyMessages", async(chatId: string, thunkApi)=> {
      try {
           const response = await tokenApi.get(`/chat/message/${chatId}`);
           const data = await response.data;
@@ -127,10 +127,13 @@ export const chatSlice = createSlice({
      name: "chat",
      initialState,
      reducers: {
-          resetError: (state, action)=> {
-               state.error = null
+          resetMessages: (state)=> {
+               state.messageData = [];
           },
-          resetMyChatDetails: (state, action)=> {
+          resetError: (state)=> {
+               state.error = null;
+          },
+          resetMyChatDetails: (state)=> {
                state.myChatDetails = null;
           }
      },
@@ -224,4 +227,4 @@ export const chatSlice = createSlice({
 })
 
 export default chatSlice.reducer;
-export const { resetError, resetMyChatDetails } = chatSlice.actions;
+export const { resetError, resetMyChatDetails, resetMessages } = chatSlice.actions;

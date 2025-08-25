@@ -3,16 +3,18 @@ import { Text, View } from "react-native";
 export default function UserComponent({
   letter,
   focused,
+  size = 35, // ✅ default size
 }: {
-  letter: String;
+  letter: string;
   focused?: boolean;
+  size?: number;
 }) {
   return (
     <View
       style={{
-        width: 35,
-        height: 35,
-        borderRadius: 50,
+        width: size,
+        height: size,
+        borderRadius: size / 2, // ✅ makes it always circular
         backgroundColor: focused ? "transparent" : "#d1d1cf",
         justifyContent: "center",
         alignItems: "center",
@@ -20,12 +22,12 @@ export default function UserComponent({
     >
       <Text
         style={{
-          fontWeight: 600,
+          fontWeight: "600", // ✅ should be string not number in RN
           color: focused ? "#fff" : "#000",
-          fontSize: 18,
+          fontSize: size * 0.5, // ✅ scale text based on size
         }}
       >
-        {letter.toUpperCase()}
+        {letter?.toUpperCase()}
       </Text>
     </View>
   );

@@ -177,6 +177,7 @@ export const authSlice = createSlice({
     });
     builder.addCase(logout.fulfilled, (state, action)=> {
       state.logoutUserData = action?.payload;
+      state.loginUserData = null;
       state.isLoading = false;
     });
     builder.addCase(logout.rejected, (state, action)=> {

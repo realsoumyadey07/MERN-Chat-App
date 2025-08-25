@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import ConversationsComp from "@/components/ConversationsComp";
 import { useDispatch, useSelector } from "react-redux";
 import { getMyChatByName, getMyChats } from "@/redux/slices/chat.slice";
 import { AppDispatch } from "@/redux/store";
 import CustomEmptyChat from "@/components/CustomEmptyChat";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Conversations = () => {
   const [conversationName, setConversationName] = useState<string>("");
@@ -42,9 +43,15 @@ const Conversations = () => {
     }
   };
 
-  useEffect(() => {
-    handleLoadChats();
-  }, [dispatch]);
+  // useEffect(() => {
+  //   handleLoadChats();
+  // }, []);
+
+  useFocusEffect(
+    useCallback(()=> {
+      handleLoadChats();
+    }, [])
+  )
 
   return (
     <View style={styles.container}>

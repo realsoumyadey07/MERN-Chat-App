@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ToastAndroid
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
@@ -67,10 +68,16 @@ const Login = () => {
     ),
   });
   const handleLogin = (data: any) => {
-    dispatch(login(data));
+    dispatch(login(data)).then(()=> {
+      ToastAndroid.show("User loogedin successfully!", ToastAndroid.SHORT);
+      router.replace("/conversations");
+    });
   };
   const handleRegistration = (data: any) => {
-    dispatch(registration(data));
+    dispatch(registration(data)).then(()=>{
+      ToastAndroid.show("User successfully registered, Now login", ToastAndroid.SHORT);
+      setScreen("Login");
+    });
   };
   useEffect(() => {
     if (!error && loginUserData) {

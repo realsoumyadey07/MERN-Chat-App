@@ -1,45 +1,66 @@
+import UserComponent from "@/components/UserComponent";
 import { getUserDetails } from "@/redux/slices/auth.slice";
 import { AppDispatch } from "@/redux/store";
-import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
+  RefreshControl,
+  ToastAndroid,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ProfileId() {
   const { id } = useLocalSearchParams();
   const dispatch = useDispatch<AppDispatch>();
-  const { userDetails } = useSelector((state: any) => state.auth);
-  useEffect(() => {
-    if (typeof id === "string") {
-      dispatch(getUserDetails(id));
+  const { userDetails, isLoading, error } = useSelector((state: any) => state.auth);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const loadUserDetails = async () => {
+    try {
+      if (typeof id === "string") {
+        await dispatch(getUserDetails(id)).unwrap();
+      }
+    } catch (err: any) {
+      ToastAndroid.show("Failed to load user details", ToastAndroid.SHORT);
     }
-  }, [id, dispatch]);
-  if (!userDetails) {
-    return <ActivityIndicator size={"large"} color="#0000ff" />; // or a loading indicator
-  }
-  // dummy data
-  const user = {
-    name: "Soumya Dey",
-    about: "Realsoumyadey",
-    phoneNumber: "soumyadipdey802@gmail.com",
-    profilePicture: require("../../assets/images/user-logo.png"),
   };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadUserDetails();
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    loadUserDetails();
+  }, [id]);
+
+  if (isLoading && !userDetails) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    ToastAndroid.show(error, ToastAndroid.LONG);
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.profilePictureContainer}>
-        <Image source={user.profilePicture} style={styles.profilePicture} />
-        <TouchableOpacity style={styles.cameraIcon}>
-          <Ionicons name="camera" size={24} color="#fff" />
-        </TouchableOpacity>
+        <UserComponent letter={userDetails?.username[0]} size={150} />
       </View>
 
       <Text style={styles.userName}>{userDetails?.username}</Text>
@@ -60,7 +81,7 @@ export default function ProfileId() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5", // consistent with User screen
     padding: 20,
     paddingTop: 70,
     alignItems: "center",
@@ -69,48 +90,36 @@ const styles = StyleSheet.create({
     position: "relative",
     marginBottom: 20,
   },
-  profilePicture: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  cameraIcon: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: "#000",
-    borderRadius: 20,
-    padding: 8,
-  },
   userName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 26,
+    fontWeight: "700",
+    marginBottom: 25,
+    color: "#111827", // near-black
   },
   section: {
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 18,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB", // subtle divider
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#888",
-    marginBottom: 5,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#6B7280", // gray text
+    marginBottom: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   sectionContent: {
-    fontSize: 18,
-    color: "#000",
+    fontSize: 17,
+    color: "#111827",
+    fontWeight: "500",
   },
-  editButton: {
-    backgroundColor: "red",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  editButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
   },
 });
