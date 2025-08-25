@@ -6,7 +6,6 @@ import {
   getAllUnknownUsers,
   getRequestsByName,
   resetAcceptedRequestData,
-  resetError,
   resetRequests,
   resetUnknownUsers,
   sendFriendRequest,

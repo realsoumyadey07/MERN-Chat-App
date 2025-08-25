@@ -2,26 +2,39 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import UserComponent from "./UserComponent";
-import { useSelector } from "react-redux";
 import { useRouter } from "expo-router";
+import { formatChatTime } from "@/utils/formatChatTime";
+
+interface LatestMessage {
+  _id: string;
+  content: string;
+  createdAt: Date;
+}
 
 interface ConversationProps {
-    _id: string;
-    name: string;
-    message?: string;
-    groupChat?: boolean;
-    members?: string[];
+  _id: string;
+  name: string;
+  latest_message?: LatestMessage;
+  groupChat?: boolean;
+  members?: string[];
 }
 export default function ConversationsComp(props: ConversationProps) {
   const router = useRouter();
   return (
-    <TouchableOpacity style={styles.chatContainer} onPress={()=> router.push(`/conversationId/${props._id}`)}>
+    <TouchableOpacity
+      style={styles.chatContainer}
+      onPress={() => router.push(`/conversationId/${props._id}`)}
+    >
       <UserComponent letter={props?.name?.charAt(0).toUpperCase() || "U"} />
       <View style={styles.messageSection}>
-        <Text>{props.name? props.name: "Name"}</Text>
-        <Text>{props.message? props.message : "messages..."}</Text>
+        <Text>{props.name ? props.name : "Name"}</Text>
+        <Text>
+          {props.latest_message?.content ? props.latest_message?.content : ""}
+        </Text>
       </View>
-      <Text>Yesterday</Text>
+      {props.latest_message && (
+        <Text>{formatChatTime(props.latest_message?.createdAt!)}</Text>
+      )}
     </TouchableOpacity>
   );
 }

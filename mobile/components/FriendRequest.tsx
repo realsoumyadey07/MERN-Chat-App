@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ToastAndroid } from "react-native";
 import React from "react";
 import UserComponent from "./UserComponent";
 import CustomButton from "./CustomButton";
@@ -29,20 +29,14 @@ const FriendRequest = ({ requestId, senderId, title }: FriendRequest) => {
         {
           text: "Accept",
           onPress: async () => {
-            dispatch(
-              acceptRequest({
-                requestId,
-                accept: true,
-              })
-            ).then(() => {
-              dispatch(getAllRequests());
-            });
             try {
               await dispatch(acceptRequest({requestId, accept: true})).unwrap();
+              ToastAndroid.show("Request accepted!", ToastAndroid.SHORT);
               await dispatch(getAllRequests());
               await dispatch(getMyChats());
             } catch (error: any) {
               console.log(error);
+              ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
             }
           },
         },
@@ -68,9 +62,11 @@ const FriendRequest = ({ requestId, senderId, title }: FriendRequest) => {
                 acceptRequest({ requestId, accept: false })
               ).unwrap();
               console.log("Accepted:", data);
+              ToastAndroid.show("Request rejected!", ToastAndroid.SHORT);
               dispatch(getAllRequests());
             } catch (err) {
               console.error("Accept request failed:", err);
+              ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
             }
           },
         },

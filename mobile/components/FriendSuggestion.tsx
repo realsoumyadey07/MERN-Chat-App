@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ToastAndroid } from "react-native";
 import React from "react";
 import UserComponent from "./UserComponent";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -26,9 +26,11 @@ const FriendSuggestion = ({ userId, title, status }: FriendSuggestion) => {
         onPress: async () => {
           try {
             await dispatch(sendRequest(userId)).unwrap();
+            ToastAndroid.show("Request has been sent!", ToastAndroid.SHORT);
             dispatch(getAllSuggestions());
           } catch (err) {
             console.error(err);
+            ToastAndroid.show("Something went wrong", ToastAndroid.SHORT);
           }
         },
       },

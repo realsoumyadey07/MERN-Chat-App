@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,31 +9,52 @@ import {
   Alert,
   ActivityIndicator,
   ToastAndroid,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserData, logout } from "@/redux/slices/auth.slice";
 import { AppDispatch } from "@/redux/store";
 import { router } from "expo-router";
+import UserComponent from "@/components/UserComponent";
 
 const User = () => {
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
-  const { userData, logoutUserData, error, isLoading } = useSelector(
+  const { userData, error, isLoading } = useSelector(
     (state: any) => state.auth
   );
-  const user = {
-    name: "Soumya Dey",
-    about: "Realsoumyadey",
-    phoneNumber: "soumyadipdey802@gmail.com",
-    profilePicture: require("../../assets/images/user-logo.png"),
+
+  const loadUserData = async () => {
+    try {
+      await dispatch(getUserData()).unwrap();
+    } catch (err: any) {
+      ToastAndroid.show("Failed to load user data", ToastAndroid.SHORT);
+    }
   };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadUserData();
+    setRefreshing(false);
+  };
+
   useEffect(() => {
-    dispatch(getUserData());
+    loadUserData();
   }, []);
-  
+
   if (!userData) {
-    return <ActivityIndicator size={"large"} color="#0000ff" />;
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
+
+  if (error) {
+    return ToastAndroid.show(error, ToastAndroid.LONG);
+  }
+
   console.log("userData in user screen: ", userData);
   const handleSignOut = () => {
     try {
@@ -57,7 +78,7 @@ const User = () => {
                   ToastAndroid.SHORT
                 );
                 router.push("/(auth)/login");
-              } catch (err) {
+              } catch (err: any) {
                 ToastAndroid.show("Logout failed!", ToastAndroid.SHORT);
                 console.error(err);
               }
@@ -72,33 +93,42 @@ const User = () => {
     }
   };
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.profilePictureContainer}>
-        <Image source={user.profilePicture} style={styles.profilePicture} />
-        <TouchableOpacity style={styles.cameraIcon}>
-          <Ionicons name="camera" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.userName}>{userData?.username}</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Username</Text>
-        <Text style={styles.sectionContent}>{userData?.status}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Email</Text>
-        <Text style={styles.sectionContent}>{userData?.email}</Text>
-      </View>
+    <>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
       ) : (
-        <TouchableOpacity style={styles.editButton} onPress={handleSignOut}>
-          <Text style={styles.editButtonText}>Sign out</Text>
-        </TouchableOpacity>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={styles.profilePictureContainer}>
+            <UserComponent letter={userData?.username[0]} size={150} />
+            <TouchableOpacity style={styles.cameraIcon}>
+              <Ionicons name="camera" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.userName}>{userData?.username}</Text>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Username</Text>
+            <Text style={styles.sectionContent}>{userData?.status}</Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Email</Text>
+            <Text style={styles.sectionContent}>{userData?.email}</Text>
+          </View>
+          <TouchableOpacity style={styles.editButton} onPress={handleSignOut}>
+            <Text style={styles.editButtonText}>Sign out</Text>
+          </TouchableOpacity>
+        </ScrollView>
       )}
-    </ScrollView>
+    </>
   );
 };
 
@@ -107,7 +137,7 @@ export default User;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5", // light gray for clean background
     padding: 20,
     paddingTop: 70,
     alignItems: "center",
@@ -117,47 +147,64 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profilePicture: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 3,
+    borderColor: "#E5E7EB", // subtle border around profile
   },
   cameraIcon: {
     position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: "#000",
+    bottom: 5,
+    right: 5,
+    backgroundColor: "#5091fa",
     borderRadius: 20,
-    padding: 8,
+    padding: 6,
   },
   userName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 26,
+    fontWeight: "700",
+    marginBottom: 25,
+    color: "#111827", // near-black
   },
   section: {
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 18,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB", // subtle divider
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#888",
-    marginBottom: 5,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#6B7280", // gray text
+    marginBottom: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   sectionContent: {
-    fontSize: 18,
-    color: "#000",
+    fontSize: 17,
+    color: "#111827",
+    fontWeight: "500",
   },
   editButton: {
-    backgroundColor: "black",
+    backgroundColor: "red",
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 8,
-    marginTop: 20,
+    borderRadius: 5,
+    marginTop: 30,
+    elevation: 3,
   },
   editButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5", // match screen bg
   },
 });
