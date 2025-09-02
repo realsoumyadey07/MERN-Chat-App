@@ -46,9 +46,16 @@ const ConversationId = () => {
       withCredentials: true,
     });
     setSocket(newSocket);
+    newSocket.on("NEW_MESSAGE", (newMessage) => {
+    // Update redux store or refetch messages
+    if (newMessage.chatId === id) {
+      dispatch(getMyMessages(id as string)); 
+    }
+  });
 
     return () => {
       newSocket.disconnect();
+      newSocket.off("NEW_MESSAGE", () => {});
     };
   }, []);
 
