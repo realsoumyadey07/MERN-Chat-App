@@ -27,7 +27,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: true, // allow any origin
+        origin: "*", // allow any origin
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
@@ -35,7 +35,7 @@ const io = new Server(server, {
 
 app.set("io", io);
 app.use(cors({
-    origin: true, // allow any origin
+    origin: "*", // allow any origin
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
