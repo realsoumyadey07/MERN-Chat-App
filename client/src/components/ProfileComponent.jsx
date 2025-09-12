@@ -32,9 +32,9 @@ export default function ProfileComponent() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
     console.log("Logout clicked");
-    dispatch(logOut());
+    await dispatch(logOut()).unwrap();
     setOpenModal(false);
     router.push("/authentication");
   };
