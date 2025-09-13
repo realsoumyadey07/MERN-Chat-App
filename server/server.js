@@ -12,8 +12,6 @@ import { v4 as uuid } from "uuid";
 // Routers import
 import userRouter from "./routes/user.router.js";
 import chatRouter from "./routes/chat.router.js";
-// import { createMessagesInAChat, createSingleChats, deleteAllChats } from "./seeders/chat.js";
-import { createUser, deleteAllUsers } from "./seeders/user.js";
 import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.model.js";
@@ -50,7 +48,7 @@ const io = new Server(server, {
     credentials: true
   }
 });
-// ------------------------------------------------
+
 
 app.set("io", io);
 
@@ -58,6 +56,15 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", process.env.ORIGIN);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  next();
+});
+
 
 // user mapping with socketIds
 export const socketUserIds = new Map();
@@ -148,10 +155,3 @@ connectDb()
   .catch(err => {
     console.log("❌ DB connection failed:", err);
   });
-
-// Seeder examples
-// createUser(5);
-// createSingleChats();
-// createMessagesInAChat("67b9ce4e74c62ad7acafa4ad", 50);
-// deleteAllChats();
-// deleteAllUsers();
